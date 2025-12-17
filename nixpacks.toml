@@ -2,13 +2,16 @@
 nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x"]
 
 [phases.install]
-cmds = ["composer install --no-dev --optimize-autoloader", "npm install", "npm run build"]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-scripts",
+    "npm install",
+    "npm run build"
+]
 
 [phases.build]
 cmds = [
-    "php artisan config:clear", 
-    "php artisan cache:clear",
-    "mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs bootstrap/cache && chmod -R a+rw storage"
+    "mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs bootstrap/cache",
+    "chmod -R 775 storage bootstrap/cache"
 ]
 
 [start]
