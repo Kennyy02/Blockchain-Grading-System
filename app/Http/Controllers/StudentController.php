@@ -94,7 +94,7 @@ class StudentController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users,id|unique:students',
+                'user_id' => 'nullable|exists:users,id|unique:students', // Made nullable to allow creating new user
                 'student_id' => 'required|string|max:20|unique:students',
                 'first_name' => 'required|string|max:255',
                 'middle_name' => 'nullable|string|max:255',
@@ -107,6 +107,8 @@ class StudentController extends Controller
                 'program' => 'nullable|string|max:255',
                 'year_level' => 'required|integer|min:1|max:16',
                 'current_class_id' => 'nullable|exists:classes,id',
+                // Student password (for creating user account)
+                'password' => 'required_without:user_id|string|min:8|confirmed',
                 // Parent/Guardian validation
                 'parent_guardian' => 'nullable|array',
                 'parent_guardian.first_name' => 'nullable|string|max:255',
@@ -129,6 +131,19 @@ class StudentController extends Controller
             
             $studentData = $validator->validated();
             unset($studentData['parent_guardian']); // Remove parent data from student creation
+            
+            // Create user account if user_id not provided
+            if (!isset($studentData['user_id']) && isset($studentData['password'])) {
+                $user = User::create([
+                    'name' => trim($studentData['first_name'] . ' ' . $studentData['last_name']),
+                    'email' => $studentData['email'],
+                    'password' => Hash::make($studentData['password']),
+                    'role' => 'student',
+                    'status' => 'active',
+                ]);
+                $studentData['user_id'] = $user->id;
+            }
+            unset($studentData['password']); // Remove password from student data
             
             $student = Student::create($studentData);
             
