@@ -624,19 +624,26 @@ const StudentModal: React.FC<{
                                         {errors['parent_guardian.email'] && (<p className="text-red-500 text-xs mt-1">{errors['parent_guardian.email'][0]}</p>)}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Gender</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Gender
+                                            {formData.parent_guardian?.relationship === 'Guardian' && <span className="text-red-500 ml-1">*</span>}
+                                        </label>
                                         <select
                                             name="gender"
                                             value={formData.parent_guardian?.gender || ''}
                                             onChange={handleParentChange}
                                             disabled={formData.parent_guardian?.relationship === 'Father' || formData.parent_guardian?.relationship === 'Mother'}
-                                            className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none ${(formData.parent_guardian?.relationship === 'Father' || formData.parent_guardian?.relationship === 'Mother') ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+                                            required={formData.parent_guardian?.relationship === 'Guardian'}
+                                            className={`w-full px-4 py-3 border ${formData.parent_guardian?.relationship === 'Guardian' && !formData.parent_guardian?.gender ? 'border-red-300' : 'border-gray-200'} rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none ${(formData.parent_guardian?.relationship === 'Father' || formData.parent_guardian?.relationship === 'Mother') ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
                                         >
                                             <option value="">Select Gender</option>
                                             <option value="Male">Male</option>
                                             <option value="Female">Female</option>
                                         </select>
                                         {errors['parent_guardian.gender'] && (<p className="text-red-500 text-xs mt-1">{errors['parent_guardian.gender'][0]}</p>)}
+                                        {formData.parent_guardian?.relationship === 'Guardian' && !formData.parent_guardian?.gender && (
+                                            <p className="text-red-500 text-xs mt-1">Gender is required for Guardian</p>
+                                        )}
                                     </div>
                                 </div>
 

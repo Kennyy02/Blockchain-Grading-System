@@ -144,6 +144,7 @@ class ParentController extends Controller
                 'middle_name' => 'nullable|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'email' => 'required|email',
+                'gender' => 'nullable|in:Male,Female',
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
                 'password' => 'required|string|min:8|confirmed',
@@ -157,6 +158,19 @@ class ParentController extends Controller
             }
 
             $validated = $validator->validated();
+            
+            // Custom validation: Gender is required if any relationship is "Guardian"
+            if (!empty($validated['students'])) {
+                $hasGuardian = collect($validated['students'])->contains(function ($student) {
+                    return isset($student['relationship']) && $student['relationship'] === 'Guardian';
+                });
+                
+                if ($hasGuardian && empty($validated['gender'])) {
+                    return $request->expectsJson() 
+                        ? response()->json(['success' => false, 'errors' => ['gender' => ['Gender is required when relationship is Guardian']], 'message' => 'Validation failed'], 422) 
+                        : back()->withErrors(['gender' => 'Gender is required when relationship is Guardian'])->withInput();
+                }
+            }
             
             // Check if user with this email already exists
             $user = User::where('email', $validated['email'])->first();
@@ -185,6 +199,7 @@ class ParentController extends Controller
                 'middle_name' => $validated['middle_name'] ?? null,
                 'last_name' => $validated['last_name'],
                 'email' => $validated['email'],
+                'gender' => $validated['gender'] ?? null,
                 'phone' => $validated['phone'] ?? null,
                 'address' => $validated['address'] ?? null,
             ]);
@@ -233,6 +248,7 @@ class ParentController extends Controller
                 'middle_name' => 'nullable|string|max:255',
                 'last_name' => 'sometimes|required|string|max:255',
                 'email' => 'sometimes|required|email|unique:parents,email,' . $id,
+                'gender' => 'nullable|in:Male,Female',
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
                 'password' => 'nullable|string|min:8|confirmed',
@@ -247,12 +263,27 @@ class ParentController extends Controller
 
             $validated = $validator->validated();
             
+            // Custom validation: Gender is required if any relationship is "Guardian"
+            if (!empty($validated['students'])) {
+                $hasGuardian = collect($validated['students'])->contains(function ($student) {
+                    return isset($student['relationship']) && $student['relationship'] === 'Guardian';
+                });
+                
+                $currentGender = $validated['gender'] ?? $parent->gender;
+                if ($hasGuardian && empty($currentGender)) {
+                    return $request->expectsJson() 
+                        ? response()->json(['success' => false, 'errors' => ['gender' => ['Gender is required when relationship is Guardian']], 'message' => 'Validation failed'], 422) 
+                        : back()->withErrors(['gender' => 'Gender is required when relationship is Guardian'])->withInput();
+                }
+            }
+            
             // Update parent record
             $parent->update([
                 'first_name' => $validated['first_name'] ?? $parent->first_name,
                 'middle_name' => $validated['middle_name'] ?? $parent->middle_name,
                 'last_name' => $validated['last_name'] ?? $parent->last_name,
                 'email' => $validated['email'] ?? $parent->email,
+                'gender' => $validated['gender'] ?? $parent->gender,
                 'phone' => $validated['phone'] ?? $parent->phone,
                 'address' => $validated['address'] ?? $parent->address,
             ]);

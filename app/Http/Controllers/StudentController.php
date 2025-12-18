@@ -154,6 +154,7 @@ class StudentController extends Controller
                 'parent_guardian.phone' => 'nullable|string|max:20',
                 'parent_guardian.address' => 'nullable|string|max:500',
                 'parent_guardian.relationship' => 'nullable|string|max:50',
+                'parent_guardian.gender' => 'nullable|in:Male,Female|required_if:parent_guardian.relationship,Guardian',
                 'parent_guardian.password' => 'nullable|string|min:8|confirmed',
             ]);
 
@@ -366,6 +367,7 @@ class StudentController extends Controller
                 'parent_guardian.phone' => 'nullable|string|max:20',
                 'parent_guardian.address' => 'nullable|string|max:500',
                 'parent_guardian.relationship' => 'nullable|string|max:50',
+                'parent_guardian.gender' => 'nullable|in:Male,Female|required_if:parent_guardian.relationship,Guardian',
                 'parent_guardian.password' => 'nullable|string|min:8|confirmed',
             ]);
 
