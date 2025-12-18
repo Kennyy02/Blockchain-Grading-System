@@ -164,15 +164,6 @@ const ClassModal: React.FC<{
     errors: Record<string, string[]>;
 }> = ({ classItem, onClose, onSave, errors }) => {
 
-    // Debug: Log classItem when modal opens
-    useEffect(() => {
-        if (classItem) {
-            console.log('ClassModal - Editing class:', classItem);
-            console.log('ClassModal - course_id:', classItem.course_id);
-            console.log('ClassModal - course:', classItem.course);
-        }
-    }, [classItem]);
-
     const [formData, setFormData] = useState<ClassFormData>({
         class_code: classItem?.class_code || '',
         class_name: classItem?.class_name || '',
@@ -184,6 +175,24 @@ const ClassModal: React.FC<{
         semester_id: classItem?.semester_id || 0,
         adviser_id: classItem?.adviser_id || null,
     });
+
+    // Update formData when classItem changes (important for editing)
+    // This ensures the form is properly populated when editing an existing class
+    useEffect(() => {
+        if (classItem) {
+            setFormData({
+                class_code: classItem.class_code || '',
+                class_name: classItem.class_name || '',
+                year_level: classItem.year_level || 1,
+                section: classItem.section || '',
+                program: classItem.program || '',
+                course_id: classItem.course_id || null,
+                academic_year_id: classItem.academic_year_id || 0,
+                semester_id: classItem.semester_id || 0,
+                adviser_id: classItem.adviser_id || null,
+            });
+        }
+    }, [classItem]);
 
     const [loading, setLoading] = useState(false);
     const [loadingOptions, setLoadingOptions] = useState(true);
@@ -222,19 +231,14 @@ const ClassModal: React.FC<{
     // Filter courses based on grade level
     useEffect(() => {
         if (allCourses.length > 0) {
-            console.log('Filtering courses - year_level:', formData.year_level, 'course_id:', formData.course_id);
             const gradeCategory = getGradeLevelCategory(formData.year_level);
             const filtered = allCourses.filter(course => course.level === gradeCategory);
-            console.log('Filtered courses:', filtered);
             
             // When editing, if the current course exists but isn't in filtered list,
             // add it to the list so it shows in dropdown
             if (classItem && formData.course_id) {
-                console.log('Editing mode - checking if course exists in filtered list');
                 const currentCourse = allCourses.find(c => c.id === formData.course_id);
-                console.log('Current course:', currentCourse);
                 if (currentCourse && !filtered.some(c => c.id === formData.course_id)) {
-                    console.log('Adding current course to filtered list');
                     filtered.push(currentCourse);
                 }
             }
@@ -318,28 +322,19 @@ const ClassModal: React.FC<{
             }
 
             if (coursesRes.success) {
-                console.log('Loaded all courses:', coursesRes.data);
-                console.log('Current formData.course_id:', formData.course_id);
-                console.log('Current formData.year_level:', formData.year_level);
-                
                 setAllCourses(coursesRes.data);
                 // Initial filtering based on current year_level
                 const gradeCategory = getGradeLevelCategory(formData.year_level);
                 const filtered = coursesRes.data.filter((course: Course) => course.level === gradeCategory);
-                console.log('Initially filtered courses for category', gradeCategory, ':', filtered);
                 
                 // When editing, ensure the current course is in the filtered list
                 if (classItem && formData.course_id) {
-                    console.log('Editing mode - adding current course if needed');
                     const currentCourse = coursesRes.data.find((c: Course) => c.id === formData.course_id);
-                    console.log('Found current course:', currentCourse);
                     if (currentCourse && !filtered.some((c: Course) => c.id === formData.course_id)) {
-                        console.log('Current course not in filtered list, adding it');
                         filtered.push(currentCourse);
                     }
                 }
                 
-                console.log('Final filtered courses:', filtered);
                 setCourses(filtered);
             }
         } catch (error) {
