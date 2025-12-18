@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class StudentController extends Controller
@@ -94,12 +95,25 @@ class StudentController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'user_id' => 'nullable|exists:users,id|unique:students,user_id,NULL,id,deleted_at,NULL', // Ignore soft-deleted
-                'student_id' => 'required|string|max:20|unique:students,student_id,NULL,id,deleted_at,NULL', // Ignore soft-deleted
+                'user_id' => [
+                    'nullable',
+                    'exists:users,id',
+                    Rule::unique('students', 'user_id')->whereNull('deleted_at')
+                ],
+                'student_id' => [
+                    'required',
+                    'string',
+                    'max:20',
+                    Rule::unique('students', 'student_id')->whereNull('deleted_at')
+                ],
                 'first_name' => 'required|string|max:255',
                 'middle_name' => 'nullable|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'email' => 'required|email|unique:students,email,NULL,id,deleted_at,NULL', // Ignore soft-deleted
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('students', 'email')->whereNull('deleted_at')
+                ],
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
                 'date_of_birth' => 'required|date',
@@ -255,12 +269,25 @@ class StudentController extends Controller
             $student = Student::findOrFail($id);
             
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users,id|unique:students,user_id,' . $student->id . ',id,deleted_at,NULL',
-                'student_id' => 'required|string|max:20|unique:students,student_id,' . $student->id . ',id,deleted_at,NULL',
+                'user_id' => [
+                    'required',
+                    'exists:users,id',
+                    Rule::unique('students', 'user_id')->ignore($student->id)->whereNull('deleted_at')
+                ],
+                'student_id' => [
+                    'required',
+                    'string',
+                    'max:20',
+                    Rule::unique('students', 'student_id')->ignore($student->id)->whereNull('deleted_at')
+                ],
                 'first_name' => 'required|string|max:255',
                 'middle_name' => 'nullable|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'email' => 'required|email|unique:students,email,' . $student->id . ',id,deleted_at,NULL',
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('students', 'email')->ignore($student->id)->whereNull('deleted_at')
+                ],
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
                 'date_of_birth' => 'required|date',
