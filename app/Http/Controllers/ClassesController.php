@@ -397,17 +397,16 @@ class ClassesController extends Controller
             // Count classes with advisers assigned
             $totalAdvisersAssigned = Classes::whereNotNull('adviser_id')->count();
 
-            // Count unique courses/programs
-            $totalCourses = Classes::distinct('course_id')->whereNotNull('course_id')->count('course_id');
-            // If no course_id, count by program string
-            if ($totalCourses === 0) {
-                $totalCourses = Classes::distinct('program')->count('program');
-            }
+            // Count unique courses/programs - simplified approach
+            $totalCourses = Classes::distinct()
+                ->whereNotNull('program')
+                ->count('program');
 
             $byProgram = Classes::select('program', DB::raw('count(*) as count'))
+                ->whereNotNull('program')
                 ->groupBy('program')
                 ->get()
-                ->map(fn($item) => ['program' => $item->program, 'count' => (int)$item->count]);
+                ->map(fn($item) => ['program' => $item->program ?? 'N/A', 'count' => (int)$item->count]);
             
             $stats = [
                 'total_classes' => $totalClasses,
@@ -424,6 +423,7 @@ class ClassesController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Error getting global class stats: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve global class statistics',
