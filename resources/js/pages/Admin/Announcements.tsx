@@ -192,11 +192,17 @@ const ViewDetailsModal: React.FC<{
                                 Timestamps
                             </h3>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Published At</label>
                                     <p className="text-sm bg-white px-3 py-2 rounded-lg border font-mono">
                                         {formatDate(announcement.published_at)}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Expires At</label>
+                                    <p className="text-sm bg-white px-3 py-2 rounded-lg border font-mono">
+                                        {announcement.expires_at ? formatDate(announcement.expires_at) : 'Never'}
                                     </p>
                                 </div>
                                 <div>
@@ -299,11 +305,22 @@ const AnnouncementModal: React.FC<{
         return '';
     }, [announcement]);
 
+    const initialExpiresAt = useMemo(() => {
+        if (announcement?.expires_at) {
+            const date = new Date(announcement.expires_at);
+            const pad = (num: number) => num.toString().padStart(2, '0');
+            // Format for datetime-local input (YYYY-MM-DDThh:mm)
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+        return '';
+    }, [announcement]);
+
     const [formData, setFormData] = useState<AnnouncementFormData>({
         title: announcement?.title || '',
         content: announcement?.content || '',
         target_audience: announcement?.target_audience || 'Students',
         published_at: initialPublishedAt,
+        expires_at: initialExpiresAt,
     });
 
     const [loading, setLoading] = useState(false);
@@ -319,6 +336,9 @@ const AnnouncementModal: React.FC<{
                 ...formData,
                 published_at: formData.published_at && formData.published_at.trim() !== '' 
                     ? new Date(formData.published_at).toISOString() 
+                    : null,
+                expires_at: formData.expires_at && formData.expires_at.trim() !== '' 
+                    ? new Date(formData.expires_at).toISOString() 
                     : null,
             };
             
@@ -386,24 +406,25 @@ const AnnouncementModal: React.FC<{
                             {errors.content && (<p className="text-red-500 text-xs mt-1">{errors.content[0]}</p>)}
                         </div>
 
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Target Audience <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                name="target_audience"
+                                value={formData.target_audience}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                required
+                            >
+                                {AUDIENCE_OPTIONS.map(audience => (
+                                    <option key={audience} value={audience}>{audience}</option>
+                                ))}
+                            </select>
+                            {errors.target_audience && (<p className="text-red-500 text-xs mt-1">{errors.target_audience[0]}</p>)}
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Target Audience <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    name="target_audience"
-                                    value={formData.target_audience}
-                                    onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
-                                    required
-                                >
-                                    {AUDIENCE_OPTIONS.map(audience => (
-                                        <option key={audience} value={audience}>{audience}</option>
-                                    ))}
-                                </select>
-                                {errors.target_audience && (<p className="text-red-500 text-xs mt-1">{errors.target_audience[0]}</p>)}
-                            </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Publish Date (Optional for Draft)
@@ -418,6 +439,20 @@ const AnnouncementModal: React.FC<{
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Leave empty for Draft. Set future date for Scheduled.</p>
                                 {errors.published_at && (<p className="text-red-500 text-xs mt-1">{errors.published_at[0]}</p>)}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Expiration Date (Optional)
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    name="expires_at"
+                                    value={formData.expires_at || ''} 
+                                    onChange={handleChange}
+                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Leave empty for no expiration. Announcement will stop displaying after this date.</p>
+                                {errors.expires_at && (<p className="text-red-500 text-xs mt-1">{errors.expires_at[0]}</p>)}
                             </div>
                         </div>
                         

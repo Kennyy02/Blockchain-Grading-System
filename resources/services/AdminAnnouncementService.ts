@@ -38,6 +38,7 @@ export interface Announcement {
     content: string;
     target_audience: TargetAudience;
     published_at: string | null; // Null for draft, future date for scheduled
+    expires_at: string | null; // Null for no expiration, date for expiration
     created_at: string;
 
     // Relationships (Eager Loaded)
@@ -55,6 +56,7 @@ export interface AnnouncementFormData {
     content: string;
     target_audience: TargetAudience;
     published_at: string | null;
+    expires_at: string | null;
 }
 
 export interface AnnouncementStats {

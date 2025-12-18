@@ -16,12 +16,14 @@ class Announcement extends Model
         'content',
         'target_audience',
         'published_at',
+        'expires_at',
     ];
 
     protected function casts(): array
     {
         return [
             'published_at' => 'datetime',
+            'expires_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
@@ -33,6 +35,19 @@ class Announcement extends Model
     {
         return $query->whereNotNull('published_at')
             ->where('published_at', '<=', now());
+    }
+
+    public function scopeNotExpired($query)
+    {
+        return $query->where(function($q) {
+            $q->whereNull('expires_at')
+              ->orWhere('expires_at', '>', now());
+        });
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->published()->notExpired();
     }
 
     public function scopeUnpublished($query)
@@ -108,6 +123,16 @@ class Announcement extends Model
         return $this->published_at && $this->published_at->isFuture();
     }
 
+    public function isExpired(): bool
+    {
+        return $this->expires_at && $this->expires_at->isPast();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isPublished() && !$this->isExpired();
+    }
+
     public function publish(): void
     {
         $this->published_at = now();
@@ -129,6 +154,7 @@ class Announcement extends Model
     public function isVisibleTo(User $user): bool
     {
         if (!$this->isPublished()) return false;
+        if ($this->isExpired()) return false;
 
         if ($this->target_audience === 'All') return true;
 

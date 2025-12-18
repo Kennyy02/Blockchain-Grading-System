@@ -24,6 +24,7 @@ class AnnouncementController extends Controller
             'content' => $prefix . 'required|string',
             'target_audience' => $prefix . 'required|in:All,Teachers,Students,Parents',
             'published_at' => 'nullable|date',
+            'expires_at' => 'nullable|date|after_or_equal:published_at',
         ];
     }
 
@@ -112,12 +113,19 @@ class AnnouncementController extends Controller
                 $publishedAt = null;
             }
 
+            // Ensure expires_at is properly null if empty
+            $expiresAt = $request->expires_at;
+            if (empty($expiresAt) || $expiresAt === '') {
+                $expiresAt = null;
+            }
+
             $announcement = Announcement::create([
                 'created_by' => $request->user()->id, 
                 'title' => $request->title,
                 'content' => $request->content,
                 'target_audience' => $request->target_audience,
                 'published_at' => $publishedAt,
+                'expires_at' => $expiresAt,
             ]);
 
             $announcement->load('creator'); // FIXED: removed .user
@@ -180,6 +188,12 @@ class AnnouncementController extends Controller
             if ($request->has('published_at')) {
                 $publishedAt = $request->published_at;
                 $updateData['published_at'] = (empty($publishedAt) || $publishedAt === '') ? null : $publishedAt;
+            }
+            
+            // Handle expires_at separately to ensure null handling
+            if ($request->has('expires_at')) {
+                $expiresAt = $request->expires_at;
+                $updateData['expires_at'] = (empty($expiresAt) || $expiresAt === '') ? null : $expiresAt;
             }
             
             $announcement->update($updateData);
@@ -282,7 +296,7 @@ class AnnouncementController extends Controller
     public function getPublishedForUser(Request $request, $audience)
     {
         try {
-            $announcements = Announcement::published()
+            $announcements = Announcement::active()
                 ->where(function($query) use ($audience) {
                     // Filter for 'All' audience OR the specific audience type requested
                     $query->byAudience('All')

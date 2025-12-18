@@ -19,7 +19,12 @@ const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ userRole = 'student
             });
             
             if (response.success && response.data) {
-                setAnnouncements(response.data);
+                const now = new Date();
+                // Filter out expired announcements
+                const activeAnnouncements = response.data.filter(announcement => {
+                    return !announcement.expires_at || new Date(announcement.expires_at) > now;
+                });
+                setAnnouncements(activeAnnouncements);
             }
         } catch (error) {
             console.error('Error fetching announcements:', error);
