@@ -95,7 +95,7 @@ export interface SubmissionsResponse extends ApiResponse<StudentSubmission[]> {
 // 🛠️ ADMIN STUDENT SUBMISSION SERVICE CLASS
 
 class AdminStudentSubmissionService {
-    private baseURL = '';
+    private baseURL = '/api';
 
     // Replicating the base request logic
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {

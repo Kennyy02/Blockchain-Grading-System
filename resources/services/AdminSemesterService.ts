@@ -59,7 +59,7 @@ export interface SemestersResponse extends ApiResponse<Semester[]> {
 // 🛠️ ADMIN SEMESTER SERVICE CLASS
 
 class AdminSemesterService {
-    private baseURL = '';
+    private baseURL = '/api';
 
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');

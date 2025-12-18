@@ -73,7 +73,7 @@ export interface ConversationsResponse extends ApiResponse<ConversationThread[]>
 // 🛠️ ADMIN MESSAGE SERVICE CLASS
 
 class AdminMessageService {
-    private baseURL = ''; 
+    private baseURL = '/api'; 
 
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');

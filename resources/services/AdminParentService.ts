@@ -99,7 +99,7 @@ export interface ParentsResponse extends ApiResponse<Parent[]> {
 // ========================================================================
 
 class AdminParentService {
-    private baseURL = '';
+    private baseURL = '/api';
 
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');

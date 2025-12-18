@@ -74,7 +74,7 @@ export interface CourseMaterialsResponse extends ApiResponse<CourseMaterial[]> {
 // 🛠️ ADMIN COURSE MATERIAL SERVICE CLASS
 
 class AdminCourseMaterialService {
-    private baseURL = '';
+    private baseURL = '/api';
 
     // Standard JSON Request Handler
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {

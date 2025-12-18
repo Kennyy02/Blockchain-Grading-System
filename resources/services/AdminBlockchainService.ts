@@ -204,7 +204,7 @@ export interface BlockchainStats {
 // ========================================================================
 
 class AdminBlockchainService {
-    private baseURL = '';
+    private baseURL = '/api';
 
     /**
      * Generic wrapper for authenticated API requests

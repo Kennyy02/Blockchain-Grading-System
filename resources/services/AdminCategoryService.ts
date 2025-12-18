@@ -64,7 +64,7 @@ export interface CategoriesResponse extends ApiResponse<Category[]> {
 // ========================================================================
 
 class AdminCategoryService {
-    private baseURL = '';
+    private baseURL = '/api';
 
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');

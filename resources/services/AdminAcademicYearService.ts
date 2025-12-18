@@ -53,7 +53,7 @@ export interface AcademicYearsResponse extends ApiResponse<AcademicYear[]> {
 // 🛠️ ADMIN ACADEMIC YEAR SERVICE CLASS
 
 class AdminAcademicYearService {
-    private baseURL = '';
+    private baseURL = '/api';
 
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
