@@ -13,7 +13,7 @@ function forceWhiteTheme() {
 // Run immediately to avoid flicker
 forceWhiteTheme();
 
-const appName = import.meta.env.VITE_APP_NAME || 'POS';
+const appName = import.meta.env.VITE_APP_NAME || 'Southern Mindoro Maritime School Inc.';
 
 createInertiaApp({
     title: (title) => `${title} ${appName}`,
