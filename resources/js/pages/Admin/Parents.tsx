@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Users, Plus, Search, Filter, Edit, Trash2, X, RefreshCw, Download, Phone, Mail, Link, Eye, EyeOff, UserPlus, GraduationCap, ChevronDown } from 'lucide-react';
+import { Users, Plus, Search, Filter, Edit, Trash2, X, RefreshCw, Download, Phone, Mail, Link, Eye, EyeOff, UserPlus, GraduationCap, ChevronDown, CheckCircle, AlertCircle } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 // UPDATED IMPORT: Using the new dedicated Parent service
 import { adminParentService, Parent, ParentFormData, ParentStats, ParentsResponse, ApiResponse, StudentSelection } from '../../../services/AdminParentService';
@@ -129,6 +129,12 @@ const ParentModal: React.FC<{
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     
+    // Check if passwords match in real-time
+    const passwordsMatch = formData.password && formData.password_confirmation && 
+                          formData.password === formData.password_confirmation;
+    const passwordsDontMatch = formData.password_confirmation && 
+                              formData.password !== formData.password_confirmation;
+    
     // Student search state
     const [studentSearch, setStudentSearch] = useState('');
     const [searchResults, setSearchResults] = useState<Student[]>([]);
@@ -206,6 +212,15 @@ const ParentModal: React.FC<{
         setSelectedStudents(prev => prev.map(s => 
             s.student_id === studentId ? { ...s, relationship } : s
         ));
+    };
+
+    // Helper to format error messages for better UX
+    const formatErrorMessage = (message: string): string => {
+        return message
+            .replace(/The password field confirmation does not match\./i, 'Passwords do not match')
+            .replace(/The (.+?) field confirmation does not match\./i, '$1 confirmation does not match')
+            .replace(/The (.+?) has already been taken\./i, '$1 is already in use')
+            .replace(/The (.+?) field is required\./i, '$1 is required');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -315,7 +330,11 @@ const ParentModal: React.FC<{
                                             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                         </button>
                                     </div>
-                                    {errors.password && (<p className="text-red-500 text-xs mt-1">{errors.password[0]}</p>)}
+                                    {errors.password && (
+                                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                                            <p className="text-red-600 text-sm font-medium">{formatErrorMessage(errors.password[0])}</p>
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
@@ -336,7 +355,27 @@ const ParentModal: React.FC<{
                                             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                         </button>
                                     </div>
-                                    {errors.password_confirmation && (<p className="text-red-500 text-xs mt-1">{errors.password_confirmation[0]}</p>)}
+                                    
+                                    {/* Real-time password match feedback */}
+                                    {passwordsDontMatch && (
+                                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+                                            <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
+                                            <p className="text-red-600 text-sm font-medium">Passwords do not match</p>
+                                        </div>
+                                    )}
+                                    {passwordsMatch && (
+                                        <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+                                            <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                            <p className="text-green-600 text-sm font-medium">Passwords match</p>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Server-side validation errors */}
+                                    {errors.password_confirmation && !passwordsMatch && !passwordsDontMatch && (
+                                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                                            <p className="text-red-600 text-sm font-medium">{formatErrorMessage(errors.password_confirmation[0])}</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

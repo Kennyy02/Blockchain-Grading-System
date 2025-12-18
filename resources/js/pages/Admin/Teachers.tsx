@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, Plus, Search, Edit, Trash2, X, RefreshCw, Download, Phone, Mail, Users, Eye, EyeOff, ChevronDown } from 'lucide-react';
+import { UserCheck, Plus, Search, Edit, Trash2, X, RefreshCw, Download, Phone, Mail, Users, Eye, EyeOff, ChevronDown, CheckCircle, AlertCircle } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 // UPDATED IMPORT: Changed from adminService to adminTeacherService
 import { adminTeacherService, Teacher, TeacherFormData } from '../../../services/AdminTeacherService'; 
@@ -77,6 +77,12 @@ const TeacherModal: React.FC<{
     });
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    
+    // Check if passwords match in real-time
+    const passwordsMatch = formData.password && formData.password_confirmation && 
+                          formData.password === formData.password_confirmation;
+    const passwordsDontMatch = formData.password_confirmation && 
+                              formData.password !== formData.password_confirmation;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -293,7 +299,23 @@ const TeacherModal: React.FC<{
                                             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                         </button>
                                     </div>
-                                    {errors.password_confirmation && (
+                                    
+                                    {/* Real-time password match feedback */}
+                                    {passwordsDontMatch && (
+                                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+                                            <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
+                                            <p className="text-red-600 text-sm font-medium">Passwords do not match</p>
+                                        </div>
+                                    )}
+                                    {passwordsMatch && (
+                                        <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+                                            <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                            <p className="text-green-600 text-sm font-medium">Passwords match</p>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Server-side validation errors */}
+                                    {errors.password_confirmation && !passwordsMatch && !passwordsDontMatch && (
                                         <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
                                             <p className="text-red-600 text-sm font-medium">{formatErrorMessage(errors.password_confirmation[0])}</p>
                                         </div>
