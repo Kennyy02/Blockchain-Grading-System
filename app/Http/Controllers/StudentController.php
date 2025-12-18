@@ -22,7 +22,8 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Student::with(['user', 'currentClass', 'parents'])->withCount(['grades', 'attendance']);
+            // SIMPLIFIED FOR DEBUGGING - removed eager loading and counts
+            $query = Student::query();
             
             if ($search = $request->input('search')) {
                 $query->search($search);

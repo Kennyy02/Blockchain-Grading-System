@@ -35,29 +35,13 @@ class TeacherController extends Controller
             $perPage = $request->get('per_page', 15);
             $page = $request->get('page', 1);
 
-            // Execute query with pagination and load advisory class and subjects (many-to-many)
-            $teachers = $query->with(['advisoryClass', 'assignedSubjects:id,subject_code,subject_name'])
-                             ->orderBy('created_at', 'desc')
+            // Execute query with pagination - SIMPLIFIED FOR DEBUGGING
+            $teachers = $query->orderBy('created_at', 'desc')
                              ->paginate($perPage, ['*'], 'page', $page);
 
-            // Add class count and advisory class to each teacher
+            // Simplified transformation - just add full_name
             $teachers->getCollection()->transform(function ($teacher) {
-                $teacher->classes_count = $teacher->assignedSubjects->count(); // Use assigned subjects count
-                $teacher->full_name = $teacher->getFullName();
-                // Add advisory class info
-                if ($teacher->advisoryClass) {
-                    $teacher->advisory_class_name = $teacher->advisoryClass->class_name ?? $teacher->advisoryClass->section;
-                } else {
-                    $teacher->advisory_class_name = null;
-                }
-                // Format subjects for frontend display (using many-to-many relationship)
-                $teacher->subjects = $teacher->assignedSubjects->map(function ($subject) {
-                    return [
-                        'id' => $subject->id,
-                        'subject_code' => $subject->subject_code,
-                        'subject_name' => $subject->subject_name,
-                    ];
-                });
+                $teacher->full_name = trim($teacher->first_name . ' ' . $teacher->last_name);
                 return $teacher;
             });
 
