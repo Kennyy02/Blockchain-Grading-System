@@ -10,6 +10,9 @@ class Attendance extends Model
 {
     use HasFactory, SoftDeletes;
 
+    // Specify the table name (migration creates 'attendance' not 'attendances')
+    protected $table = 'attendance';
+
     protected $fillable = [
         'class_subject_id',
         'student_id',
