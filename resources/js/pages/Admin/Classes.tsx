@@ -136,10 +136,12 @@ const generateClassCode = (yearLevel: number, courseCode: string, section: strin
         return '';
     }
     
-    // For Senior High (Grade 11-12), use G{grade}{courseCode}-{section} (e.g., G12STEM-A)
+    // For Senior High (Grade 11-12), use G{grade}{strand}-{section} (e.g., G12STEM-A)
     if (yearLevel >= 11 && yearLevel <= 12) {
         if (courseCode) {
-            return `G${yearLevel}${courseCode}-${section.toUpperCase()}`;
+            // Extract strand from course code (e.g., "SHS-STEM" -> "STEM")
+            const strand = courseCode.includes('-') ? courseCode.split('-').pop() || courseCode : courseCode;
+            return `G${yearLevel}${strand}-${section.toUpperCase()}`;
         }
         // If no course code, fall back to Grade format
         return `Grade${yearLevel}-${section.toUpperCase()}`;
@@ -162,10 +164,12 @@ const generateClassName = (yearLevel: number, courseCode: string, section: strin
         return '';
     }
     
-    // For Senior High (Grade 11-12), use G{grade}{courseCode}-{section} (e.g., G12STEM-A)
+    // For Senior High (Grade 11-12), use G{grade}{strand}-{section} (e.g., G12STEM-A)
     if (yearLevel >= 11 && yearLevel <= 12) {
         if (courseCode) {
-            return `G${yearLevel}${courseCode}-${section.toUpperCase()}`;
+            // Extract strand from course code (e.g., "SHS-STEM" -> "STEM")
+            const strand = courseCode.includes('-') ? courseCode.split('-').pop() || courseCode : courseCode;
+            return `G${yearLevel}${strand}-${section.toUpperCase()}`;
         }
         // If no course code, fall back to Grade format
         return `Grade ${yearLevel} - Section ${section.toUpperCase()}`;
