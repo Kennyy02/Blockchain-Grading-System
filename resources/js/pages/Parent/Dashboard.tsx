@@ -264,7 +264,7 @@ const ChildSection: React.FC<{
                     </h2>
                     
                     <div className="space-y-3">
-                        <QuickNavLink title="Course Materials" href="/parent/children" icon={FolderOpen} studentId={child.studentId} />
+                        <QuickNavLink title="My Children" href="/parent/children" icon={Users} studentId={child.studentId} />
                         <QuickNavLink title="Grades" href="/parent/grades" icon={Award} studentId={child.studentId} />
                         <QuickNavLink title="Attendance" href="/parent/attendance" icon={ClipboardCheck} studentId={child.studentId} />
                     </div>

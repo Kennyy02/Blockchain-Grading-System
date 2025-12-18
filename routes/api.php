@@ -343,12 +343,8 @@ Route::prefix('messages')->group(function () {
     Route::delete('/{id}', [MessageController::class, 'destroy']);
 });
 
-// Contact Messages (Public submission, Admin management)
+// Contact Messages (Admin management - protected routes)
 Route::prefix('contact-messages')->group(function () {
-    // Public route - no auth required for submitting contact form
-    Route::post('/', [ContactMessageController::class, 'store']);
-    
-    // Admin routes - uses session-based auth (same as other routes)
     Route::get('/', [ContactMessageController::class, 'index']);
     Route::get('/stats', [ContactMessageController::class, 'getStats']);
     Route::get('/{contactMessage}', [ContactMessageController::class, 'show']);
@@ -524,3 +520,10 @@ Route::prefix('search')->group(function () {
 });
 
 }); // End of auth:sanctum middleware group
+
+// ========================================================================
+// 🌐 PUBLIC API ROUTES - NO AUTHENTICATION REQUIRED
+// ========================================================================
+
+// Contact Form Submission (Public - anyone can submit)
+Route::post('/contact-messages', [ContactMessageController::class, 'store']);
