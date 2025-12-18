@@ -307,33 +307,8 @@ class StudentController extends Controller
     {
         try {
             $student = Student::findOrFail($id);
-            $forceDelete = $request->input('force', false);
             
-            $gradesCount = $student->grades()->count();
-            $attendanceCount = $student->attendance()->count();
-            $totalRelated = $gradesCount + $attendanceCount;
-            
-            if ($totalRelated > 0 && !$forceDelete) {
-                $message = "Cannot delete student '{$student->first_name} {$student->last_name}' because they have {$gradesCount} grade(s) and {$attendanceCount} attendance record(s).";
-                return $request->expectsJson()
-                    ? response()->json(['success' => false, 'message' => $message], 400)
-                    : back()->with('error', $message);
-            }
-            
-            if ($totalRelated > 0 && $forceDelete) {
-                // Delete related records on force delete
-                $student->grades()->delete();
-                $student->attendance()->delete();
-                // Only delete if relationships exist
-                if (method_exists($student, 'studentSubmissions')) {
-                    $student->studentSubmissions()->delete();
-                }
-                if (method_exists($student, 'certificates')) {
-                    $student->certificates()->delete();
-                }
-                Log::warning("Force deleted student '{$student->first_name} {$student->last_name}' with related records.");
-            }
-            
+            // SIMPLIFIED: Just delete without checking relationships for now
             $studentName = $student->first_name . ' ' . $student->last_name;
             $student->delete();
             
