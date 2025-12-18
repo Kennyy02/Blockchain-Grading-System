@@ -44,6 +44,7 @@ export interface Student {
     last_name: string;
     middle_name?: string;
     email: string;
+    gender?: string;
     phone?: string;
     address?: string;
     program: string; // Matches PHP controller field
@@ -77,6 +78,7 @@ export interface StudentFormData {
     last_name: string;
     middle_name?: string;
     email: string;
+    gender?: string;
     phone?: string;
     address?: string;
     program: string; // Use 'program' to match PHP controller field

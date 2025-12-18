@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
     Layers, 
-    Calendar, 
     Award, 
-    FileText, 
     Users, 
     ClipboardCheck,
     RefreshCw,
@@ -18,8 +16,6 @@ import { useTeacherAuth } from '../../../services/useTeacherAuth';
 
 // Import necessary types and services
 import { adminClassSubjectService, ClassSubject } from '../../../services/AdminClassSubjectService';
-import { adminAssignmentService } from '../../../services/AdminAssignmentService';
-import { adminStudentSubmissionService } from '../../../services/AdminStudentSubmissionService';
 import { adminGradeService } from '../../../services/AdminGradeService';
 import { adminAttendanceService } from '../../../services/AdminAttendanceService';
 
@@ -34,8 +30,6 @@ const TEXT_COLOR_CLASS = 'text-[#003366]';
 
 interface DashboardStats {
     totalClasses: number;
-    upcomingAssignments: number;
-    ungradedSubmissions: number;
     avgClassGrade: number;
     avgAttendanceRate: number;
 }
@@ -82,8 +76,6 @@ const Dashboard: React.FC = () => {
     
     const [stats, setStats] = useState<DashboardStats>({
         totalClasses: 0,
-        upcomingAssignments: 0,
-        ungradedSubmissions: 0,
         avgClassGrade: 0,
         avgAttendanceRate: 0,
     });
@@ -112,16 +104,12 @@ const Dashboard: React.FC = () => {
             const classSubjects = classSubjectsRes.success ? (classSubjectsRes.data as ClassSubject[]) : [];
             
             // Get combined stats across ALL subjects taught by the teacher (using dynamic teacher ID)
-            const assignmentStatsRes = await adminAssignmentService.getAssignmentStats(undefined, currentTeacherId);
-            const submissionStatsRes = await adminStudentSubmissionService.getSubmissionStats(undefined, currentTeacherId);
             const gradeStatsRes = await adminGradeService.getGradeStats({ teacher_id: currentTeacherId });
             const attendanceStatsRes = await adminAttendanceService.getAttendanceStats({ teacher_id: currentTeacherId });
 
             // 2. Aggregate the main dashboard metrics
             const newStats: DashboardStats = {
                 totalClasses: classSubjects.length,
-                upcomingAssignments: assignmentStatsRes.success ? assignmentStatsRes.data.upcoming_assignments : 0,
-                ungradedSubmissions: submissionStatsRes.success ? submissionStatsRes.data.ungraded_count : 0,
                 avgClassGrade: gradeStatsRes.success ? (gradeStatsRes.data.average_final_rating ?? 0) : 0,
                 avgAttendanceRate: attendanceStatsRes.success ? (attendanceStatsRes.data.attendance_rate ?? 0) : 0,
             };
@@ -220,7 +208,7 @@ const Dashboard: React.FC = () => {
                 )}
 
                 {/* Main Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatCard 
                         title="My Classes/Subjects" 
                         value={stats.totalClasses} 
@@ -228,22 +216,10 @@ const Dashboard: React.FC = () => {
                         color={TEXT_COLOR_CLASS} 
                     />
                     <StatCard 
-                        title="Upcoming Assignments" 
-                        value={stats.upcomingAssignments} 
-                        icon={Calendar} 
-                        color="text-blue-600" 
-                    />
-                    <StatCard 
                         title="Avg. Grade (All Classes)" 
                         value={`${(stats.avgClassGrade ?? 0).toFixed(2)}%`} 
                         icon={Award} 
                         color="text-indigo-600" 
-                    />
-                    <StatCard 
-                        title="Ungraded Submissions" 
-                        value={stats.ungradedSubmissions} 
-                        icon={FileText} 
-                        color="text-yellow-600" 
                     />
                     <StatCard 
                         title="Avg. Attendance Rate" 
@@ -265,10 +241,8 @@ const Dashboard: React.FC = () => {
                         
                         <div className="space-y-3">
                             <QuickNavLink title="My Classes & Subjects" href="/teacher/my-classes" icon={Layers} />
-                            <QuickNavLink title="Assignments Management" href="/teacher/assignments" icon={Calendar} />
                             <QuickNavLink title="Grades Entry" href="/teacher/grades" icon={Award} />
                             <QuickNavLink title="Attendance Recording" href="/teacher/attendance" icon={ClipboardCheck} />
-                            <QuickNavLink title="Submissions Review" href="/teacher/submissions" icon={FileText} />
                         </div>
                     </div>
                 </div>

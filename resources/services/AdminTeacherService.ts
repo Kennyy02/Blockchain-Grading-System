@@ -15,6 +15,7 @@ export interface Teacher {
     last_name: string;
     middle_name?: string;
     email: string;
+    gender?: string;
     phone?: string;
     address?: string;
     department?: string;
@@ -36,6 +37,7 @@ export interface TeacherFormData {
     last_name: string;
     middle_name?: string;
     email: string;
+    gender?: string;
     phone?: string;
     address?: string;
     password?: string;

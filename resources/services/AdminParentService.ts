@@ -48,6 +48,7 @@ export interface Parent {
     last_name: string;
     middle_name?: string;
     email: string;
+    gender?: string;
     phone: string;
     address?: string;
     full_name: string; // Computed by PHP model
@@ -72,6 +73,7 @@ export interface ParentFormData {
     last_name: string;
     middle_name?: string;
     email: string;
+    gender?: string;
     phone: string;
     address?: string;
     // Frontend uses these, but PHP Controller does not validate/store them directly on ParentModel.
