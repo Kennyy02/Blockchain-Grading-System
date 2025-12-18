@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { usePage } from '@inertiajs/react';
+import AnnouncementCard from '@/components/AnnouncementCard';
 
 // Import necessary services
 import { adminClassSubjectService } from '../../../services/AdminClassSubjectService';
@@ -245,6 +246,11 @@ const StudentDashboard: React.FC = () => {
                     </div>
                 )}
                 
+                {/* Announcements Section */}
+                <div>
+                    <AnnouncementCard userRole="student" />
+                </div>
+
                 {/* Notification */}
                 {notification && (
                     <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl">

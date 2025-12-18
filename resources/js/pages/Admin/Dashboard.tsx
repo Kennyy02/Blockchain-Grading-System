@@ -10,7 +10,8 @@ import {
     ApiResponse,
     AcademicYearOption,
     SemesterOption,
-} from '../../../services/AdminGradeService'; 
+} from '../../../services/AdminGradeService';
+import AnnouncementCard from '@/components/AnnouncementCard'; 
 
 // --- THEME COLORS ---
 const PRIMARY_COLOR_CLASS = 'bg-[#003366]';
@@ -316,6 +317,10 @@ const Dashboard: React.FC = () => {
                         />
                     </div>
 
+                    {/* Announcements Section */}
+                    <div className="mb-8">
+                        <AnnouncementCard userRole="admin" />
+                    </div>
 
                     {/* Notification */}
                     {notification && (

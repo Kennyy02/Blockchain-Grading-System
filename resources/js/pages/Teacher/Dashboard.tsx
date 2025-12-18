@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { useTeacherAuth } from '../../../services/useTeacherAuth';
+import AnnouncementCard from '@/components/AnnouncementCard';
 
 // Import necessary types and services
 import { adminClassSubjectService, ClassSubject } from '../../../services/AdminClassSubjectService';
@@ -229,8 +230,13 @@ const Dashboard: React.FC = () => {
                     />
                 </div>
 
+                {/* Announcements Section */}
+                <div className="mt-6">
+                    <AnnouncementCard userRole="teacher" />
+                </div>
+
                 {/* To-Do List & Alerts */}
-                <div className="grid grid-cols-1 lg:grid-cols- gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols- gap-6 mt-6">
                   
                     {/* Quick Navigation */}
                     <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 space-y-4">
