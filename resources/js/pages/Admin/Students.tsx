@@ -179,8 +179,6 @@ const StudentModal: React.FC<{
     const existingParent = student?.parents?.[0];
     
     const [formData, setFormData] = useState<StudentFormData>({
-        // TEMPORARY FIX: Set user_id to 1 (assuming an admin/placeholder user exists)
-        user_id: student?.user_id || 1, 
         student_id: student?.student_id || '',
         first_name: student?.first_name || '',
         last_name: student?.last_name || '',
@@ -302,8 +300,6 @@ const StudentModal: React.FC<{
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                        {/* TEMPORARY HIDDEN FIELD FOR user_id to pass Laravel Validation */}
-                        <input type="hidden" name="user_id" value={formData.user_id} />
 
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
