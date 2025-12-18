@@ -26,6 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Enable Sanctum's stateful API for SPA authentication
         // This allows API routes to share session with web routes
         $middleware->statefulApi();
+
+        // Trust Railway proxy for HTTPS detection
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
