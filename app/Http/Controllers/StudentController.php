@@ -157,7 +157,9 @@ class StudentController extends Controller
                 ]);
                 $studentData['user_id'] = $user->id;
             }
-            unset($studentData['password']); // Remove password from student data
+            // Remove password fields from student data (not student table columns)
+            unset($studentData['password']);
+            unset($studentData['password_confirmation']);
             
             $student = Student::create($studentData);
             
@@ -228,7 +230,9 @@ class StudentController extends Controller
         
         // Link parent to student (many-to-many relationship)
         if (!$student->parents()->where('parent_id', $parent->id)->exists()) {
-            $student->parents()->attach($parent->id);
+            $student->parents()->attach($parent->id, [
+                'relationship' => $parentData['relationship'] ?? 'Parent'
+            ]);
         }
         
         return $parent;
