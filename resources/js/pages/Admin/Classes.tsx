@@ -136,7 +136,16 @@ const generateClassCode = (yearLevel: number, courseCode: string, section: strin
         return '';
     }
     
-    // For K-12, use Grade-Section (e.g., 7-A or Grade7-A)
+    // For Senior High (Grade 11-12), use G{grade}{courseCode}-{section} (e.g., G12STEM-A)
+    if (yearLevel >= 11 && yearLevel <= 12) {
+        if (courseCode) {
+            return `G${yearLevel}${courseCode}-${section.toUpperCase()}`;
+        }
+        // If no course code, fall back to Grade format
+        return `Grade${yearLevel}-${section.toUpperCase()}`;
+    }
+    
+    // For K-10, use Grade-Section (e.g., Grade7-A)
     return `Grade${yearLevel}-${section.toUpperCase()}`;
 };
 
@@ -153,7 +162,16 @@ const generateClassName = (yearLevel: number, courseCode: string, section: strin
         return '';
     }
     
-    // For K-12, use Grade Level Section format
+    // For Senior High (Grade 11-12), use G{grade}{courseCode}-{section} (e.g., G12STEM-A)
+    if (yearLevel >= 11 && yearLevel <= 12) {
+        if (courseCode) {
+            return `G${yearLevel}${courseCode}-${section.toUpperCase()}`;
+        }
+        // If no course code, fall back to Grade format
+        return `Grade ${yearLevel} - Section ${section.toUpperCase()}`;
+    }
+    
+    // For K-10, use Grade Level Section format
     return `Grade ${yearLevel} - Section ${section.toUpperCase()}`;
 };
 
@@ -284,9 +302,9 @@ const ClassModal: React.FC<{
         const selectedCourse = allCourses.find(c => c.id === formData.course_id);
         const courseCode = selectedCourse?.course_code || '';
         
-        // For K-12 (non-college), generate without course code
-        // For college, require course to be selected
-        if (formData.year_level < 13 || (formData.year_level >= 13 && courseCode)) {
+        // For K-10, generate without course code requirement
+        // For Senior High (11-12) and College (13-16), require course to be selected
+        if (formData.year_level < 11 || (formData.year_level >= 11 && courseCode)) {
             const newClassCode = generateClassCode(formData.year_level, courseCode, formData.section);
             const newClassName = generateClassName(formData.year_level, courseCode, formData.section);
             
