@@ -94,12 +94,12 @@ class StudentController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'user_id' => 'nullable|exists:users,id|unique:students', // Made nullable to allow creating new user
-                'student_id' => 'required|string|max:20|unique:students',
+                'user_id' => 'nullable|exists:users,id|unique:students,user_id,NULL,id,deleted_at,NULL', // Ignore soft-deleted
+                'student_id' => 'required|string|max:20|unique:students,student_id,NULL,id,deleted_at,NULL', // Ignore soft-deleted
                 'first_name' => 'required|string|max:255',
                 'middle_name' => 'nullable|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'email' => 'required|email|unique:students',
+                'email' => 'required|email|unique:students,email,NULL,id,deleted_at,NULL', // Ignore soft-deleted
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
                 'date_of_birth' => 'required|date',
@@ -255,12 +255,12 @@ class StudentController extends Controller
             $student = Student::findOrFail($id);
             
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users,id|unique:students,user_id,' . $student->id,
-                'student_id' => 'required|string|max:20|unique:students,student_id,' . $student->id,
+                'user_id' => 'required|exists:users,id|unique:students,user_id,' . $student->id . ',id,deleted_at,NULL',
+                'student_id' => 'required|string|max:20|unique:students,student_id,' . $student->id . ',id,deleted_at,NULL',
                 'first_name' => 'required|string|max:255',
                 'middle_name' => 'nullable|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'email' => 'required|email|unique:students,email,' . $student->id,
+                'email' => 'required|email|unique:students,email,' . $student->id . ',id,deleted_at,NULL',
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
                 'date_of_birth' => 'required|date',
