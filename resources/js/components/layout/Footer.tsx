@@ -17,8 +17,8 @@ const CONTACT_INFO = {
     
     // Contact Details
     address: {
-        city: 'San Jose',
-        province: 'Occidental Mindoro',
+        city: 'Bagumbayan, Roxas',
+        province: 'Oriental Mindoro',
         country: 'Philippines'
     },
     phone: '+63 XXX XXX XXXX',
@@ -26,7 +26,7 @@ const CONTACT_INFO = {
     
     // Social Media & Website
     facebookUrl: 'https://www.facebook.com/smmsi.shs',
-    websiteUrl: 'https://www.facebook.com/smmsi.shs', // Update with actual website when available
+    websiteUrl: 'https://smmsblockchain.up.railway.app/', // Update with actual website when available
     
     // Copyright
     copyrightYear: '2025',
