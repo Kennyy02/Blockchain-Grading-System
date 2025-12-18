@@ -324,8 +324,13 @@ class StudentController extends Controller
                 // Delete related records on force delete
                 $student->grades()->delete();
                 $student->attendance()->delete();
-                $student->studentSubmissions()->delete(); // Assuming this relationship exists
-                $student->certificates()->delete(); // Assuming this relationship exists
+                // Only delete if relationships exist
+                if (method_exists($student, 'studentSubmissions')) {
+                    $student->studentSubmissions()->delete();
+                }
+                if (method_exists($student, 'certificates')) {
+                    $student->certificates()->delete();
+                }
                 Log::warning("Force deleted student '{$student->first_name} {$student->last_name}' with related records.");
             }
             
