@@ -543,14 +543,34 @@ const StudentModal: React.FC<{
                                         <label className="block text-sm font-semibold text-gray-700 mb-2">Relationship</label>
                                         <select 
                                             name="relationship" 
-                                            value={formData.parent_guardian?.relationship || 'Parent'} 
-                                            onChange={handleParentChange} 
+                                            value={formData.parent_guardian?.relationship || ''} 
+                                            onChange={(e) => {
+                                                const relationship = e.target.value;
+                                                let gender = formData.parent_guardian?.gender || '';
+                                                
+                                                // Auto-set gender based on relationship
+                                                if (relationship === 'Father') {
+                                                    gender = 'Male';
+                                                } else if (relationship === 'Mother') {
+                                                    gender = 'Female';
+                                                }
+                                                // For Guardian, keep the current selection or allow manual selection
+                                                
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    parent_guardian: prev.parent_guardian ? {
+                                                        ...prev.parent_guardian,
+                                                        relationship,
+                                                        gender
+                                                    } : undefined
+                                                }));
+                                            }}
                                             className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
                                         >
+                                            <option value="">Select Relationship</option>
                                             <option value="Father">Father</option>
                                             <option value="Mother">Mother</option>
                                             <option value="Guardian">Guardian</option>
-                                            <option value="Parent">Parent</option>
                                         </select>
                                     </div>
                                     <div>
@@ -609,7 +629,8 @@ const StudentModal: React.FC<{
                                             name="gender"
                                             value={formData.parent_guardian?.gender || ''}
                                             onChange={handleParentChange}
-                                            className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                            disabled={formData.parent_guardian?.relationship === 'Father' || formData.parent_guardian?.relationship === 'Mother'}
+                                            className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none ${(formData.parent_guardian?.relationship === 'Father' || formData.parent_guardian?.relationship === 'Mother') ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
                                         >
                                             <option value="">Select Gender</option>
                                             <option value="Male">Male</option>

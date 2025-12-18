@@ -143,7 +143,16 @@ const ParentModal: React.FC<{
     const [selectedStudents, setSelectedStudents] = useState<SelectedStudent[]>([]);
     const [showSearchResults, setShowSearchResults] = useState(false);
 
-    const RELATIONSHIP_OPTIONS = ['Father', 'Mother', 'Guardian', 'Grandparent', 'Other'];
+    const RELATIONSHIP_OPTIONS = ['Father', 'Mother', 'Guardian'];
+
+    // Determine if gender should be auto-set (all relationships are Father or Mother)
+    const shouldDisableGender = () => {
+        if (selectedStudents.length === 0) return false;
+        const relationships = selectedStudents.map(s => s.relationship);
+        const allFather = relationships.every(r => r === 'Father');
+        const allMother = relationships.every(r => r === 'Mother');
+        return allFather || allMother;
+    };
 
     // Load existing linked students when editing
     useEffect(() => {
@@ -192,14 +201,22 @@ const ParentModal: React.FC<{
         return () => clearTimeout(timer);
     }, [studentSearch, searchStudents]);
 
-    const addStudent = (student: Student) => {
+    const addStudent = (student: Student, defaultRelationship: string = 'Father') => {
         const newStudent: SelectedStudent = {
             student_id: student.id,
             student_name: student.full_name,
             student_info: `${student.program || 'N/A'} - ${formatGradeLevelModal(student.year_level)}`,
-            relationship: 'Father',
+            relationship: defaultRelationship,
         };
         setSelectedStudents(prev => [...prev, newStudent]);
+        
+        // Auto-set parent gender based on the first relationship
+        if (defaultRelationship === 'Father') {
+            setFormData(prev => ({ ...prev, gender: 'Male' }));
+        } else if (defaultRelationship === 'Mother') {
+            setFormData(prev => ({ ...prev, gender: 'Female' }));
+        }
+        
         setStudentSearch('');
         setSearchResults([]);
         setShowSearchResults(false);
@@ -213,6 +230,14 @@ const ParentModal: React.FC<{
         setSelectedStudents(prev => prev.map(s => 
             s.student_id === studentId ? { ...s, relationship } : s
         ));
+        
+        // Auto-set parent gender based on relationship
+        if (relationship === 'Father') {
+            setFormData(prev => ({ ...prev, gender: 'Male' }));
+        } else if (relationship === 'Mother') {
+            setFormData(prev => ({ ...prev, gender: 'Female' }));
+        }
+        // For Guardian, keep the current gender or allow manual selection
     };
 
     // Helper to format error messages for better UX
@@ -308,7 +333,9 @@ const ParentModal: React.FC<{
                                         name="gender"
                                         value={formData.gender || ''}
                                         onChange={handleChange}
-                                        className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                        disabled={shouldDisableGender()}
+                                        className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none ${shouldDisableGender() ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+                                        title={shouldDisableGender() ? 'Gender is automatically set based on relationship' : ''}
                                     >
                                         <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
