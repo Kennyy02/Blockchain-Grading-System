@@ -1404,9 +1404,13 @@ const Classes: React.FC = () => {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${LIGHT_BG_CLASS} ${TEXT_COLOR_CLASS}`}>
-                                                        {classItem.student_count} students
-                                                    </span>
+                                                    <button
+                                                        onClick={() => handleViewStudents(classItem)}
+                                                        className="text-sm text-gray-900 hover:text-blue-600 transition-colors font-medium"
+                                                        title="Click to view students"
+                                                    >
+                                                        {classItem.student_count || 0} {classItem.student_count === 1 ? 'student' : 'students'}
+                                                    </button>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right">
                                                     <div className="flex justify-end space-x-2">
