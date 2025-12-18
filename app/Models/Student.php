@@ -22,7 +22,10 @@ class Student extends Model
         'gender',
         'address',
         'program',
+        'course_id',
         'year_level',
+        'enrollment_date',
+        'status',
         'current_class_id',
     ];
 
