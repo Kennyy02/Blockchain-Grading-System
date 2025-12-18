@@ -250,6 +250,13 @@ class AttendanceController extends Controller
         try {
             $query = Attendance::query();
             
+            // Apply teacher filter if provided - filter by teacher's class subjects
+            if ($teacherId = $request->input('teacher_id')) {
+                $query->whereHas('classSubject', function($q) use ($teacherId) {
+                    $q->where('teacher_id', $teacherId);
+                });
+            }
+            
             // Apply student filter if provided (accept both integer and string)
             if ($studentId = $request->input('student_id')) {
                 $query->byStudent((int)$studentId);
@@ -275,6 +282,14 @@ class AttendanceController extends Controller
             
             // Build stats query with same filters
             $statsQuery = Attendance::query();
+            
+            // Apply teacher filter to stats query
+            if ($teacherId = $request->input('teacher_id')) {
+                $statsQuery->whereHas('classSubject', function($q) use ($teacherId) {
+                    $q->where('teacher_id', $teacherId);
+                });
+            }
+            
             if ($studentId = $request->input('student_id')) {
                 $statsQuery->byStudent((int)$studentId);
             }
@@ -305,6 +320,7 @@ class AttendanceController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching attendance stats: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve attendance stats',
