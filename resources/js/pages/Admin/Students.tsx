@@ -13,6 +13,21 @@ const RING_COLOR_CLASS = 'focus:ring-[#003366]';
 const LIGHT_BG_CLASS = 'bg-[#003366]/10'; // Light Blue/Navy Tint
 const LIGHT_HOVER_CLASS = 'hover:bg-[#e6f2ff]'; // Very Light Blue
 
+// Format date display
+const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '—';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    } catch {
+        return dateString;
+    }
+};
+
 // Format grade level display
 const formatGradeLevel = (grade: number): string => {
     if (grade >= 13) {
@@ -772,7 +787,7 @@ const ViewStudentModal: React.FC<{
                             </div>
                             <div>
                                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Enrollment Date</label>
-                                <p className="text-gray-900 font-medium mt-1">{student.enrollment_date || '—'}</p>
+                                <p className="text-gray-900 font-medium mt-1">{formatDate(student.enrollment_date)}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Address</label>
