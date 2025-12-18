@@ -335,15 +335,15 @@ class StudentController extends Controller
             
             $validator = Validator::make($request->all(), [
                 'user_id' => [
-                    'required',
+                    'nullable',
                     'exists:users,id',
-                    Rule::unique('students', 'user_id')->ignore($student->id)->whereNull('deleted_at')
+                    Rule::unique('students', 'user_id')->ignore($student->id, 'id')->whereNull('deleted_at')
                 ],
                 'student_id' => [
                     'required',
                     'string',
                     'max:20',
-                    Rule::unique('students', 'student_id')->ignore($student->id)->whereNull('deleted_at')
+                    Rule::unique('students', 'student_id')->ignore($student->id, 'id')->whereNull('deleted_at')
                 ],
                 'first_name' => 'required|string|max:255',
                 'middle_name' => 'nullable|string|max:255',
@@ -351,7 +351,7 @@ class StudentController extends Controller
                 'email' => [
                     'required',
                     'email',
-                    Rule::unique('students', 'email')->ignore($student->id)->whereNull('deleted_at')
+                    Rule::unique('students', 'email')->ignore($student->id, 'id')->whereNull('deleted_at')
                 ],
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
@@ -382,6 +382,11 @@ class StudentController extends Controller
             
             $studentData = $validator->validated();
             unset($studentData['parent_guardian']); // Remove parent data from student update
+            
+            // Don't update user_id if it's not provided (to prevent overwriting existing association)
+            if (!isset($studentData['user_id']) || $studentData['user_id'] === null) {
+                unset($studentData['user_id']);
+            }
             
             $student->update($studentData);
             
