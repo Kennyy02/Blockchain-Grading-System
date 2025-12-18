@@ -1184,6 +1184,11 @@ const Classes: React.FC = () => {
     };
 
     const handleEdit = (classItem: Class) => {
+        console.log('=== EDITING CLASS ===');
+        console.log('Full classItem object:', JSON.stringify(classItem, null, 2));
+        console.log('course_id value:', classItem.course_id);
+        console.log('course_id type:', typeof classItem.course_id);
+        console.log('====================');
         setSelectedClass(classItem);
         setValidationErrors({});
         setShowModal(true);
