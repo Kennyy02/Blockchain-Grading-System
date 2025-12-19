@@ -136,25 +136,28 @@ const ViewCurriculumModal: React.FC<{
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
                 <div className={`${PRIMARY_COLOR_CLASS} text-white p-6`}>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-2xl font-bold flex items-center gap-3">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                            <h2 className="text-2xl font-bold flex items-center gap-3 mb-1">
                                 <GraduationCap className="h-8 w-8" />
                                 {course.course_code} Curriculum
                             </h2>
-                            <p className="text-blue-100 mt-1">
-                                {course.course_name} • {course.total_subjects} Subjects • {course.total_units} Total Units
+                            <p className="text-blue-100 text-sm ml-11">
+                                {course.course_name}
+                            </p>
+                            <p className="text-blue-100 text-sm ml-11 mt-0.5">
+                                • {course.total_subjects} Subjects • {course.total_units} Total Units
                             </p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 mt-1">
                             <button 
                                 onClick={() => onAdd(course.id)}
-                                className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+                                className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors cursor-pointer"
                             >
                                 <Plus className="h-4 w-4" />
                                 Add Subject
                             </button>
-                            <button onClick={onClose} className="rounded-full p-2 hover:bg-white/20">
+                            <button onClick={onClose} className="rounded-full p-2 hover:bg-white/20 cursor-pointer">
                                 <X className="h-6 w-6" />
                             </button>
                         </div>
