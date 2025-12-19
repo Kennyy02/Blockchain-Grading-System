@@ -239,11 +239,17 @@ const BlockchainStudentGrades: React.FC = () => {
                 <div className="container mx-auto px-4 py-8">
                     <div className="mb-6">
                         <button
-                            onClick={() => router.visit('/admin/blockchain-transactions/grades')}
+                            onClick={() => {
+                                if (classId) {
+                                    router.visit(`/admin/blockchain-transactions/grades/class/${classId}/students`);
+                                } else {
+                                    router.visit('/admin/blockchain-transactions/grades');
+                                }
+                            }}
                             className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-4"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back to Grades
+                            Back to Students
                         </button>
                         <div>
                             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
