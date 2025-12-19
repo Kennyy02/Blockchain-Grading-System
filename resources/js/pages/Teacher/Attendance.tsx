@@ -376,8 +376,9 @@ const AttendancePage: React.FC = () => {
         const handleClickOutside = (event: MouseEvent) => {
             if (openDropdown) {
                 const target = event.target as HTMLElement;
-                if (!target.closest('.attendance-cell-dropdown')) {
+                if (!target.closest('.attendance-cell-dropdown') && !target.closest('[style*="z-[9999]"]')) {
                     setOpenDropdown(null);
+                    setDropdownPosition(null);
                 }
             }
         };
@@ -778,6 +779,10 @@ const AttendancePage: React.FC = () => {
             setNotification({ type: 'error', message: 'Please select a class first.' });
             return;
         }
+        
+        // Close dropdown
+        setOpenDropdown(null);
+        setDropdownPosition(null);
 
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const attendanceDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
