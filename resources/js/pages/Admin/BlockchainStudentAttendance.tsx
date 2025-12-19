@@ -392,13 +392,13 @@ const BlockchainStudentAttendance: React.FC = () => {
                                                     <th className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-700 sticky left-0 bg-gray-100 z-10">
                                                         Name
                                                     </th>
-                                                    {/* Date headers */}
-                                                    {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                                                    {/* Date headers - aligned with calendar */}
+                                                    {calendarDays.map((day, index) => (
                                                         <th
-                                                            key={day}
+                                                            key={index}
                                                             className="border border-gray-300 px-2 py-2 text-center font-semibold text-gray-700 min-w-[40px]"
                                                         >
-                                                            {day}
+                                                            {day !== null ? day : ''}
                                                         </th>
                                                     ))}
                                                 </tr>
@@ -406,7 +406,7 @@ const BlockchainStudentAttendance: React.FC = () => {
                                                     <th className="border border-gray-300 px-4 py-1 text-left text-xs text-gray-600 sticky left-0 bg-gray-50 z-10">
                                                         Subject
                                                     </th>
-                                                    {/* Day of week headers */}
+                                                    {/* Day of week headers - aligned with calendar */}
                                                     {calendarDays.map((day, index) => (
                                                         <th
                                                             key={index}
@@ -429,20 +429,26 @@ const BlockchainStudentAttendance: React.FC = () => {
                                                                 <div className="font-semibold text-gray-900">{subjectCode}</div>
                                                                 <div className="text-xs text-gray-600">{subjectName}</div>
                                                             </td>
-                                                            {/* Attendance cells for each day */}
-                                                            {Array.from({ length: 31 }, (_, i) => i + 1).map(day => {
+                                                            {/* Attendance cells - aligned with calendar */}
+                                                            {calendarDays.map((day, index) => {
+                                                                if (day === null) {
+                                                                    return (
+                                                                        <td
+                                                                            key={index}
+                                                                            className="border border-gray-300 px-2 py-2 text-center min-w-[40px] bg-gray-50"
+                                                                        />
+                                                                    );
+                                                                }
+                                                                
                                                                 const key = `${subjectId}_${day}`;
                                                                 const attendance = attendanceMap.get(key);
-                                                                const isDayInMonth = day <= getDaysInMonth(currentYear, currentMonth);
                                                                 
                                                                 return (
                                                                     <td
-                                                                        key={day}
-                                                                        className={`border border-gray-300 px-2 py-2 text-center min-w-[40px] ${
-                                                                            !isDayInMonth ? 'bg-gray-50' : ''
-                                                                        }`}
+                                                                        key={index}
+                                                                        className="border border-gray-300 px-2 py-2 text-center min-w-[40px]"
                                                                     >
-                                                                        {isDayInMonth && attendance ? (
+                                                                        {attendance ? (
                                                                             <span
                                                                                 className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${getStatusColor(attendance.status)}`}
                                                                                 title={attendance.status}
