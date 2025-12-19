@@ -1,16 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
     CalendarCheck, 
-    Search, 
-    Filter, 
     RefreshCw, 
     X, 
-    Clock, 
-    CheckSquare, 
-    CalendarX,
-    ClipboardCheck,
-    Hash,
-    TrendingUp,
+    ChevronLeft, 
+    ChevronRight,
     AlertCircle
 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
@@ -19,67 +13,51 @@ import {
     adminAttendanceService, 
     Attendance, 
     AttendanceStats, 
-    AttendanceResponse, 
     MinimalClassSubject,
-    AttendanceStatus,
-    AttendanceFilters,
-    ApiResponse,
-    PaginationData
-} from '../../../services/AdminAttendanceService'; 
+} from '../../../services/AdminAttendanceService';
+import { adminClassSubjectService } from '../../../services/AdminClassSubjectService';
 
-const PRIMARY_COLOR_CLASS = 'bg-[#007bff]'; 
-const TEXT_COLOR_CLASS = 'text-[#007bff]';
-const RING_COLOR_CLASS = 'focus:ring-[#007bff]';
+const PRIMARY_COLOR_CLASS = 'bg-gradient-to-r from-purple-600 to-indigo-600';
+const TEXT_COLOR_CLASS = 'text-purple-600';
 
-// Helper function to get current date in Philippines timezone (Asia/Manila, UTC+8)
-const getPhilippinesDate = (): string => {
-    const now = new Date();
-    // Use Intl.DateTimeFormat to get date in Philippines timezone
-    const formatter = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Asia/Manila',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    });
-    // Format returns YYYY-MM-DD
-    return formatter.format(now);
+// Helper function to format grade/year level based on education category
+const formatGradeYearLevel = (yearLevel: number | null): { label: string; value: string } => {
+    if (yearLevel === null || yearLevel === undefined) return { label: '', value: '' };
+    
+    // College: 13-16 (1st Year - 4th Year)
+    if (yearLevel >= 13 && yearLevel <= 16) {
+        const yearNames = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+        return { label: 'Year Level', value: yearNames[yearLevel - 13] };
+    }
+    
+    // Elementary (1-6), Junior High (7-10), Senior High (11-12): All use "Grade Level"
+    return { label: 'Grade Level', value: `Grade ${yearLevel}` };
 };
 
-interface Notification { 
-    type: 'success' | 'error'; 
-    message: string; 
+interface Notification {
+    type: 'success' | 'error' | 'info';
+    message: string;
 }
 
-interface Pagination { 
-    current_page: number; 
-    last_page: number; 
-    per_page: number; 
-    total: number; 
-}
-
-interface LocalFilters {
-    class_subject_id: string;
-    status: string;
-    start_date: string;
-    end_date: string;
-    page: number;
-    per_page: number;
-}
-
-const Notification: React.FC<{ notification: Notification; onClose: () => void }> = ({ notification, onClose }) => {
+// Notification Component
+const NotificationDisplay: React.FC<{ notification: Notification; onClose: () => void }> = ({ notification, onClose }) => {
     useEffect(() => {
         const timer = setTimeout(onClose, 5000);
         return () => clearTimeout(timer);
     }, [onClose]);
 
-    const bgColor = notification.type === 'success' ? PRIMARY_COLOR_CLASS : 'bg-red-500';
+    const bgColor = notification.type === 'success' 
+        ? 'bg-green-600'
+        : notification.type === 'error'
+        ? 'bg-red-600'
+        : 'bg-blue-600';
 
     return (
         <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right-full duration-300">
             <div className={`${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl backdrop-blur-sm`}>
                 <div className="flex items-center justify-between">
                     <div className="font-medium">{notification.message}</div>
-                    <button onClick={onClose} className="ml-4 rounded-full p-1 hover:bg-white/20 transition-colors">
+                    <button onClick={onClose} className="ml-4 rounded-full p-1 hover:bg-white/20 transition-colors cursor-pointer">
                         <X className="w-4 h-4" />
                     </button>
                 </div>
@@ -88,254 +66,218 @@ const Notification: React.FC<{ notification: Notification; onClose: () => void }
     );
 };
 
-const StatCard: React.FC<{ title: string; value: string | number; icon: React.ElementType; color: string }> = ({ title, value, icon: Icon, color }) => {
-    const displayValue = (typeof value === 'number' && isNaN(value)) ? 'N/A' : value;
-    const bgColor = color.replace('text-', 'bg-').replace('-600', '-100').replace('[#007bff]', '[#007bff]/10');
-    
-    return (
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-                    <p className={`text-3xl font-bold ${color}`}>{displayValue}</p>
-                </div>
-                <div className={`${bgColor} p-3 rounded-xl`}>
-                    <Icon className={`h-8 w-8 ${color}`} />
-                </div>
-            </div>
-        </div>
-    );
+// Helper function to get status code
+const getStatusCode = (status: string): string => {
+    switch (status) {
+        case 'Present': return 'P';
+        case 'Absent': return 'A';
+        case 'Late': return 'L';
+        case 'Excused': return 'E';
+        default: return '';
+    }
 };
 
-const renderStatusTag = (status: AttendanceStatus) => {
-    let colorClass = 'bg-gray-100 text-gray-600';
-    let icon = <Clock className="h-4 w-4" />;
-    
+// Helper function to get status color
+const getStatusColor = (status: string): string => {
     switch (status) {
-        case 'Present':
-            colorClass = 'bg-green-100 text-green-800';
-            icon = <CheckSquare className="h-4 w-4" />;
-            break;
-        case 'Absent':
-            colorClass = 'bg-red-100 text-red-800';
-            icon = <CalendarX className="h-4 w-4" />;
-            break;
-        case 'Late':
-            colorClass = 'bg-yellow-100 text-yellow-800';
-            icon = <Clock className="h-4 w-4" />;
-            break;
-        case 'Excused':
-            colorClass = 'bg-blue-100 text-blue-800';
-            icon = <ClipboardCheck className="h-4 w-4" />;
-            break;
+        case 'Present': return 'bg-green-100 text-green-800';
+        case 'Absent': return 'bg-red-100 text-red-800';
+        case 'Late': return 'bg-yellow-100 text-yellow-800';
+        case 'Excused': return 'bg-blue-100 text-blue-800';
+        default: return 'bg-gray-100 text-gray-800';
     }
+};
 
-    return (
-        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${colorClass}`}>
-            {icon}
-            <span className="ml-1">{status}</span>
-        </span>
-    );
+// Helper function to get days in month
+const getDaysInMonth = (year: number, month: number): number => {
+    return new Date(year, month + 1, 0).getDate();
+};
+
+// Helper function to get day abbreviation
+const getDayAbbr = (dayIndex: number): string => {
+    const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    return days[dayIndex];
 };
 
 const MyAttendance: React.FC = () => {
-    const { currentStudentId, isStudent, user, studentIdNumber } = useStudentAuth();
+    const { currentStudentId, isStudent, user } = useStudentAuth();
     
-    // Debug logging
-    useEffect(() => {
-        console.log('🔍 [ATTENDANCE PAGE] currentStudentId:', currentStudentId);
-        console.log('🔍 [ATTENDANCE PAGE] isStudent:', isStudent);
-        console.log('🔍 [ATTENDANCE PAGE] user:', user);
-        console.log('🔍 [ATTENDANCE PAGE] student profile:', user?.student);
-    }, [currentStudentId, isStudent, user]);
-    
-    const [attendanceRecords, setAttendanceRecords] = useState<Attendance[]>([]);
     const [loading, setLoading] = useState(true);
+    const [attendanceRecords, setAttendanceRecords] = useState<Attendance[]>([]);
+    const [classSubjects, setClassSubjects] = useState<any[]>([]);
+    const [studentName, setStudentName] = useState('');
+    const [className, setClassName] = useState('');
+    const [yearLevel, setYearLevel] = useState<number | null>(null);
     const [notification, setNotification] = useState<Notification | null>(null);
-    const [classSubjects, setClassSubjects] = useState<MinimalClassSubject[]>([]); 
-
-    const [filters, setFilters] = useState<LocalFilters>({
-        class_subject_id: '',
-        status: '',
-        start_date: '',
-        end_date: getPhilippinesDate(),
-        page: 1,
-        per_page: 15,
-    });
-
-    const [pagination, setPagination] = useState<Pagination>({
-        current_page: 1,
-        last_page: 1,
-        per_page: 15,
-        total: 0,
-    });
-
-    // Updated to match API response structure
-    const [stats, setStats] = useState<AttendanceStats>({
-        total_records: 0, 
-        present_count: 0, 
-        absent_count: 0, 
-        late_count: 0, 
-        excused_count: 0, 
-        attendance_rate: 0,
-    });
-
-    const loadDropdownOptions = async () => {
-        if (!currentStudentId) return;
-        try {
-            console.log('📚 Loading class subjects for student:', currentStudentId);
-            const response = await adminAttendanceService.getAllDropdownOptions(undefined, currentStudentId); 
-            setClassSubjects(response.classSubjects);
-            console.log('✅ Loaded', response.classSubjects.length, 'subjects');
-        } catch (error) {
-            console.error('❌ Error loading dropdown options:', error);
-        }
-    };
     
-    const loadAttendance = async () => {
+    // Month/Year pagination
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+    useEffect(() => {
+        if (currentStudentId) {
+            loadStudentAttendance();
+        }
+    }, [currentStudentId, currentMonth, currentYear]);
+
+    const loadStudentAttendance = async () => {
         if (!currentStudentId) {
-            console.warn('⚠️ No currentStudentId available, cannot load attendance');
             setLoading(false);
             return;
         }
+        
         setLoading(true);
         try {
-            const classSubjectId = filters.class_subject_id ? parseInt(filters.class_subject_id) : undefined;
-
-            // Clean up filters - remove empty strings and undefined values
-            const studentFilters: AttendanceFilters = {
-                page: filters.page,
-                per_page: filters.per_page,
-                student_id: currentStudentId,
-                class_subject_id: classSubjectId,
-                status: filters.status && filters.status !== '' ? filters.status : undefined,
-                start_date: filters.start_date && filters.start_date !== '' ? filters.start_date : undefined,
-                end_date: filters.end_date && filters.end_date !== '' ? filters.end_date : undefined,
-            };
+            // Get student information
+            const studentRes = await fetch(`/api/students/${currentStudentId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
             
-            console.log('📡 Fetching attendance with filters:', studentFilters);
-            console.log('📡 Current Student ID:', currentStudentId, '(type:', typeof currentStudentId, ')');
-            console.log('📡 User object:', user);
-            console.log('📡 Student profile:', user?.student);
-            
-            const response: AttendanceResponse = await adminAttendanceService.getAttendance(studentFilters);
-            console.log('📡 API Response:', response);
-            
-            if (response.success) {
-                setAttendanceRecords(response.data);
-                if ('pagination' in response && response.pagination) {
-                    setPagination(response.pagination);
+            if (studentRes.ok) {
+                const studentData = await studentRes.json();
+                if (studentData.success) {
+                    setStudentName(studentData.data.full_name || `${studentData.data.first_name} ${studentData.data.last_name}`);
+                    if (studentData.data.year_level !== undefined && studentData.data.year_level !== null) {
+                        setYearLevel(studentData.data.year_level);
+                    }
                 }
-                console.log('✅ Loaded', response.data.length, 'attendance records');
-                if (response.data.length === 0) {
-                    console.warn('⚠️ No attendance records returned, but request was successful');
-                }
-            } else {
-                console.error('❌ Response not successful:', response);
-                setAttendanceRecords([]);
-                setPagination(prev => ({ ...prev, total: 0 }));
             }
-        } catch (error) {
-            console.error('❌ Failed to load attendance:', error);
-            setNotification({ type: 'error', message: 'Failed to load attendance records.' });
+
+            // Get all class subjects for this student
+            const classSubjectsRes = await adminClassSubjectService.getClassSubjects({
+                student_id: currentStudentId,
+                per_page: 9999,
+            });
+
+            if (!classSubjectsRes.success) {
+                setNotification({ 
+                    type: 'error', 
+                    message: classSubjectsRes.message || 'Failed to load class subjects' 
+                });
+                setClassSubjects([]);
+                return;
+            }
+
+            const subjects = classSubjectsRes.data || [];
+            setClassSubjects(subjects);
+            
+            if (subjects.length === 0) {
+                setNotification({ 
+                    type: 'info', 
+                    message: 'No subjects found. Please ensure you are enrolled in classes.' 
+                });
+                setAttendanceRecords([]);
+                return;
+            }
+
+            // Get the class information from the first class subject
+            if (subjects.length > 0 && subjects[0].class) {
+                setClassName(subjects[0].class.class_code || subjects[0].class.class_name || '');
+                if (subjects[0].class.year_level !== undefined && subjects[0].class.year_level !== null) {
+                    setYearLevel(subjects[0].class.year_level);
+                }
+            }
+
+            // Calculate date range for the current month
+            const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+            const startDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`;
+            const endDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+
+            // Get attendance for this student in the selected month
+            const response = await adminAttendanceService.getAttendance({
+                student_id: currentStudentId,
+                start_date: startDate,
+                end_date: endDate,
+                per_page: 9999,
+            });
+
+            if (response.success) {
+                // Filter attendance to only include records for this student's class subjects
+                const classSubjectIds = subjects.map((cs: any) => cs.id);
+                const filteredAttendance = (response.data || []).filter((att: Attendance) => 
+                    classSubjectIds.includes(att.class_subject_id)
+                );
+                setAttendanceRecords(filteredAttendance);
+            } else {
+                setNotification({ 
+                    type: 'error', 
+                    message: response.message || 'Failed to load attendance records' 
+                });
+                setAttendanceRecords([]);
+            }
+        } catch (error: any) {
+            console.error('Error loading student attendance:', error);
+            setNotification({ 
+                type: 'error', 
+                message: error.message || 'Failed to load attendance. Please try again or contact support if the issue persists.' 
+            });
             setAttendanceRecords([]);
-            setPagination(prev => ({ ...prev, total: 0 }));
         } finally {
             setLoading(false);
         }
     };
 
-    const loadStats = async () => {
-        if (!currentStudentId) {
-            console.warn('⚠️ No currentStudentId available for stats');
-            return;
-        }
-        try {
-            const statsParams = {
-                student_id: currentStudentId,
-                class_subject_id: filters.class_subject_id ? parseInt(filters.class_subject_id) : undefined,
-            };
-            
-            console.log('📊 Fetching stats with params:', statsParams);
-            console.log('📊 Current Student ID:', currentStudentId, '(type:', typeof currentStudentId, ')');
-            
-            const response: ApiResponse<AttendanceStats> = await adminAttendanceService.getAttendanceStats(statsParams);
-            if (response.success) {
-                setStats(response.data);
-                console.log('✅ Stats loaded:', response.data);
-            } else {
-                console.error('❌ Stats response not successful:', response);
+    // Create a map of attendance by subject and date
+    const attendanceMap = useMemo(() => {
+        const map = new Map<string, Attendance>();
+        attendanceRecords.forEach(att => {
+            const subjectId = (att.class_subject as any)?.subject?.id || 
+                             (att.class_subject as any)?.subject_id || 
+                             null;
+            if (subjectId) {
+                const date = new Date(att.attendance_date).getDate();
+                const key = `${subjectId}_${date}`;
+                map.set(key, att);
             }
-        } catch (error) {
-            console.error('❌ Error loading attendance stats:', error);
+        });
+        return map;
+    }, [attendanceRecords]);
+
+    // Get calendar days - start directly on the first day of the month, no padding
+    const calendarDays = useMemo(() => {
+        const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+        const days: number[] = [];
+        
+        // Add days of the month directly, starting from day 1
+        for (let day = 1; day <= daysInMonth; day++) {
+            days.push(day);
+        }
+        
+        return days;
+    }, [currentYear, currentMonth]);
+
+    // Navigation functions
+    const goToPreviousMonth = () => {
+        if (currentMonth === 0) {
+            setCurrentMonth(11);
+            setCurrentYear(currentYear - 1);
+        } else {
+            setCurrentMonth(currentMonth - 1);
         }
     };
 
-    useEffect(() => {
-        if (currentStudentId) {
-            loadDropdownOptions(); 
+    const goToNextMonth = () => {
+        if (currentMonth === 11) {
+            setCurrentMonth(0);
+            setCurrentYear(currentYear + 1);
         } else {
-            setLoading(false);
+            setCurrentMonth(currentMonth + 1);
         }
-    }, [currentStudentId]);
-
-    // Update "To" date to current Philippines date on component mount and when window gains focus
-    useEffect(() => {
-        const updateDate = () => {
-            setFilters(prev => ({ ...prev, end_date: getPhilippinesDate() }));
-        };
-        
-        // Update on mount
-        updateDate();
-        
-        // Update when window gains focus (user returns to tab)
-        window.addEventListener('focus', updateDate);
-        
-        return () => {
-            window.removeEventListener('focus', updateDate);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (currentStudentId) {
-            const debounceTimer = setTimeout(() => {
-                loadAttendance();
-                loadStats(); 
-            }, 300);
-            return () => clearTimeout(debounceTimer);
-        } else {
-            setLoading(false);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filters.class_subject_id, filters.status, filters.start_date, filters.end_date, filters.page, currentStudentId]);
-
-    const renderPagination = () => {
-        if (pagination.last_page <= 1) return null;
-
-        return (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-                <div className="text-sm text-gray-600">
-                    Showing {((pagination.current_page - 1) * pagination.per_page) + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total} results
-                </div>
-                <div className="flex items-center space-x-2">
-                    <button
-                        onClick={() => setFilters(prev => ({...prev, page: prev.page - 1}))}
-                        disabled={pagination.current_page === 1}
-                        className={`px-4 py-2 border border-gray-300 rounded-lg ${TEXT_COLOR_CLASS} hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        onClick={() => setFilters(prev => ({...prev, page: prev.page + 1}))}
-                        disabled={pagination.current_page === pagination.last_page}
-                        className={`px-4 py-2 border border-gray-300 rounded-lg ${TEXT_COLOR_CLASS} hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                        Next
-                    </button>
-                </div>
-            </div>
-        );
     };
+
+    const goToCurrentMonth = () => {
+        const now = new Date();
+        setCurrentMonth(now.getMonth());
+        setCurrentYear(now.getFullYear());
+    };
+
+    const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
 
     if (!isStudent) {
         return (
@@ -357,156 +299,181 @@ const MyAttendance: React.FC = () => {
 
     return (
         <AppLayout>
-            <div className="min-h-screen bg-[#f3f4f6]">
-                <div className="container mx-auto px-6 py-8">
-                    <div className="mb-8 flex items-center justify-between">
-                        <div className="flex items-center">
-                            <div className={`${PRIMARY_COLOR_CLASS} p-3 rounded-xl mr-4`}>
-                                <CalendarCheck className="h-8 w-8 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900">My Attendance History</h1>
-                                <p className="text-gray-600 mt-1">
-                                    {user?.name} ({studentIdNumber}) - Review your attendance records
-                                </p>
-                            </div>
-                        </div>
-                        <button 
-                            onClick={() => { loadAttendance(); loadStats(); }}
-                            className={`inline-flex items-center px-4 py-3 bg-white border border-gray-300 ${TEXT_COLOR_CLASS} rounded-xl hover:bg-gray-50 transition-all shadow-sm`}
-                        >
-                            <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-                        </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                        <StatCard title="Total Records" value={stats.total_records} icon={Hash} color={TEXT_COLOR_CLASS} />
-                        <StatCard title="Present Count" value={stats.present_count} icon={CheckSquare} color="text-green-600" />
-                        <StatCard title="Absent Count" value={stats.absent_count} icon={CalendarX} color="text-red-600" />
-                        <StatCard title="Attendance Rate" value={`${(stats.attendance_rate ?? 0).toFixed(1)}%`} icon={TrendingUp} color="text-indigo-600" />
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div className="flex items-center">
-                                <Filter className="h-5 w-5 text-gray-400 mr-3" />
-                                <select
-                                    value={filters.class_subject_id}
-                                    onChange={(e) => setFilters({...filters, class_subject_id: e.target.value, page: 1})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
-                                >
-                                    <option value="">All Subjects</option>
-                                    {classSubjects.map(cs => (
-                                        <option key={cs.id} value={cs.id}>
-                                            {cs.subject?.subject_name || cs.subject?.subject_code}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            
-                            <div className="flex items-center">
-                                <Filter className="h-5 w-5 text-gray-400 mr-3" />
-                                <select
-                                    value={filters.status}
-                                    onChange={(e) => setFilters({...filters, status: e.target.value, page: 1})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
-                                >
-                                    <option value="">All Statuses</option>
-                                    <option value="Present">Present</option>
-                                    <option value="Absent">Absent</option>
-                                    <option value="Late">Late</option>
-                                    <option value="Excused">Excused</option>
-                                </select>
-                            </div>
-                            
-                            <div className="flex items-center">
-                                <Filter className="h-5 w-5 text-gray-400 mr-3" />
-                                <label className="text-sm font-medium text-gray-700 mr-2 whitespace-nowrap">From:</label>
-                                <input
-                                    type="date"
-                                    name="start_date"
-                                    value={filters.start_date}
-                                    onChange={(e) => setFilters({...filters, start_date: e.target.value, page: 1})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
-                                    placeholder="Start Date"
-                                />
-                            </div>
-                            
-                            <div className="flex items-center">
-                                <Filter className="h-5 w-5 text-gray-400 mr-3" />
-                                <label className="text-sm font-medium text-gray-700 mr-2 whitespace-nowrap">To:</label>
-                                <input
-                                    type="date"
-                                    name="end_date"
-                                    value={filters.end_date}
-                                    onChange={(e) => setFilters({...filters, end_date: e.target.value, page: 1})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
-                                    placeholder="End Date"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Subject</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Date</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Class</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {loading ? (
-                                        <tr>
-                                            <td colSpan={4} className="px-6 py-12 text-center">
-                                                <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} />
-                                                <p className="mt-2 text-sm text-gray-600">Loading attendance...</p>
-                                            </td>
-                                        </tr>
-                                    ) : attendanceRecords.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                                                No attendance records found for your filters.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        attendanceRecords.map((record) => (
-                                            <tr key={record.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-semibold text-gray-900">
-                                                        {record.class_subject?.subject?.subject_name || 'N/A'}
-                                                    </div>
-                                                    <div className="text-xs text-gray-500">
-                                                        {record.class_subject?.subject?.subject_code || ''}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                                    {new Date(record.attendance_date).toLocaleDateString()}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    {renderStatusTag(record.status)}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                                    {record.class_subject?.class?.class_code || 'N/A'}
-                                                </td>
-                                            </tr>
-                                        ))
+            {notification && (
+                <NotificationDisplay 
+                    notification={notification} 
+                    onClose={() => setNotification(null)} 
+                />
+            )}
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="mb-6">
+                        <div>
+                            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+                                My Attendance
+                            </h1>
+                            <div className="mb-4">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-3">{studentName || user?.name || 'Student'}</h2>
+                                <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                                    {className && (
+                                        <div>
+                                            <span className="font-semibold">Class:</span> {className}
+                                        </div>
                                     )}
-                                </tbody>
-                            </table>
+                                    {yearLevel !== null && (() => {
+                                        const { label, value } = formatGradeYearLevel(yearLevel);
+                                        return (
+                                            <div>
+                                                <span className="font-semibold">{label}:</span> {value}
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
                         </div>
-                        
-                        {renderPagination()}
                     </div>
 
-                    {notification && (
-                        <Notification 
-                            notification={notification} 
-                            onClose={() => setNotification(null)} 
-                        />
+                    {loading ? (
+                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 p-6">
+                            <div className="flex items-center justify-center py-12">
+                                <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                            {/* Month/Year Navigation */}
+                            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            onClick={goToPreviousMonth}
+                                            className="p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            <ChevronLeft className="w-5 h-5 text-gray-700" />
+                                        </button>
+                                        <div className="text-lg font-semibold text-gray-900">
+                                            {monthNames[currentMonth]} / {currentYear}
+                                        </div>
+                                        <button
+                                            onClick={goToNextMonth}
+                                            className="p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            <ChevronRight className="w-5 h-5 text-gray-700" />
+                                        </button>
+                                    </div>
+                                    <button
+                                        onClick={goToCurrentMonth}
+                                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm cursor-pointer"
+                                    >
+                                        Today
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Attendance Grid */}
+                            <div className="p-6 overflow-x-auto">
+                                {classSubjects.length === 0 ? (
+                                    <div className="text-center py-12 text-gray-500">
+                                        No subjects found for this class
+                                    </div>
+                                ) : (
+                                    <div className="min-w-full">
+                                        <table className="w-full border-collapse border border-gray-300 text-sm">
+                                            <thead>
+                                                <tr className="bg-gray-100">
+                                                    <th className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-700 sticky left-0 bg-gray-100 z-10">
+                                                        Name
+                                                    </th>
+                                                    {/* Date headers - aligned with calendar */}
+                                                    {calendarDays.map((day, index) => (
+                                                        <th
+                                                            key={index}
+                                                            className="border border-gray-300 px-2 py-2 text-center font-semibold text-gray-700 min-w-[40px]"
+                                                        >
+                                                            {day}
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                                <tr className="bg-gray-50">
+                                                    <th className="border border-gray-300 px-4 py-1 text-left text-xs text-gray-600 sticky left-0 bg-gray-50 z-10">
+                                                        Subject
+                                                    </th>
+                                                    {/* Day of week headers - aligned with calendar */}
+                                                    {calendarDays.map((day, index) => (
+                                                        <th
+                                                            key={index}
+                                                            className="border border-gray-300 px-2 py-1 text-center text-xs text-gray-600 min-w-[40px]"
+                                                        >
+                                                            {getDayAbbr(new Date(currentYear, currentMonth, day).getDay())}
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {classSubjects.map((subject) => {
+                                                    const subjectId = subject.subject?.id || subject.subject_id;
+                                                    const subjectCode = subject.subject?.subject_code || subject.subject_code || '';
+                                                    const subjectName = subject.subject?.subject_name || subject.subject_name || '';
+                                                    
+                                                    return (
+                                                        <tr key={subjectId} className="hover:bg-gray-50">
+                                                            <td className="border border-gray-300 px-4 py-3 sticky left-0 bg-white z-10">
+                                                                <div className="font-semibold text-gray-900">{subjectCode}</div>
+                                                                <div className="text-xs text-gray-600">{subjectName}</div>
+                                                            </td>
+                                                            {/* Attendance cells - aligned with calendar */}
+                                                            {calendarDays.map((day, index) => {
+                                                                const key = `${subjectId}_${day}`;
+                                                                const attendance = attendanceMap.get(key);
+                                                                
+                                                                return (
+                                                                    <td
+                                                                        key={index}
+                                                                        className="border border-gray-300 px-2 py-2 text-center min-w-[40px]"
+                                                                    >
+                                                                        {attendance ? (
+                                                                            <span
+                                                                                className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${getStatusColor(attendance.status)}`}
+                                                                                title={attendance.status}
+                                                                            >
+                                                                                {getStatusCode(attendance.status)}
+                                                                            </span>
+                                                                        ) : null}
+                                                                    </td>
+                                                                );
+                                                            })}
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Legend */}
+                            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                                <div className="flex flex-wrap items-center gap-4 text-sm">
+                                    <span className="font-semibold text-gray-700">Legend:</span>
+                                    <span className="flex items-center gap-2">
+                                        <span className="inline-block px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">P</span>
+                                        <span className="text-gray-600">Present</span>
+                                    </span>
+                                    <span className="flex items-center gap-2">
+                                        <span className="inline-block px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">A</span>
+                                        <span className="text-gray-600">Absent</span>
+                                    </span>
+                                    <span className="flex items-center gap-2">
+                                        <span className="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">L</span>
+                                        <span className="text-gray-600">Late</span>
+                                    </span>
+                                    <span className="flex items-center gap-2">
+                                        <span className="inline-block px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs font-medium">E</span>
+                                        <span className="text-gray-600">Excused</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

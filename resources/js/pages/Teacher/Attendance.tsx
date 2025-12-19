@@ -31,6 +31,7 @@ import {
 } from '../../../services/AdminAttendanceService';
 import { adminClassSubjectService } from '../../../services/AdminClassSubjectService';
 import { adminGradeService } from '../../../services/AdminGradeService';
+import { adminTeacherService } from '../../../services/AdminTeacherService';
 
 const PRIMARY_COLOR_CLASS = 'bg-[#003366]';
 const HOVER_COLOR_CLASS = 'hover:bg-[#002244]';
@@ -403,6 +404,7 @@ const AttendancePage: React.FC = () => {
     
     // Class selection state
     const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+    const [rawClasses, setRawClasses] = useState<Array<{ id: number; class_code: string; class_name: string }>>([]);
     const [classes, setClasses] = useState<Array<{ id: number; class_code: string; class_name: string; subjectCount: number }>>([]);
     
     const [pagination, setPagination] = useState<Pagination>({
@@ -645,11 +647,61 @@ const AttendancePage: React.FC = () => {
         }
     };
 
+    const fetchClasses = async () => {
+        if (!currentTeacherId) {
+            console.warn('⚠️ [ATTENDANCE] No teacher ID available for fetching classes');
+            return;
+        }
+        
+        try {
+            console.log('🔍 [ATTENDANCE] Fetching classes for teacher ID:', currentTeacherId);
+            const response = await adminTeacherService.getTeacherClasses(currentTeacherId);
+            
+            if (response.success && Array.isArray(response.data)) {
+                const classesData = response.data.map((classItem: any) => ({
+                    id: classItem.id,
+                    class_code: classItem.class_code,
+                    class_name: classItem.class_name
+                }));
+                
+                setRawClasses(classesData);
+                console.log('✅ [ATTENDANCE] Loaded', classesData.length, 'classes');
+            } else {
+                setRawClasses([]);
+                console.warn('⚠️ [ATTENDANCE] No classes returned from API');
+            }
+        } catch (error) {
+            console.error('❌ [ATTENDANCE] Failed to fetch classes:', error);
+            setRawClasses([]);
+        }
+    };
+
+    // Calculate classes with subjectCount when rawClasses or classSubjects change
+    useEffect(() => {
+        if (rawClasses.length > 0) {
+            const classesWithCount = rawClasses.map((classItem) => {
+                const subjectCount = classSubjects.filter(
+                    (cs) => (cs.class?.id || cs.class_id) === classItem.id
+                ).length;
+                
+                return {
+                    ...classItem,
+                    subjectCount: subjectCount
+                };
+            });
+            
+            setClasses(classesWithCount);
+        } else {
+            setClasses([]);
+        }
+    }, [rawClasses, classSubjects]);
+
     useEffect(() => {
         if (currentTeacherId) {
             fetchAttendance();
             fetchStats();
             fetchDropdownLists();
+            fetchClasses();
         }
     }, [filters, currentTeacherId]);
 
@@ -991,6 +1043,7 @@ const AttendancePage: React.FC = () => {
                                 fetchAttendance(); 
                                 fetchStats(); 
                                 fetchDropdownLists();
+                                fetchClasses();
                                 if (filters.class_subject_id && selectedDate) {
                                     fetchAttendanceForDate();
                                 }
