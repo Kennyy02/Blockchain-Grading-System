@@ -1839,7 +1839,8 @@ const fetchDropdownLists = async () => {
                                                 </table>
                                             </div>
                                         </div>
-                                    )}
+                                        );
+                                    })()}
                                 </div>
                             )}
                         </div>
