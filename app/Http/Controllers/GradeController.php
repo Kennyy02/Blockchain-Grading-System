@@ -48,6 +48,13 @@ class GradeController extends Controller
                 $query->where('class_subject_id', $classSubjectId);
             }
             
+            // Apply teacher filter - only show grades from class-subjects assigned to this teacher
+            if ($teacherId = $request->input('teacher_id')) {
+                $query->whereHas('classSubject', function($q) use ($teacherId) {
+                    $q->where('teacher_id', $teacherId);
+                });
+            }
+            
             // Apply remarks filter
             if ($remarks = $request->input('remarks')) {
                 match($remarks) {

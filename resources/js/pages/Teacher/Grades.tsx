@@ -32,6 +32,7 @@ import {
     GradeFilters 
 } from '../../../services/AdminGradeService'; 
 import { adminClassSubjectService } from '../../../services/AdminClassSubjectService';
+import { adminClassesService } from '../../../services/AdminClassesService';
 
 // --- THEME COLORS ---
 const PRIMARY_COLOR_CLASS = 'bg-[#003366]';
@@ -811,10 +812,36 @@ const fetchDropdownLists = async () => {
             
             if (response.classSubjects && response.classSubjects.length > 0) {
                 classSubjectsData = response.classSubjects;
-                studentsData = response.students || [];
+                
+                // Filter students to only those from teacher's assigned classes
+                const classIds = [...new Set(classSubjectsData.map((cs: any) => 
+                    cs.class?.id || cs.class_id || (cs.class as any)?.id
+                ).filter(Boolean))];
+                
+                if (classIds.length > 0) {
+                    const studentPromises = classIds.map(async (classId: number) => {
+                        try {
+                            const classStudentsRes = await adminClassesService.getClassStudents(classId, { per_page: 9999 });
+                            return classStudentsRes.success ? (classStudentsRes.data || []) : [];
+                        } catch (error) {
+                            console.warn(`Failed to fetch students for class ${classId}:`, error);
+                            return [];
+                        }
+                    });
+                    
+                    const studentsArrays = await Promise.all(studentPromises);
+                    const allStudents = studentsArrays.flat();
+                    const uniqueStudents = Array.from(
+                        new Map(allStudents.map((s: any) => [s.id, s])).values()
+                    );
+                    studentsData = uniqueStudents;
+                } else {
+                    studentsData = [];
+                }
+                
                 academicYearsData = response.academicYears || [];
                 semestersData = response.semesters || [];
-                console.log('✅ Method 1 SUCCESS:', classSubjectsData.length, 'subjects');
+                console.log('✅ Method 1 SUCCESS:', classSubjectsData.length, 'subjects', studentsData.length, 'students');
             }
         } catch (error) {
             console.warn('⚠️ Method 1 failed:', error);
@@ -825,16 +852,41 @@ const fetchDropdownLists = async () => {
         // ===========================================================
         if (classSubjectsData.length === 0) {
             try {
-                const [csRes, stRes, ayRes, semRes] = await Promise.all([
+                const [csRes, ayRes, semRes] = await Promise.all([
                     adminGradeService.getClassSubjectsMinimal(currentTeacherId),
-                    adminGradeService.getStudentsMinimal(),
                     adminGradeService.getAcademicYears(),
                     adminGradeService.getSemesters()
                 ]);
                 
                 if (csRes.data && csRes.data.length > 0) {
                     classSubjectsData = csRes.data;
-                    studentsData = stRes.data || [];
+                    
+                    // Filter students to only those from teacher's assigned classes
+                    const classIds = [...new Set(classSubjectsData.map((cs: any) => 
+                        cs.class?.id || cs.class_id || (cs.class as any)?.id
+                    ).filter(Boolean))];
+                    
+                    if (classIds.length > 0) {
+                        const studentPromises = classIds.map(async (classId: number) => {
+                            try {
+                                const classStudentsRes = await adminClassesService.getClassStudents(classId, { per_page: 9999 });
+                                return classStudentsRes.success ? (classStudentsRes.data || []) : [];
+                            } catch (error) {
+                                console.warn(`Failed to fetch students for class ${classId}:`, error);
+                                return [];
+                            }
+                        });
+                        
+                        const studentsArrays = await Promise.all(studentPromises);
+                        const allStudents = studentsArrays.flat();
+                        const uniqueStudents = Array.from(
+                            new Map(allStudents.map((s: any) => [s.id, s])).values()
+                        );
+                        studentsData = uniqueStudents;
+                    } else {
+                        studentsData = [];
+                    }
+                    
                     academicYearsData = ayRes.data || [];
                     semestersData = semRes.data || [];
                 }
@@ -863,13 +915,39 @@ const fetchDropdownLists = async () => {
                             teacher_id: cs.teacher_id
                         }));
                     
+                    // Get students from teacher's assigned classes only
+                    const classIds = [...new Set(classSubjectsData.map((cs: any) => 
+                        cs.class?.id || cs.class_id || (cs.class as any)?.id
+                    ).filter(Boolean))];
+                    
+                    if (classIds.length > 0) {
+                        // Fetch students from each class
+                        const studentPromises = classIds.map(async (classId: number) => {
+                            try {
+                                const classStudentsRes = await adminClassesService.getClassStudents(classId, { per_page: 9999 });
+                                return classStudentsRes.success ? (classStudentsRes.data || []) : [];
+                            } catch (error) {
+                                console.warn(`Failed to fetch students for class ${classId}:`, error);
+                                return [];
+                            }
+                        });
+                        
+                        const studentsArrays = await Promise.all(studentPromises);
+                        // Flatten and deduplicate students
+                        const allStudents = studentsArrays.flat();
+                        const uniqueStudents = Array.from(
+                            new Map(allStudents.map((s: any) => [s.id, s])).values()
+                        );
+                        studentsData = uniqueStudents;
+                    } else {
+                        studentsData = [];
+                    }
+                    
                     // Get other dropdowns
-                    const [stRes, ayRes, semRes] = await Promise.all([
-                        adminGradeService.getStudentsMinimal(),
+                    const [ayRes, semRes] = await Promise.all([
                         adminGradeService.getAcademicYears(),
                         adminGradeService.getSemesters()
                     ]);
-                    studentsData = stRes.data || [];
                     academicYearsData = ayRes.data || [];
                     semestersData = semRes.data || [];
                 }
@@ -897,12 +975,36 @@ const fetchDropdownLists = async () => {
                     
                     console.warn('⚠️ TESTING MODE: Showing ALL', classSubjectsData.length, 'subjects');
                     
-                    const [stRes, ayRes, semRes] = await Promise.all([
-                        adminGradeService.getStudentsMinimal(),
+                    // Filter students to only those from teacher's assigned classes
+                    const classIds = [...new Set(classSubjectsData.map((cs: any) => 
+                        cs.class?.id || cs.class_id || (cs.class as any)?.id
+                    ).filter(Boolean))];
+                    
+                    if (classIds.length > 0) {
+                        const studentPromises = classIds.map(async (classId: number) => {
+                            try {
+                                const classStudentsRes = await adminClassesService.getClassStudents(classId, { per_page: 9999 });
+                                return classStudentsRes.success ? (classStudentsRes.data || []) : [];
+                            } catch (error) {
+                                console.warn(`Failed to fetch students for class ${classId}:`, error);
+                                return [];
+                            }
+                        });
+                        
+                        const studentsArrays = await Promise.all(studentPromises);
+                        const allStudents = studentsArrays.flat();
+                        const uniqueStudents = Array.from(
+                            new Map(allStudents.map((s: any) => [s.id, s])).values()
+                        );
+                        studentsData = uniqueStudents;
+                    } else {
+                        studentsData = [];
+                    }
+                    
+                    const [ayRes, semRes] = await Promise.all([
                         adminGradeService.getAcademicYears(),
                         adminGradeService.getSemesters()
                     ]);
-                    studentsData = stRes.data || [];
                     academicYearsData = ayRes.data || [];
                     semestersData = semRes.data || [];
                 }
