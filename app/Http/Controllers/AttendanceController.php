@@ -383,9 +383,24 @@ class AttendanceController extends Controller
                         
                         if ($existing) {
                             $existing->update(['status' => $record['status']]);
+                            $existing->load(['student', 'classSubject.subject', 'classSubject.teacher']);
+                            // Register update on blockchain
+                            try {
+                                $existing->registerOnBlockchain(true);
+                            } catch (\Exception $e) {
+                                Log::warning('Failed to register attendance update on blockchain: ' . $e->getMessage());
+                            }
                             $attendanceRecords[] = $existing;
                         } else {
-                            $attendanceRecords[] = Attendance::create($record);
+                            $attendance = Attendance::create($record);
+                            $attendance->load(['student', 'classSubject.subject', 'classSubject.teacher']);
+                            // Register creation on blockchain
+                            try {
+                                $attendance->registerOnBlockchain(false);
+                            } catch (\Exception $e) {
+                                Log::warning('Failed to register attendance on blockchain: ' . $e->getMessage());
+                            }
+                            $attendanceRecords[] = $attendance;
                         }
                     }
                     DB::commit();
@@ -434,8 +449,22 @@ class AttendanceController extends Controller
                 if ($existing) {
                     $existing->update(['status' => $request->status]);
                     $attendance = $existing;
+                    // Register update on blockchain
+                    try {
+                        $attendance->load(['student', 'classSubject.subject', 'classSubject.teacher']);
+                        $attendance->registerOnBlockchain(true);
+                    } catch (\Exception $e) {
+                        Log::warning('Failed to register attendance update on blockchain: ' . $e->getMessage());
+                    }
                 } else {
                     $attendance = Attendance::create($validator->validated());
+                    // Register creation on blockchain
+                    try {
+                        $attendance->load(['student', 'classSubject.subject', 'classSubject.teacher']);
+                        $attendance->registerOnBlockchain(false);
+                    } catch (\Exception $e) {
+                        Log::warning('Failed to register attendance on blockchain: ' . $e->getMessage());
+                    }
                 }
                 
                 $attendance->load(['student.user', 'classSubject.subject', 'classSubject.class']);
@@ -554,7 +583,15 @@ class AttendanceController extends Controller
             }
 
             $attendance->update($validator->validated());
-            $attendance->load(['student.user', 'classSubject.subject', 'classSubject.class']);
+            $attendance->load(['student.user', 'classSubject.subject', 'classSubject.class', 'classSubject.teacher']);
+            
+            // Register update on blockchain
+            try {
+                $attendance->registerOnBlockchain(true);
+            } catch (\Exception $e) {
+                // Log but don't fail - attendance is already updated
+                Log::warning('Failed to register attendance update on blockchain: ' . $e->getMessage());
+            }
             
             if ($request->expectsJson()) {
                 return response()->json([

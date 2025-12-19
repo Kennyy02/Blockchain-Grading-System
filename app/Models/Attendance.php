@@ -148,4 +148,102 @@ class Attendance extends Model
             default => 'circle',
         };
     }
+
+    // ========================================================================
+    // BLOCKCHAIN METHODS
+    // ========================================================================
+
+    /**
+     * Generate a blockchain hash for this attendance record
+     * This hash ensures data integrity and prevents tampering
+     */
+    public function generateBlockchainHash(): string
+    {
+        // Ensure relationships are loaded
+        if (!$this->relationLoaded('student')) {
+            $this->load('student');
+        }
+        if (!$this->relationLoaded('classSubject')) {
+            $this->load('classSubject.subject');
+        }
+
+        // Create a data structure that uniquely identifies this attendance
+        $data = [
+            'attendance_id' => $this->id,
+            'student_id' => $this->student_id,
+            'student_name' => $this->student ? ($this->student->first_name . ' ' . $this->student->last_name) : null,
+            'class_subject_id' => $this->class_subject_id,
+            'subject_code' => $this->classSubject?->subject?->subject_code,
+            'subject_name' => $this->classSubject?->subject?->subject_name,
+            'attendance_date' => $this->attendance_date ? $this->attendance_date->format('Y-m-d') : null,
+            'status' => $this->status,
+            'created_at' => $this->created_at ? $this->created_at->toIso8601String() : null,
+            'updated_at' => $this->updated_at ? $this->updated_at->toIso8601String() : null,
+            'timestamp' => now()->timestamp,
+        ];
+
+        // Sort data to ensure consistent hashing
+        ksort($data);
+        return hash('sha256', json_encode($data, JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Verify the integrity of the attendance by regenerating and comparing the hash
+     */
+    public function verifyIntegrity(string $storedHash): bool
+    {
+        $currentHash = $this->generateBlockchainHash();
+        return hash_equals($storedHash, $currentHash);
+    }
+
+    /**
+     * Register this attendance on the blockchain
+     * Creates a blockchain transaction record for audit purposes
+     */
+    public function registerOnBlockchain(bool $isUpdate = false): void
+    {
+        // Generate the attendance hash
+        $blockchainHash = $this->generateBlockchainHash();
+        
+        // Get the user ID for initiated_by
+        // Try to get from authenticated user first
+        $initiatedBy = auth()->id();
+        
+        // If no authenticated user, try to get from class subject's teacher
+        if (!$initiatedBy && $this->classSubject) {
+            if (!$this->relationLoaded('classSubject')) {
+                $this->load('classSubject.teacher');
+            }
+            if ($this->classSubject?->teacher?->user_id) {
+                $initiatedBy = $this->classSubject->teacher->user_id;
+            }
+        }
+        
+        // If still no user ID, get the first admin user as fallback
+        if (!$initiatedBy) {
+            $adminUser = User::where('role', 'admin')->first();
+            if ($adminUser) {
+                $initiatedBy = $adminUser->id;
+            }
+        }
+
+        // Create blockchain transaction record
+        if ($initiatedBy) {
+            try {
+                BlockchainTransaction::create([
+                    'transaction_hash' => $blockchainHash,
+                    'transaction_type' => $isUpdate ? 'attendance_update' : 'attendance_creation',
+                    'initiated_by' => $initiatedBy,
+                    'status' => 'confirmed', // Attendance records are immediately confirmed as they're stored in our system
+                    'submitted_at' => now(),
+                ]);
+            } catch (\Exception $e) {
+                // Log but don't fail - attendance is already saved
+                \Log::warning('Failed to create blockchain transaction for attendance: ' . $e->getMessage(), [
+                    'attendance_id' => $this->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+    }
 }

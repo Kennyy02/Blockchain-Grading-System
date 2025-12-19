@@ -300,7 +300,15 @@ class GradeController extends Controller
                 $grade->updateFinalRating();
             }
             
-            $grade->load(['student', 'classSubject.subject', 'academicYear', 'semester']);
+            $grade->load(['student', 'classSubject.subject', 'classSubject.teacher', 'academicYear', 'semester']);
+            
+            // Register on blockchain for audit trail
+            try {
+                $grade->registerOnBlockchain(false);
+            } catch (\Exception $e) {
+                // Log but don't fail - grade is already saved
+                Log::warning('Failed to register grade on blockchain: ' . $e->getMessage());
+            }
             
             if ($request->expectsJson()) {
                 return response()->json([
@@ -430,7 +438,15 @@ class GradeController extends Controller
                 $grade->updateFinalRating();
             }
             
-            $grade->load(['student', 'classSubject.subject', 'academicYear', 'semester']);
+            $grade->load(['student', 'classSubject.subject', 'classSubject.teacher', 'academicYear', 'semester']);
+            
+            // Register on blockchain for audit trail (update)
+            try {
+                $grade->registerOnBlockchain(true);
+            } catch (\Exception $e) {
+                // Log but don't fail - grade is already updated
+                Log::warning('Failed to register grade update on blockchain: ' . $e->getMessage());
+            }
             
             if ($request->expectsJson()) {
                 return response()->json([

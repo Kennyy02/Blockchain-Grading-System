@@ -233,4 +233,115 @@ class Grade extends Model
 
         return round(($completed / 3) * 100, 2);
     }
+
+    // ========================================================================
+    // BLOCKCHAIN METHODS
+    // ========================================================================
+
+    /**
+     * Generate a blockchain hash for this grade record
+     * This hash ensures data integrity and prevents tampering
+     */
+    public function generateBlockchainHash(): string
+    {
+        // Ensure relationships are loaded
+        if (!$this->relationLoaded('student')) {
+            $this->load('student');
+        }
+        if (!$this->relationLoaded('classSubject')) {
+            $this->load('classSubject.subject');
+        }
+        if (!$this->relationLoaded('academicYear')) {
+            $this->load('academicYear');
+        }
+        if (!$this->relationLoaded('semester')) {
+            $this->load('semester');
+        }
+
+        // Create a data structure that uniquely identifies this grade
+        $data = [
+            'grade_id' => $this->id,
+            'student_id' => $this->student_id,
+            'student_name' => $this->student ? ($this->student->first_name . ' ' . $this->student->last_name) : null,
+            'class_subject_id' => $this->class_subject_id,
+            'subject_code' => $this->classSubject?->subject?->subject_code,
+            'subject_name' => $this->classSubject?->subject?->subject_name,
+            'academic_year_id' => $this->academic_year_id,
+            'academic_year' => $this->academicYear?->year_name,
+            'semester_id' => $this->semester_id,
+            'semester' => $this->semester?->semester_name,
+            'prelim_grade' => $this->prelim_grade,
+            'midterm_grade' => $this->midterm_grade,
+            'final_grade' => $this->final_grade,
+            'final_rating' => $this->final_rating,
+            'remarks' => $this->remarks,
+            'created_at' => $this->created_at ? $this->created_at->toIso8601String() : null,
+            'updated_at' => $this->updated_at ? $this->updated_at->toIso8601String() : null,
+            'timestamp' => now()->timestamp,
+        ];
+
+        // Sort data to ensure consistent hashing
+        ksort($data);
+        return hash('sha256', json_encode($data, JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Verify the integrity of the grade by regenerating and comparing the hash
+     */
+    public function verifyIntegrity(string $storedHash): bool
+    {
+        $currentHash = $this->generateBlockchainHash();
+        return hash_equals($storedHash, $currentHash);
+    }
+
+    /**
+     * Register this grade on the blockchain
+     * Creates a blockchain transaction record for audit purposes
+     */
+    public function registerOnBlockchain(bool $isUpdate = false): void
+    {
+        // Generate the grade hash
+        $blockchainHash = $this->generateBlockchainHash();
+        
+        // Get the user ID for initiated_by
+        // Try to get from authenticated user first
+        $initiatedBy = auth()->id();
+        
+        // If no authenticated user, try to get from class subject's teacher
+        if (!$initiatedBy && $this->classSubject) {
+            if (!$this->relationLoaded('classSubject')) {
+                $this->load('classSubject.teacher');
+            }
+            if ($this->classSubject?->teacher?->user_id) {
+                $initiatedBy = $this->classSubject->teacher->user_id;
+            }
+        }
+        
+        // If still no user ID, get the first admin user as fallback
+        if (!$initiatedBy) {
+            $adminUser = User::where('role', 'admin')->first();
+            if ($adminUser) {
+                $initiatedBy = $adminUser->id;
+            }
+        }
+
+        // Create blockchain transaction record
+        if ($initiatedBy) {
+            try {
+                BlockchainTransaction::create([
+                    'transaction_hash' => $blockchainHash,
+                    'transaction_type' => $isUpdate ? 'grade_update' : 'grade_creation',
+                    'initiated_by' => $initiatedBy,
+                    'status' => 'confirmed', // Grades are immediately confirmed as they're stored in our system
+                    'submitted_at' => now(),
+                ]);
+            } catch (\Exception $e) {
+                // Log but don't fail - grade is already saved
+                \Log::warning('Failed to create blockchain transaction for grade: ' . $e->getMessage(), [
+                    'grade_id' => $this->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+    }
 }

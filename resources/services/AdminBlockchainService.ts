@@ -52,7 +52,7 @@ export interface MinimalTeacher {
 // ========================================================================
 
 export type TransactionStatus = 'pending' | 'confirmed' | 'failed';
-export type TransactionType = 'certificate_creation' | 'certificate_update' | 'verification';
+export type TransactionType = 'certificate_creation' | 'certificate_update' | 'verification' | 'grade_creation' | 'grade_update' | 'attendance_creation' | 'attendance_update';
 
 export interface BlockchainTransaction {
     id: number;
