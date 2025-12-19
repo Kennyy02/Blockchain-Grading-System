@@ -1127,7 +1127,7 @@ const AttendancePage: React.FC = () => {
                             
                             {/* Attendance Marking Calendar Grid */}
                             {filters.class_subject_id && (
-                        <div className="mt-6 pt-6 border-t border-gray-200">
+                                <div className="mt-6 pt-6 border-t border-gray-200">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">Mark Attendance</h3>
                             </div>
