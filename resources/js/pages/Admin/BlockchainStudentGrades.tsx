@@ -8,14 +8,18 @@ import { adminClassSubjectService } from '../../../services/AdminClassSubjectSer
 const PRIMARY_COLOR_CLASS = 'bg-gradient-to-r from-purple-600 to-indigo-600';
 const TEXT_COLOR_CLASS = 'text-purple-600';
 
-// Helper function to format year level for college
-const formatYearLevel = (yearLevel: number | null): string => {
-    if (yearLevel === null || yearLevel === undefined) return '';
-    const yearNames = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'];
-    if (yearLevel >= 1 && yearLevel <= yearNames.length) {
-        return yearNames[yearLevel - 1];
+// Helper function to format grade/year level based on education category
+const formatGradeYearLevel = (yearLevel: number | null): { label: string; value: string } => {
+    if (yearLevel === null || yearLevel === undefined) return { label: '', value: '' };
+    
+    // College: 13-16 (1st Year - 4th Year)
+    if (yearLevel >= 13 && yearLevel <= 16) {
+        const yearNames = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+        return { label: 'Year Level', value: yearNames[yearLevel - 13] };
     }
-    return `${yearLevel}${yearLevel === 1 ? 'st' : yearLevel === 2 ? 'nd' : yearLevel === 3 ? 'rd' : 'th'} Year`;
+    
+    // Elementary (1-6), Junior High (7-10), Senior High (11-12): All use "Grade Level"
+    return { label: 'Grade Level', value: `Grade ${yearLevel}` };
 };
 
 interface Notification {
@@ -337,11 +341,14 @@ const BlockchainStudentGrades: React.FC = () => {
                                     <div>
                                         <span className="font-semibold">Class:</span> {className}
                                     </div>
-                                    {yearLevel !== null && (
-                                        <div>
-                                            <span className="font-semibold">Year Level:</span> {formatYearLevel(yearLevel)}
-                                        </div>
-                                    )}
+                                    {yearLevel !== null && (() => {
+                                        const { label, value } = formatGradeYearLevel(yearLevel);
+                                        return (
+                                            <div>
+                                                <span className="font-semibold">{label}:</span> {value}
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             </div>
                         </div>
