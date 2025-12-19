@@ -6,22 +6,27 @@ If you've just set `ADMIN_EMAIL`, `ADMIN_NAME`, and `ADMIN_PASSWORD` in Railway 
 
 ## Quick Steps:
 
-### Step 1: Open Railway Shell
+### Step 1: Use Railway CLI (Since Railway doesn't have a web shell)
 
-1. Go to https://railway.app/
-2. Open your **"System"** service (the web service, not MySQL)
-3. Click on **"Deployments"** tab
-4. Click on the **latest deployment**
-5. Look for a **"Shell"** or **"Terminal"** button/tab
-6. Click it to open a shell directly on Railway's server
+Since Railway doesn't provide a web shell/terminal, use the Railway CLI:
 
-### Step 2: Run the Command
+1. **Open your terminal/command prompt** (on your local machine)
+2. **Make sure you're logged in** (if not already):
+   ```bash
+   railway login
+   ```
+3. **Link to your project** (if not already linked):
+   ```bash
+   railway link
+   ```
+   Select your project when prompted.
 
-In the Railway shell, type:
+4. **Run the command**:
+   ```bash
+   railway run php artisan admin:setup-from-env
+   ```
 
-```bash
-php artisan admin:setup-from-env
-```
+**Note:** This runs the command on Railway's server, not locally, so it has access to the database.
 
 You should see output like:
 
@@ -43,14 +48,22 @@ Go to your login page and use:
 - **Email:** `admin@smms.edu.ph` (or whatever you set in `ADMIN_EMAIL`)
 - **Password:** `admin123` (or whatever you set in `ADMIN_PASSWORD`)
 
-## Alternative: Wait for Next Deployment
+## Alternative: Wait for Next Deployment (Automatic)
 
-If you don't want to run it manually, the command will run automatically on the next deployment. To trigger a redeploy:
+The command is configured to run **automatically on every deployment**. To trigger it:
 
-1. Go to Railway → Your service → Deployments
-2. Click **"Redeploy"** button
-3. Wait for deployment to complete
-4. The admin account will be created automatically
+1. Go to Railway → Your **System** service → **Deployments** tab
+2. Click the **"Redeploy"** button (or make any code change and push to GitHub)
+3. Watch the **Deploy Logs** - you should see output like:
+   ```
+   === Admin Setup from Environment Variables ===
+   📧 Found ADMIN_EMAIL: admin@smms.edu.ph
+   🔑 Found ADMIN_PASSWORD: [Set]
+   ✅ Admin account created successfully!
+   ```
+4. Once deployment completes, the admin account will be ready
+
+**Check the Deploy Logs** to see if the command ran successfully. Look for messages starting with "===" or "Admin Setup".
 
 ## Troubleshooting
 

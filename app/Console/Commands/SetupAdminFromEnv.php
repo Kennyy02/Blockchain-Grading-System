@@ -27,25 +27,34 @@ class SetupAdminFromEnv extends Command
      */
     public function handle()
     {
+        // Always output that we're starting
+        $this->info('=== Admin Setup from Environment Variables ===');
+        
         $email = env('ADMIN_EMAIL');
         $password = env('ADMIN_PASSWORD');
 
         if (!$email) {
             $this->error('ADMIN_EMAIL environment variable is not set.');
             $this->info('Please set ADMIN_EMAIL in your .env file or Railway Variables.');
-            return 1;
+            $this->info('Skipping admin setup...');
+            return 0; // Return 0 so deployment doesn't fail
         }
 
         if (!$password) {
             $this->error('ADMIN_PASSWORD environment variable is not set.');
             $this->info('Please set ADMIN_PASSWORD in your .env file or Railway Variables.');
-            return 1;
+            $this->info('Skipping admin setup...');
+            return 0; // Return 0 so deployment doesn't fail
         }
 
         if (strlen($password) < 8) {
             $this->error('ADMIN_PASSWORD must be at least 8 characters long.');
-            return 1;
+            $this->info('Skipping admin setup...');
+            return 0; // Return 0 so deployment doesn't fail
         }
+
+        $this->info("Found ADMIN_EMAIL: {$email}");
+        $this->info("Found ADMIN_PASSWORD: [Set]");
 
         // Check if admin user already exists
         $admin = User::where('email', $email)->first();
@@ -87,17 +96,18 @@ class SetupAdminFromEnv extends Command
                 'email_verified_at' => now(),
             ]);
             
-            $this->info("✓ Admin account created successfully!");
-            $this->info("  Name: {$name}");
-            $this->info("  Email: {$email}");
-            $this->info("  Password: [Set from environment]");
-            $this->info("  Role: admin");
+            $this->info("✅ Admin account created successfully!");
+            $this->info("   Name: {$name}");
+            $this->info("   Email: {$email}");
+            $this->info("   Password: [Set from environment]");
+            $this->info("   Role: admin");
         }
 
         $this->newLine();
-        $this->info("You can now log in with:");
-        $this->info("  Email: {$email}");
-        $this->info("  Password: [The password you set in ADMIN_PASSWORD]");
+        $this->info("🎉 Setup complete! You can now log in with:");
+        $this->info("   Email: {$email}");
+        $this->info("   Password: [The password you set in ADMIN_PASSWORD]");
+        $this->newLine();
 
         return 0;
     }
