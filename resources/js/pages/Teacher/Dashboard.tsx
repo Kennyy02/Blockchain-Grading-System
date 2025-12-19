@@ -14,6 +14,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { useTeacherAuth } from '../../../services/useTeacherAuth';
 import AnnouncementCard from '@/components/AnnouncementCard';
+import Greeting from '@/components/Greeting';
 
 // Import necessary types and services
 import { adminClassSubjectService, ClassSubject } from '../../../services/AdminClassSubjectService';
@@ -182,6 +183,12 @@ const Dashboard: React.FC = () => {
     return (
         <AppLayout>
             <div className="p-8 space-y-8 min-h-screen bg-[#f3f4f6]">
+                {/* Greeting */}
+                <Greeting 
+                    userName={user?.name} 
+                    userRole="teacher" 
+                />
+                
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>

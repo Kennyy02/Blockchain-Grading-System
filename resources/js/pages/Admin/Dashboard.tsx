@@ -14,7 +14,8 @@ import {
 import { adminStudentService } from '../../../services/AdminStudentService';
 import { adminTeacherService } from '../../../services/AdminTeacherService';
 import { adminParentService } from '../../../services/AdminParentService';
-import AnnouncementCard from '@/components/AnnouncementCard'; 
+import AnnouncementCard from '@/components/AnnouncementCard';
+import Greeting from '@/components/Greeting'; 
 
 // --- THEME COLORS ---
 const PRIMARY_COLOR_CLASS = 'bg-[#003366]';
@@ -96,41 +97,6 @@ const TopFailingSubjects: React.FC<{ stats: GradeStats }> = ({ stats }) => {
     );
 };
 
-// ========================================================================
-// ☀️ GREETING COMPONENT
-// ========================================================================
-
-const Greeting: React.FC = () => {
-    const hours = new Date().getHours();
-    let greeting = 'Hello';
-    let Icon = Sun;
-    let iconColor = 'text-yellow-500';
-
-    if (hours >= 5 && hours < 12) {
-        greeting = 'Good Morning';
-        Icon = Sunrise;
-        iconColor = 'text-orange-500';
-    } else if (hours >= 12 && hours < 18) {
-        greeting = 'Good Afternoon';
-        Icon = Sun;
-        iconColor = 'text-yellow-600';
-    } else {
-        greeting = 'Good Evening';
-        Icon = Moon;
-        iconColor = 'text-indigo-400';
-    }
-
-    return (
-        <div className="flex items-center space-x-3 mb-6 p-4 bg-white/70 backdrop-blur-sm rounded-2xl shadow-md border-l-4 border-yellow-500 animate-in fade-in duration-500">
-            <div className={`p-2 rounded-full ${iconColor} bg-white shadow-inner`}>
-                <Icon className={`w-8 h-8 ${iconColor} animate-spin-slow`} />
-            </div>
-            <h2 className="text-2xl font-extrabold text-gray-800">
-                {greeting}, Administrator!
-            </h2>
-        </div>
-    );
-};
 
 // ========================================================================
 // 🏠 MAIN DASHBOARD PAGE
@@ -240,21 +206,11 @@ const Dashboard: React.FC = () => {
     return (
         <AppLayout>
             {/* 🐛 FIX: Replaced <style jsx global> with standard <style> to remove React warnings */}
-            <style>{`
-                @keyframes spin-slow {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-                .animate-spin-slow {
-                    animation: spin-slow 15s linear infinite;
-                }
-            `}</style>
-
             <div className="p-8">
                 <div className="max-w-7xl mx-auto">
                     
                     {/* ☀️ GREETING COMPONENT */}
-                    <Greeting />
+                    <Greeting userRole="admin" />
 
                     {/* Header/Subtitle */}
                     <div className="mb-8 border-b pb-4">

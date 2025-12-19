@@ -16,6 +16,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { usePage } from '@inertiajs/react';
 import AnnouncementCard from '@/components/AnnouncementCard';
+import Greeting from '@/components/Greeting';
 
 // Import necessary services
 import { adminClassSubjectService } from '../../../services/AdminClassSubjectService';
@@ -189,6 +190,12 @@ const StudentDashboard: React.FC = () => {
     return (
         <AppLayout>
             <div className="p-8 space-y-8 min-h-screen bg-[#f3f4f6]">
+                {/* Greeting */}
+                <Greeting 
+                    userName={user?.name || (student ? `${student.first_name} ${student.last_name}` : undefined)} 
+                    userRole="student" 
+                />
+                
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
