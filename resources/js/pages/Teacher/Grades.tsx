@@ -1763,40 +1763,7 @@ const fetchDropdownLists = async () => {
                                                         </tr>
                                                     </thead>
                                                     <tbody className="bg-white divide-y divide-gray-200">
-                                                        {(() => {
-                                                            // Apply filters to students
-                                                            const filteredStudents = classStudents.filter((student) => {
-                                                                // Apply search filter
-                                                                if (filters.search) {
-                                                                    const searchLower = filters.search.toLowerCase();
-                                                                    const matchesSearch = 
-                                                                        student.full_name?.toLowerCase().includes(searchLower) ||
-                                                                        student.student_id?.toLowerCase().includes(searchLower);
-                                                                    if (!matchesSearch) return false;
-                                                                }
-                                                                
-                                                                // Apply remarks filter
-                                                                if (filters.remarks) {
-                                                                    const key = `${student.id}_${selectedSubjectId}`;
-                                                                    const gradeData = gridData[key];
-                                                                    if (!gradeData || gradeData.remarks !== filters.remarks) {
-                                                                        return false;
-                                                                    }
-                                                                }
-                                                                
-                                                                // Apply academic year filter
-                                                                if (filters.academic_year_id) {
-                                                                    const key = `${student.id}_${selectedSubjectId}`;
-                                                                    const gradeData = gridData[key];
-                                                                    if (!gradeData || gradeData.academic_year_id !== parseInt(filters.academic_year_id)) {
-                                                                        return false;
-                                                                    }
-                                                                }
-                                                                
-                                                                return true;
-                                                            });
-                                                            
-                                                            return filteredStudents.map((student) => {
+                                                        {filteredStudents.map((student) => {
                                                             const key = `${student.id}_${selectedSubjectId}`;
                                                             const gradeData = gridData[key] || {};
                                                             
