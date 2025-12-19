@@ -152,6 +152,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         return Inertia::render('Admin/BlockchainGrades');
     })->name('blockchain-transactions.grades');
     
+    // Blockchain Class Students (View Only)
+    Route::get('/blockchain-transactions/grades/class/{classId}/students', function ($classId) {
+        return Inertia::render('Admin/BlockchainClassStudents', [
+            'classId' => $classId,
+        ]);
+    })->name('blockchain-transactions.grades.class-students');
+    
     // Blockchain Student Grades (View Only)
     Route::get('/blockchain-transactions/grades/{studentId}', function (Request $request, $studentId) {
         return Inertia::render('Admin/BlockchainStudentGrades', [

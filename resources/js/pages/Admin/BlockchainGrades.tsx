@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Eye, Users, ChevronRight, ChevronDown, X } from 'lucide-react';
+import { RefreshCw, Users, X } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { router } from '@inertiajs/react';
-import { adminClassesService, Class, Student } from '../../../services/AdminClassesService';
+import { adminClassesService, Class } from '../../../services/AdminClassesService';
 
 const PRIMARY_COLOR_CLASS = 'bg-gradient-to-r from-purple-600 to-indigo-600';
 const TEXT_COLOR_CLASS = 'text-purple-600';
@@ -42,9 +42,6 @@ const BlockchainGrades: React.FC = () => {
     const [notification, setNotification] = useState<Notification | null>(null);
     const [loading, setLoading] = useState(false);
     const [classes, setClasses] = useState<Class[]>([]);
-    const [expandedClassId, setExpandedClassId] = useState<number | null>(null);
-    const [students, setStudents] = useState<Map<number, Student[]>>(new Map());
-    const [loadingStudents, setLoadingStudents] = useState<Set<number>>(new Set());
 
     const loadClasses = async () => {
         setLoading(true);
@@ -59,31 +56,6 @@ const BlockchainGrades: React.FC = () => {
             setNotification({ type: 'error', message: error.message || 'Failed to load classes' });
         } finally {
             setLoading(false);
-        }
-    };
-
-    const loadStudentsForClass = async (classId: number) => {
-        if (students.has(classId)) {
-            // Already loaded, just toggle
-            setExpandedClassId(expandedClassId === classId ? null : classId);
-            return;
-        }
-
-        setLoadingStudents(new Set([...loadingStudents, classId]));
-        try {
-            const response = await adminClassesService.getClassStudents(classId);
-            if (response.success) {
-                setStudents(new Map(students.set(classId, response.data || [])));
-                setExpandedClassId(classId);
-            } else {
-                setNotification({ type: 'error', message: response.message || 'Failed to load students' });
-            }
-        } catch (error: any) {
-            setNotification({ type: 'error', message: error.message || 'Failed to load students' });
-        } finally {
-            const newSet = new Set(loadingStudents);
-            newSet.delete(classId);
-            setLoadingStudents(newSet);
         }
     };
 
@@ -124,76 +96,26 @@ const BlockchainGrades: React.FC = () => {
                             </div>
                         ) : (
                             <div className="divide-y divide-gray-200">
-                                {classes.map((classItem) => {
-                                    const isExpanded = expandedClassId === classItem.id;
-                                    const classStudents = students.get(classItem.id) || [];
-                                    const isLoading = loadingStudents.has(classItem.id);
-
-                                    return (
-                                        <div key={classItem.id} className="p-6 hover:bg-gray-50 transition-colors">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex-1">
-                                                    <h3 className="text-lg font-semibold text-gray-900">{classItem.class_code}</h3>
-                                                    <p className="text-sm text-gray-600 mt-1">{classItem.class_name}</p>
-                                                    <p className="text-xs text-gray-500 mt-1">
-                                                        {classItem.student_count || 0} students
-                                                    </p>
-                                                </div>
-                                                <button
-                                                    onClick={() => loadStudentsForClass(classItem.id)}
-                                                    className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                                                >
-                                                    {isLoading ? (
-                                                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                                                    ) : (
-                                                        <>
-                                                            <Users className="w-4 h-4 mr-2" />
-                                                            View Students
-                                                        </>
-                                                    )}
-                                                    {isExpanded ? (
-                                                        <ChevronDown className="w-4 h-4 ml-2" />
-                                                    ) : (
-                                                        <ChevronRight className="w-4 h-4 ml-2" />
-                                                    )}
-                                                </button>
+                                {classes.map((classItem) => (
+                                    <div key={classItem.id} className="p-6 hover:bg-gray-50 transition-colors">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-semibold text-gray-900">{classItem.class_code}</h3>
+                                                <p className="text-sm text-gray-600 mt-1">{classItem.class_name}</p>
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    {classItem.student_count || 0} students
+                                                </p>
                                             </div>
-
-                                            {isExpanded && (
-                                                <div className="mt-4 pt-4 border-t border-gray-200">
-                                                    {isLoading ? (
-                                                        <div className="flex items-center justify-center py-8">
-                                                            <RefreshCw className={`h-6 w-6 ${TEXT_COLOR_CLASS} animate-spin`} />
-                                                        </div>
-                                                    ) : classStudents.length === 0 ? (
-                                                        <p className="text-center text-gray-500 py-8">No students found in this class</p>
-                                                    ) : (
-                                                        <div className="space-y-2">
-                                                            {classStudents.map((student) => (
-                                                                <div
-                                                                    key={student.id}
-                                                                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                                                                >
-                                                                    <div>
-                                                                        <p className="font-medium text-gray-900">{student.full_name}</p>
-                                                                        <p className="text-sm text-gray-600">{student.student_id}</p>
-                                                                    </div>
-                                                                    <button
-                                                                        onClick={() => router.visit(`/admin/blockchain-transactions/grades/${student.id}?class_id=${classItem.id}`)}
-                                                                        className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                                                                    >
-                                                                        <Eye className="w-4 h-4 mr-1.5" />
-                                                                        View Grades
-                                                                    </button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
+                                            <button
+                                                onClick={() => router.visit(`/admin/blockchain-transactions/grades/class/${classItem.id}/students`)}
+                                                className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                            >
+                                                <Users className="w-4 h-4 mr-2" />
+                                                View Students
+                                            </button>
                                         </div>
-                                    );
-                                })}
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>
