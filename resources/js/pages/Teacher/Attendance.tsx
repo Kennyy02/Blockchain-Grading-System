@@ -1033,36 +1033,100 @@ const AttendancePage: React.FC = () => {
                 )}
 
                 <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div className="relative col-span-2">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <Search className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <input
-                                type="text"
-                                value={filters.search}
-                                onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
-                                placeholder="Search student..."
-                            />
+                    {!selectedClassId ? (
+                        // Class Selection View
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Select a Class</h3>
+                            {loadingLists ? (
+                                <div className="text-center py-8">
+                                    <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} />
+                                    <p className="mt-2 text-sm text-gray-600">Loading classes...</p>
+                                </div>
+                            ) : classes.length === 0 ? (
+                                <div className="text-center py-8 text-gray-500">
+                                    No classes found. Please ensure you are assigned to classes.
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {classes.map((classItem) => (
+                                        <button
+                                            key={classItem.id}
+                                            onClick={() => setSelectedClassId(classItem.id)}
+                                            className="p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-[#003366] hover:shadow-lg transition-all text-left cursor-pointer group"
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-lg font-semibold text-gray-900 group-hover:text-[#003366]">
+                                                    {classItem.class_code}
+                                                </h4>
+                                                <Users className="w-5 h-5 text-gray-400 group-hover:text-[#003366]" />
+                                            </div>
+                                            <p className="text-sm text-gray-600 mb-2">{classItem.class_name}</p>
+                                            <p className="text-xs text-gray-500">
+                                                {classItem.subjectCount} {classItem.subjectCount === 1 ? 'subject' : 'subjects'}
+                                            </p>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        
-                        <select
-                            value={filters.class_subject_id}
-                            onChange={(e) => setFilters({...filters, class_subject_id: e.target.value, page: 1})}
-                            className={`px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white cursor-pointer`}
-                        >
-                            <option value="">Select Classes</option>
-                            {classSubjects.map(cs => (
-                                <option key={cs.id} value={cs.id}>
-                                    {cs.class?.class_code} - {cs.subject?.subject_code}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    
-                    {/* Attendance Marking Calendar Grid */}
-                    {filters.class_subject_id && (
+                    ) : (
+                        // Attendance Marking View
+                        <div>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedClassId(null);
+                                            setFilters({...filters, class_subject_id: ''});
+                                        }}
+                                        className="flex items-center text-[#003366] hover:text-[#002244] cursor-pointer"
+                                    >
+                                        <ChevronLeft className="w-4 h-4 mr-1" />
+                                        Back to Classes
+                                    </button>
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-900">
+                                            {classes.find(c => c.id === selectedClassId)?.class_code || 'Mark Attendance'}
+                                        </h3>
+                                        <p className="text-sm text-gray-600">
+                                            {classes.find(c => c.id === selectedClassId)?.class_name || ''}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div className="relative col-span-2">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <Search className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={filters.search}
+                                        onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
+                                        className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                        placeholder="Search student..."
+                                    />
+                                </div>
+                                
+                                <select
+                                    value={filters.class_subject_id}
+                                    onChange={(e) => setFilters({...filters, class_subject_id: e.target.value, page: 1})}
+                                    className={`px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white cursor-pointer`}
+                                >
+                                    <option value="">Select Subject</option>
+                                    {classSubjects
+                                        .filter(cs => (cs.class?.id || cs.class_id) === selectedClassId)
+                                        .map(cs => (
+                                            <option key={cs.id} value={cs.id}>
+                                                {cs.subject?.subject_code} - {cs.subject?.subject_name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            
+                            {/* Attendance Marking Calendar Grid */}
+                            {filters.class_subject_id && (
                         <div className="mt-6 pt-6 border-t border-gray-200">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">Mark Attendance</h3>
