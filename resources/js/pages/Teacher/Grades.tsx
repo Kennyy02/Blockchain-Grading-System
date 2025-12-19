@@ -33,6 +33,8 @@ import {
 } from '../../../services/AdminGradeService'; 
 import { adminClassSubjectService } from '../../../services/AdminClassSubjectService';
 import { adminClassesService } from '../../../services/AdminClassesService';
+import { adminTeacherService } from '../../../services/AdminTeacherService';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // --- THEME COLORS ---
 const PRIMARY_COLOR_CLASS = 'bg-[#003366]';
@@ -785,6 +787,26 @@ const Grades: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+    
+    // Class selection state
+    const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+    const [rawClasses, setRawClasses] = useState<Array<{ id: number; class_code: string; class_name: string }>>([]);
+    const [classes, setClasses] = useState<Array<{ id: number; class_code: string; class_name: string; subjectCount: number }>>([]);
+    const [classStudents, setClassStudents] = useState<MinimalStudent[]>([]);
+    const [loadingClassStudents, setLoadingClassStudents] = useState(false);
+    const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
+    
+    // Grid editing state
+    const [gridData, setGridData] = useState<Record<string, {
+        prelim_grade?: number;
+        midterm_grade?: number;
+        final_grade?: number;
+        final_rating?: number;
+        remarks?: GradeRemarks;
+        gradeId?: number;
+    }>>({});
+    const [saving, setSaving] = useState(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
     // ========================================================================
     // 📡 DATA FETCHING
@@ -1093,11 +1115,130 @@ const fetchDropdownLists = async () => {
         setLoadingLists(false);
     }
 };
+    const fetchClasses = async () => {
+        if (!currentTeacherId) {
+            console.warn('⚠️ [GRADES] No teacher ID available for fetching classes');
+            return;
+        }
+        
+        try {
+            console.log('🔍 [GRADES] Fetching classes for teacher ID:', currentTeacherId);
+            const response = await adminTeacherService.getTeacherClasses(currentTeacherId);
+            
+            if (response.success && Array.isArray(response.data)) {
+                const classesData = response.data.map((classItem: any) => ({
+                    id: classItem.id,
+                    class_code: classItem.class_code,
+                    class_name: classItem.class_name
+                }));
+                
+                setRawClasses(classesData);
+                console.log('✅ [GRADES] Loaded', classesData.length, 'classes');
+            } else {
+                setRawClasses([]);
+                console.warn('⚠️ [GRADES] No classes returned from API');
+            }
+        } catch (error) {
+            console.error('❌ [GRADES] Failed to fetch classes:', error);
+            setRawClasses([]);
+        }
+    };
+
+    // Calculate classes with subjectCount when rawClasses or classSubjects change
+    useEffect(() => {
+        if (rawClasses.length > 0) {
+            const classesWithCount = rawClasses.map((classItem) => {
+                const subjectCount = classSubjects.filter(
+                    (cs) => (cs.class?.id || cs.class_id) === classItem.id
+                ).length;
+                
+                return {
+                    ...classItem,
+                    subjectCount: subjectCount
+                };
+            });
+            
+            setClasses(classesWithCount);
+        } else {
+            setClasses([]);
+        }
+    }, [rawClasses, classSubjects]);
+
+    // Load students for selected class
+    useEffect(() => {
+        const loadClassStudents = async () => {
+            if (!selectedClassId) {
+                setClassStudents([]);
+                return;
+            }
+
+            setLoadingClassStudents(true);
+            try {
+                const response = await adminGradeService.getStudentsMinimal(selectedClassId);
+                if (response.success) {
+                    setClassStudents(response.data || []);
+                } else {
+                    setClassStudents([]);
+                }
+            } catch (error) {
+                console.error('Error loading class students:', error);
+                setClassStudents([]);
+            } finally {
+                setLoadingClassStudents(false);
+            }
+        };
+
+        if (selectedClassId) {
+            loadClassStudents();
+        }
+    }, [selectedClassId]);
+
+    // Load grades for selected class and subject
+    useEffect(() => {
+        if (selectedClassId && selectedSubjectId) {
+            const loadGradesForGrid = async () => {
+                setLoading(true);
+                try {
+                    const response = await adminGradeService.getGrades({
+                        class_subject_id: selectedSubjectId,
+                        teacher_id: currentTeacherId,
+                        per_page: 9999
+                    });
+                    
+                    if (response.success && Array.isArray(response.data)) {
+                        const gridDataMap: Record<string, any> = {};
+                        response.data.forEach((grade: Grade) => {
+                            const key = `${grade.student_id}_${grade.class_subject_id}`;
+                            gridDataMap[key] = {
+                                prelim_grade: grade.prelim_grade,
+                                midterm_grade: grade.midterm_grade,
+                                final_grade: grade.final_grade,
+                                final_rating: grade.final_rating,
+                                remarks: grade.remarks,
+                                gradeId: grade.id
+                            };
+                        });
+                        setGridData(gridDataMap);
+                    }
+                } catch (error) {
+                    console.error('Error loading grades for grid:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            loadGradesForGrid();
+        } else {
+            setGridData({});
+        }
+    }, [selectedClassId, selectedSubjectId, currentTeacherId]);
+
     useEffect(() => {
         if (currentTeacherId) {
             fetchGrades();
             fetchStats();
             fetchDropdownLists();
+            fetchClasses();
         }
     }, [filters, currentTeacherId]);
 
@@ -1141,6 +1282,113 @@ const fetchDropdownLists = async () => {
             } else {
                 setNotification({ type: 'error', message: error.message || 'Failed to save grade.' });
             }
+        }
+    };
+
+    // Grid editing handlers
+    const handleGridCellChange = (studentId: number, field: 'prelim_grade' | 'midterm_grade' | 'final_grade' | 'remarks', value: any) => {
+        if (!selectedSubjectId) return;
+        
+        const key = `${studentId}_${selectedSubjectId}`;
+        const currentData = gridData[key] || {};
+        
+        let updatedData = { ...currentData, [field]: value };
+        
+        // Auto-calculate final_rating if all three grades are present
+        if (field !== 'remarks' && (field === 'prelim_grade' || field === 'midterm_grade' || field === 'final_grade')) {
+            const prelim = field === 'prelim_grade' ? (value === '' ? undefined : parseFloat(value)) : updatedData.prelim_grade;
+            const midterm = field === 'midterm_grade' ? (value === '' ? undefined : parseFloat(value)) : updatedData.midterm_grade;
+            const final = field === 'final_grade' ? (value === '' ? undefined : parseFloat(value)) : updatedData.final_grade;
+            
+            if (prelim !== undefined && midterm !== undefined && final !== undefined) {
+                const average = (prelim + midterm + final) / 3;
+                updatedData.final_rating = Math.round(average * 100) / 100;
+            } else {
+                updatedData.final_rating = undefined;
+            }
+        }
+        
+        setGridData(prev => ({
+            ...prev,
+            [key]: updatedData
+        }));
+        setHasUnsavedChanges(true);
+    };
+
+    const handleBulkSave = async () => {
+        if (!selectedSubjectId || !selectedClassId) {
+            setNotification({ type: 'error', message: 'Please select a class and subject first.' });
+            return;
+        }
+
+        setSaving(true);
+        try {
+            const savePromises: Promise<any>[] = [];
+            
+            for (const [key, data] of Object.entries(gridData)) {
+                const [studentIdStr] = key.split('_');
+                const studentId = parseInt(studentIdStr);
+                
+                if (!data.prelim_grade && !data.midterm_grade && !data.final_grade) {
+                    continue; // Skip empty rows
+                }
+
+                const gradeData: GradeFormData = {
+                    class_subject_id: selectedSubjectId,
+                    student_id: studentId,
+                    academic_year_id: academicYears.length > 0 ? academicYears[0].id : 0,
+                    semester_id: semesters.length > 0 ? semesters[0].id : 0,
+                    prelim_grade: data.prelim_grade,
+                    midterm_grade: data.midterm_grade,
+                    final_grade: data.final_grade,
+                    final_rating: data.final_rating,
+                    remarks: data.remarks || 'Passed'
+                };
+
+                if (data.gradeId) {
+                    // Update existing grade
+                    savePromises.push(adminGradeService.updateGrade(data.gradeId, gradeData));
+                } else {
+                    // Create new grade
+                    savePromises.push(adminGradeService.createGrade(gradeData));
+                }
+            }
+
+            await Promise.all(savePromises);
+            setNotification({ type: 'success', message: 'Grades saved successfully!' });
+            setHasUnsavedChanges(false);
+            
+            // Reload data
+            fetchGrades();
+            fetchStats();
+            
+            // Reload grid data
+            const response = await adminGradeService.getGrades({
+                class_subject_id: selectedSubjectId,
+                teacher_id: currentTeacherId,
+                per_page: 9999
+            });
+            
+            if (response.success && Array.isArray(response.data)) {
+                const gridDataMap: Record<string, any> = {};
+                response.data.forEach((grade: Grade) => {
+                    const key = `${grade.student_id}_${grade.class_subject_id}`;
+                    gridDataMap[key] = {
+                        prelim_grade: grade.prelim_grade,
+                        midterm_grade: grade.midterm_grade,
+                        final_grade: grade.final_grade,
+                        final_rating: grade.final_rating,
+                        remarks: grade.remarks,
+                        gradeId: grade.id
+                    };
+                });
+                setGridData(gridDataMap);
+            }
+        } catch (error: any) {
+            console.error('Error saving grades:', error);
+            setNotification({ type: 'error', message: error.message || 'Failed to save grades.' });
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -1214,7 +1462,12 @@ const fetchDropdownLists = async () => {
                     </div>
                     <div className="flex items-center space-x-3">
                         <button
-                            onClick={() => { fetchGrades(); fetchStats(); }}
+                            onClick={() => { 
+                                fetchGrades(); 
+                                fetchStats(); 
+                                fetchDropdownLists();
+                                fetchClasses();
+                            }}
                             className={`flex items-center px-4 py-2 border border-gray-300 rounded-xl text-sm font-medium ${TEXT_COLOR_CLASS} hover:bg-gray-50 transition-colors`}
                         >
                             <RefreshCw className="h-4 w-4 mr-2" />
@@ -1325,63 +1578,234 @@ const fetchDropdownLists = async () => {
                     </div>
                 </div>
 
-                {/* Grades Table */}
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                                <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Student & Class</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Subject</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Prelim/Midterm/Final</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Final Rating & Remarks</th>
-                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {loading ? (
-                                    <tr><td colSpan={5} className="px-6 py-12 text-center"><RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} /></td></tr>
-                                ) : grades.length === 0 ? (
-                                    <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500">No grade records found for your assigned classes.</td></tr>
-                                ) : (
-                                     grades.map((grade) => (
-                                        <tr key={grade.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-semibold text-gray-900">{grade.student?.full_name || 'N/A'}</div>
-                                                <div className="text-xs text-gray-500">{grade.class_subject?.class?.class_name || 'N/A'}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-semibold text-gray-900">{grade.class_subject?.subject?.subject_name || 'N/A'}</div>
-                                                <div className="text-xs text-gray-500">{grade.class_subject?.subject?.subject_code || 'N/A'}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                                <p>P: {grade.prelim_grade ?? 'N/A'}</p>
-                                                <p>M: {grade.midterm_grade ?? 'N/A'}</p>
-                                                <p>F: {grade.final_grade ?? 'N/A'}</p>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-bold text-gray-900">{grade.final_rating ?? 'N/A'}</div>
-                                                <div className="mt-1">{renderRemarksTag(grade.remarks)}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                <div className="flex justify-end space-x-2">
-                                                    <button
-                                                        onClick={() => handleEdit(grade)}
-                                                        className={`p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
-                                                        title="Edit Grade"
-                                                    >
-                                                        <Edit className="h-5 w-5" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
+                {/* Class Selection and Grades Grid */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    {!selectedClassId ? (
+                        // Class Selection View
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Select a Class</h3>
+                            {loadingLists ? (
+                                <div className="text-center py-8">
+                                    <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} />
+                                    <p className="mt-2 text-sm text-gray-600">Loading classes...</p>
+                                </div>
+                            ) : classes.length === 0 ? (
+                                <div className="text-center py-8 text-gray-500">
+                                    No classes found. Please ensure you are assigned to classes.
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {classes.map((classItem) => (
+                                        <button
+                                            key={classItem.id}
+                                            onClick={() => setSelectedClassId(classItem.id)}
+                                            className="p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-[#003366] hover:shadow-lg transition-all text-left cursor-pointer group"
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-lg font-semibold text-gray-900 group-hover:text-[#003366]">
+                                                    {classItem.class_code}
+                                                </h4>
+                                                <Award className="w-5 h-5 text-gray-400 group-hover:text-[#003366]" />
+                                            </div>
+                                            <p className="text-sm text-gray-600 mb-2">{classItem.class_name}</p>
+                                            <p className="text-xs text-gray-500">
+                                                {classItem.subjectCount} {classItem.subjectCount === 1 ? 'subject' : 'subjects'}
+                                            </p>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        // Grades Grid View
+                        <div>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedClassId(null);
+                                            setSelectedSubjectId(null);
+                                            setGridData({});
+                                            setHasUnsavedChanges(false);
+                                        }}
+                                        className="flex items-center text-[#003366] hover:text-[#002244] cursor-pointer"
+                                    >
+                                        <ChevronLeft className="w-4 h-4 mr-1" />
+                                        Back to Classes
+                                    </button>
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-900">
+                                            {classes.find(c => c.id === selectedClassId)?.class_code || 'Manage Grades'}
+                                        </h3>
+                                        <p className="text-sm text-gray-600">
+                                            {classes.find(c => c.id === selectedClassId)?.class_name || ''}
+                                        </p>
+                                    </div>
+                                </div>
+                                {hasUnsavedChanges && (
+                                    <button
+                                        onClick={handleBulkSave}
+                                        disabled={saving}
+                                        className={`flex items-center px-4 py-2 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all shadow-lg font-medium disabled:opacity-50`}
+                                    >
+                                        {saving ? (
+                                            <>
+                                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Save className="h-4 w-4 mr-2" />
+                                                Save All Changes
+                                            </>
+                                        )}
+                                    </button>
                                 )}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    {renderPagination()}
+                            </div>
+
+                            {/* Subject Selection */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Select Subject</label>
+                                <select
+                                    value={selectedSubjectId || ''}
+                                    onChange={(e) => {
+                                        setSelectedSubjectId(e.target.value ? parseInt(e.target.value) : null);
+                                        setGridData({});
+                                        setHasUnsavedChanges(false);
+                                    }}
+                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                >
+                                    <option value="">Select a subject...</option>
+                                    {classSubjects
+                                        .filter(cs => (cs.class?.id || cs.class_id) === selectedClassId)
+                                        .map(cs => (
+                                            <option key={cs.id} value={cs.id}>
+                                                {cs.subject?.subject_code} - {cs.subject?.subject_name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+
+                            {/* Grades Grid */}
+                            {selectedSubjectId && (
+                                <div className="mt-6">
+                                    {loadingClassStudents ? (
+                                        <div className="text-center py-8">
+                                            <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} />
+                                            <p className="mt-2 text-sm text-gray-600">Loading students...</p>
+                                        </div>
+                                    ) : classStudents.length === 0 ? (
+                                        <div className="text-center py-8 text-gray-500">
+                                            No students enrolled in this class.
+                                        </div>
+                                    ) : (
+                                        <div className="overflow-x-auto">
+                                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                                                <table className="min-w-full divide-y divide-gray-200">
+                                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                                        <tr>
+                                                            <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider sticky left-0 bg-gray-50 z-10 border-r border-gray-200">
+                                                                Student
+                                                            </th>
+                                                            <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider min-w-[100px]">
+                                                                Prelim
+                                                            </th>
+                                                            <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider min-w-[100px]">
+                                                                Midterm
+                                                            </th>
+                                                            <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider min-w-[100px]">
+                                                                Final
+                                                            </th>
+                                                            <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider min-w-[100px] bg-gray-50">
+                                                                Final Rating
+                                                            </th>
+                                                            <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider min-w-[120px]">
+                                                                Remarks
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="bg-white divide-y divide-gray-200">
+                                                        {classStudents.map((student) => {
+                                                            const key = `${student.id}_${selectedSubjectId}`;
+                                                            const gradeData = gridData[key] || {};
+                                                            
+                                                            return (
+                                                                <tr key={student.id} className="hover:bg-gray-50">
+                                                                    <td className="px-4 py-3 sticky left-0 bg-white z-10 border-r border-gray-200">
+                                                                        <div className="text-sm font-semibold text-gray-900">{student.student_id}</div>
+                                                                        <div className="text-xs text-gray-600">{student.full_name}</div>
+                                                                    </td>
+                                                                    <td className="px-4 py-2">
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            max="100"
+                                                                            step="0.01"
+                                                                            value={gradeData.prelim_grade ?? ''}
+                                                                            onChange={(e) => handleGridCellChange(student.id, 'prelim_grade', e.target.value)}
+                                                                            className="w-full px-2 py-1 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
+                                                                            placeholder="0.00"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-4 py-2">
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            max="100"
+                                                                            step="0.01"
+                                                                            value={gradeData.midterm_grade ?? ''}
+                                                                            onChange={(e) => handleGridCellChange(student.id, 'midterm_grade', e.target.value)}
+                                                                            className="w-full px-2 py-1 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
+                                                                            placeholder="0.00"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-4 py-2">
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            max="100"
+                                                                            step="0.01"
+                                                                            value={gradeData.final_grade ?? ''}
+                                                                            onChange={(e) => handleGridCellChange(student.id, 'final_grade', e.target.value)}
+                                                                            className="w-full px-2 py-1 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
+                                                                            placeholder="0.00"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-4 py-2 bg-gray-50">
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            max="100"
+                                                                            step="0.01"
+                                                                            value={gradeData.final_rating ?? ''}
+                                                                            readOnly
+                                                                            className="w-full px-2 py-1 text-center border border-gray-300 rounded bg-gray-100 text-gray-700 cursor-not-allowed"
+                                                                            placeholder="Auto"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-4 py-2">
+                                                                        <select
+                                                                            value={gradeData.remarks || 'Passed'}
+                                                                            onChange={(e) => handleGridCellChange(student.id, 'remarks', e.target.value as GradeRemarks)}
+                                                                            className="w-full px-2 py-1 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent text-xs"
+                                                                        >
+                                                                            <option value="Passed">Passed</option>
+                                                                            <option value="Failed">Failed</option>
+                                                                            <option value="Incomplete">Incomplete</option>
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Modals */}
