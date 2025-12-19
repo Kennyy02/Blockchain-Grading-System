@@ -134,3 +134,4 @@ Make sure you're running the command on Railway where the database is accessible
 ### Command not found
 Make sure the file `app/Console/Commands/CreateMissingUserAccounts.php` exists in your deployment.
 
+

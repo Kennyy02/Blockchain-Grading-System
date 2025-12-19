@@ -213,6 +213,44 @@ const GradeModal: React.FC<{
     const [filteredStudents, setFilteredStudents] = useState<MinimalStudent[]>([]);
     const [loadingStudents, setLoadingStudents] = useState(false);
 
+    // Auto-calculate Final Rating when Prelim, Midterm, or Final grades change
+    useEffect(() => {
+        const prelim = formData.prelim_grade;
+        const midterm = formData.midterm_grade;
+        const final = formData.final_grade;
+
+        // Calculate average if all three grades are present
+        if (prelim !== undefined && prelim !== null && 
+            midterm !== undefined && midterm !== null && 
+            final !== undefined && final !== null) {
+            const average = (prelim + midterm + final) / 3;
+            const roundedAverage = Math.round(average * 100) / 100; // Round to 2 decimal places
+            
+            // Update final_rating with the calculated value
+            setFormData(prev => {
+                // Only update if the value actually changed to avoid unnecessary re-renders
+                if (prev.final_rating !== roundedAverage) {
+                    return {
+                        ...prev,
+                        final_rating: roundedAverage
+                    };
+                }
+                return prev;
+            });
+        } else {
+            // If any grade is missing, clear final_rating
+            setFormData(prev => {
+                if (prev.final_rating !== undefined) {
+                    return {
+                        ...prev,
+                        final_rating: undefined
+                    };
+                }
+                return prev;
+            });
+        }
+    }, [formData.prelim_grade, formData.midterm_grade, formData.final_grade]);
+
     // Load students for the selected class when class_subject_id changes
     useEffect(() => {
         const loadStudentsForClass = async () => {
@@ -635,22 +673,28 @@ const GradeModal: React.FC<{
                                     {errors.final_grade && <p className="mt-1 text-sm text-red-600">{errors.final_grade[0]}</p>}
                                 </div>
 
-                                {/* Final Rating */}
+                                {/* Final Rating - Auto-calculated */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Final Rating (0-100)
+                                        Final Rating (0-100) <span className="text-xs text-gray-500">(Auto-calculated)</span>
                                     </label>
                                     <input
                                         type="number"
                                         name="final_rating"
                                         value={formData.final_rating ?? ''}
-                                        onChange={handleChange}
+                                        readOnly
                                         min="0"
                                         max="100"
                                         step="0.01"
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent transition-all"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-700 cursor-not-allowed transition-all"
+                                        title="Final Rating is automatically calculated as the average of Prelim, Midterm, and Final grades"
                                     />
                                     {errors.final_rating && <p className="mt-1 text-sm text-red-600">{errors.final_rating[0]}</p>}
+                                    {formData.prelim_grade !== undefined && formData.midterm_grade !== undefined && formData.final_grade !== undefined && (
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            ({formData.prelim_grade} + {formData.midterm_grade} + {formData.final_grade}) ÷ 3 = {formData.final_rating?.toFixed(2) || 'N/A'}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Remarks */}

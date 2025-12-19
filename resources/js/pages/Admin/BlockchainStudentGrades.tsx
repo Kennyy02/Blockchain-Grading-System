@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, ArrowLeft } from 'lucide-react';
+import { RefreshCw, ArrowLeft, X } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { Link, usePage, router } from '@inertiajs/react';
 import { adminGradeService, Grade } from '../../../services/AdminGradeService';
@@ -12,6 +12,33 @@ interface Notification {
     type: 'success' | 'error' | 'info';
     message: string;
 }
+
+// Notification Component
+const NotificationDisplay: React.FC<{ notification: Notification; onClose: () => void }> = ({ notification, onClose }) => {
+    useEffect(() => {
+        const timer = setTimeout(onClose, 5000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    const bgColor = notification.type === 'success' 
+        ? 'bg-green-600'
+        : notification.type === 'error'
+        ? 'bg-red-600'
+        : 'bg-blue-600';
+
+    return (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right-full duration-300">
+            <div className={`${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl backdrop-blur-sm`}>
+                <div className="flex items-center justify-between">
+                    <div className="font-medium">{notification.message}</div>
+                    <button onClick={onClose} className="ml-4 rounded-full p-1 hover:bg-white/20 transition-colors">
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 interface StudentGrades {
     subject: {
@@ -49,18 +76,42 @@ const BlockchainStudentGrades: React.FC = () => {
         setLoading(true);
         try {
             // Get class information
-            const classRes = await fetch(`/api/classes/${classId}`);
+            const classRes = await fetch(`/api/classes/${classId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!classRes.ok) {
+                const errorData = await classRes.json().catch(() => ({ message: 'Failed to load class information' }));
+                throw new Error(errorData.message || errorData.error || `Server error: ${classRes.status}`);
+            }
+            
             const classData = await classRes.json();
+            
+            if (!classData.success) {
+                throw new Error(classData.message || 'Failed to load class information');
+            }
             
             if (classData.success) {
                 setClassName(classData.data.class_code || classData.data.class_name);
                 
                 // Get student information
-                const studentRes = await fetch(`/api/students/${studentId}`);
-                const studentData = await studentRes.json();
+                const studentRes = await fetch(`/api/students/${studentId}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                });
                 
-                if (studentData.success) {
-                    setStudentName(studentData.data.full_name || `${studentData.data.first_name} ${studentData.data.last_name}`);
+                if (studentRes.ok) {
+                    const studentData = await studentRes.json();
+                    if (studentData.success) {
+                        setStudentName(studentData.data.full_name || `${studentData.data.first_name} ${studentData.data.last_name}`);
+                    }
+                } else {
+                    console.warn('Failed to load student information:', studentRes.status);
                 }
 
                 // Get all subjects for this class FIRST
@@ -165,7 +216,12 @@ const BlockchainStudentGrades: React.FC = () => {
                 setGrades(gradesTable);
             }
         } catch (error: any) {
-            setNotification({ type: 'error', message: error.message || 'Failed to load grades' });
+            console.error('Error loading student grades:', error);
+            setNotification({ 
+                type: 'error', 
+                message: error.message || 'Failed to load grades. Please try again or contact support if the issue persists.' 
+            });
+            setGrades([]);
         } finally {
             setLoading(false);
         }
@@ -173,6 +229,12 @@ const BlockchainStudentGrades: React.FC = () => {
 
     return (
         <AppLayout>
+            {notification && (
+                <NotificationDisplay 
+                    notification={notification} 
+                    onClose={() => setNotification(null)} 
+                />
+            )}
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
                 <div className="container mx-auto px-4 py-8">
                     <div className="mb-6">
