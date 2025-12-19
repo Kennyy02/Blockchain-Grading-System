@@ -13,6 +13,8 @@ class User extends Authenticatable
 
     /**
      * The attributes that are mass assignable.
+     * Note: 'role' is included for initial creation only.
+     * Role changes after creation must use setRole() method.
      *
      * @var array<int, string>
      */
@@ -21,10 +23,38 @@ class User extends Authenticatable
         'email',
         'password',
         'email_verified_at',
-        'role',
+        'role', // Allowed during creation, protected during updates
         'status',
         'avatar',
     ];
+
+    /**
+     * Prevent role from being updated via mass assignment.
+     * Override the update method to protect role changes.
+     */
+    public function update(array $attributes = [], array $options = [])
+    {
+        // Remove role from attributes if it's being updated
+        // Role can only be changed via setRole() method
+        if (isset($attributes['role']) && $this->exists) {
+            unset($attributes['role']);
+        }
+
+        return parent::update($attributes, $options);
+    }
+
+    /**
+     * Prevent role from being filled via fill() method after creation.
+     */
+    public function fill(array $attributes)
+    {
+        // Remove role from attributes if user already exists
+        if ($this->exists && isset($attributes['role'])) {
+            unset($attributes['role']);
+        }
+
+        return parent::fill($attributes);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -224,6 +254,52 @@ class User extends Authenticatable
     public function getStatusBadgeColorAttribute(): string
     {
         return $this->status === 'active' ? 'green' : 'red';
+    }
+
+    /**
+     * Safely set the user's role.
+     * This method should only be called by authorized admins.
+     * 
+     * @param string $role
+     * @return bool
+     */
+    public function setRole(string $role): bool
+    {
+        $allowedRoles = ['admin', 'teacher', 'student', 'parent'];
+        
+        if (!in_array($role, $allowedRoles)) {
+            return false;
+        }
+
+        $this->role = $role;
+        return $this->save();
+    }
+
+    /**
+     * Check if role can be changed by the given user.
+     * Only admins can change roles, and they cannot change their own role.
+     * 
+     * @param User|null $changer
+     * @return bool
+     */
+    public function canChangeRole(?User $changer = null): bool
+    {
+        // No changer specified - deny
+        if (!$changer) {
+            return false;
+        }
+
+        // Only admins can change roles
+        if (!$changer->isAdmin()) {
+            return false;
+        }
+
+        // Admins cannot change their own role
+        if ($changer->id === $this->id) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getFullProfileAttribute(): array

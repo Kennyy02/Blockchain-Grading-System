@@ -28,6 +28,7 @@ use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseYearSubjectController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // ========================================================================
 
 Route::middleware('auth:sanctum')->group(function () {
+
+// ========================================================================
+// 👤 USER MANAGEMENT (Admin Only)
+// ========================================================================
+
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index']);
+    Route::get('/{id}', [UserController::class, 'show']);
+    Route::put('/{id}/role', [UserController::class, 'updateRole']);
+});
 
 // ========================================================================
 // 📚 ACADEMIC STRUCTURE
