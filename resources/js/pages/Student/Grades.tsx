@@ -357,13 +357,13 @@ const MyGrades: React.FC = () => {
                         />
                         <StatCard 
                             title="Average Rating" 
-                            value={`${stats.average_final_rating?.toFixed(2) || 0}%`} 
+                            value={`${Number(stats.average_final_rating ?? 0).toFixed(2)}%`} 
                             icon={BarChart} 
                             color="text-blue-600" 
                         />
                         <StatCard 
                             title="Passing Rate" 
-                            value={`${stats.passing_rate?.toFixed(1) || 0}%`} 
+                            value={`${Number(stats.passing_rate ?? 0).toFixed(1)}%`} 
                             icon={TrendingUp} 
                             color="text-green-600" 
                         />
