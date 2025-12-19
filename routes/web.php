@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 // ==================== PUBLIC ROUTES ====================
@@ -150,6 +151,14 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('/blockchain-transactions/grades', function () {
         return Inertia::render('Admin/BlockchainGrades');
     })->name('blockchain-transactions.grades');
+    
+    // Blockchain Student Grades (View Only)
+    Route::get('/blockchain-transactions/grades/{studentId}', function (Request $request, $studentId) {
+        return Inertia::render('Admin/BlockchainStudentGrades', [
+            'studentId' => $studentId,
+            'classId' => $request->query('class_id'),
+        ]);
+    })->name('blockchain-transactions.grades.student');
     
     // Blockchain Attendance (View Only)
     Route::get('/blockchain-transactions/attendance', function () {
