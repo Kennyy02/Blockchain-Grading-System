@@ -29,18 +29,24 @@ class User extends Authenticatable
     ];
 
     /**
-     * Prevent role from being updated via mass assignment.
-     * Override the update method to protect role changes.
+     * Boot the model.
      */
-    public function update(array $attributes = [], array $options = [])
+    protected static function boot()
     {
-        // Remove role from attributes if it's being updated
-        // Role can only be changed via setRole() method
-        if (isset($attributes['role']) && $this->exists) {
-            unset($attributes['role']);
-        }
+        parent::boot();
 
-        return parent::update($attributes, $options);
+        // Prevent role from being changed via mass assignment after creation
+        static::saving(function ($user) {
+            // If user already exists and role is being changed, prevent it unless using setRole()
+            if ($user->exists && $user->isDirty('role')) {
+                // Check if this is a legitimate role change via setRole() method
+                // We'll use a temporary flag to allow setRole() to work
+                if (!isset($user->allowRoleChange)) {
+                    // Revert role to original value
+                    $user->role = $user->getOriginal('role');
+                }
+            }
+        });
     }
 
     /**
@@ -271,8 +277,13 @@ class User extends Authenticatable
             return false;
         }
 
+        // Set flag to allow role change
+        $this->allowRoleChange = true;
         $this->role = $role;
-        return $this->save();
+        $result = $this->save();
+        unset($this->allowRoleChange);
+        
+        return $result;
     }
 
     /**
