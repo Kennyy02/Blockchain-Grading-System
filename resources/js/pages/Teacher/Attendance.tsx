@@ -1101,12 +1101,34 @@ const AttendancePage: React.FC = () => {
                                                     <ChevronRight className="w-5 h-5 text-gray-700" />
                                                 </button>
                                             </div>
-                                            <button
-                                                onClick={goToCurrentMonth}
-                                                className="px-4 py-2 bg-[#003366] text-white rounded-lg hover:bg-[#002244] transition-colors text-sm cursor-pointer"
-                                            >
-                                                Today
-                                            </button>
+                                            <div className="flex items-center gap-4">
+                                                {/* Legend */}
+                                                <div className="flex flex-wrap items-center gap-3 text-sm">
+                                                    <span className="font-semibold text-gray-700">Legend:</span>
+                                                    <span className="flex items-center gap-1.5">
+                                                        <span className="inline-block px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">P</span>
+                                                        <span className="text-gray-600 text-xs">Present</span>
+                                                    </span>
+                                                    <span className="flex items-center gap-1.5">
+                                                        <span className="inline-block px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">A</span>
+                                                        <span className="text-gray-600 text-xs">Absent</span>
+                                                    </span>
+                                                    <span className="flex items-center gap-1.5">
+                                                        <span className="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">L</span>
+                                                        <span className="text-gray-600 text-xs">Late</span>
+                                                    </span>
+                                                    <span className="flex items-center gap-1.5">
+                                                        <span className="inline-block px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs font-medium">E</span>
+                                                        <span className="text-gray-600 text-xs">Excused</span>
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={goToCurrentMonth}
+                                                    className="px-4 py-2 bg-[#003366] text-white rounded-lg hover:bg-[#002244] transition-colors text-sm cursor-pointer"
+                                                >
+                                                    Today
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1176,42 +1198,46 @@ const AttendancePage: React.FC = () => {
                                                                                         {getStatusCode(attendance.status)}
                                                                                     </button>
                                                                                     {isOpen && (
-                                                                                        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[120px]">
+                                                                                        <div className="absolute top-full left-0 mt-1 bg-white border-2 border-gray-300 rounded-lg shadow-2xl z-30 min-w-[150px] py-1">
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Present', day);
                                                                                                 }}
-                                                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-green-50 text-green-800 cursor-pointer"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-green-50 text-green-800 cursor-pointer flex items-center gap-2 border-b border-gray-100"
                                                                                             >
-                                                                                                Present
+                                                                                                <CheckCircle className="w-4 h-4" />
+                                                                                                <span>Present</span>
                                                                                             </button>
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Absent', day);
                                                                                                 }}
-                                                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-red-50 text-red-800 cursor-pointer"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-red-50 text-red-800 cursor-pointer flex items-center gap-2 border-b border-gray-100"
                                                                                             >
-                                                                                                Absent
+                                                                                                <XCircle className="w-4 h-4" />
+                                                                                                <span>Absent</span>
                                                                                             </button>
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Late', day);
                                                                                                 }}
-                                                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-yellow-50 text-yellow-800 cursor-pointer"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-yellow-50 text-yellow-800 cursor-pointer flex items-center gap-2 border-b border-gray-100"
                                                                                             >
-                                                                                                Late
+                                                                                                <Clock className="w-4 h-4" />
+                                                                                                <span>Late</span>
                                                                                             </button>
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Excused', day);
                                                                                                 }}
-                                                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-blue-50 text-blue-800 cursor-pointer"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-blue-50 text-blue-800 cursor-pointer flex items-center gap-2"
                                                                                             >
-                                                                                                Excused
+                                                                                                <AlertCircle className="w-4 h-4" />
+                                                                                                <span>Excused</span>
                                                                                             </button>
                                                                                         </div>
                                                                                     )}
@@ -1227,42 +1253,46 @@ const AttendancePage: React.FC = () => {
                                                                                         title="Click to mark attendance"
                                                                                     />
                                                                                     {isOpen && (
-                                                                                        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[120px]">
+                                                                                        <div className="absolute top-full left-0 mt-1 bg-white border-2 border-gray-300 rounded-lg shadow-2xl z-30 min-w-[150px] py-1">
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Present', day);
                                                                                                 }}
-                                                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-green-50 text-green-800 cursor-pointer"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-green-50 text-green-800 cursor-pointer flex items-center gap-2 border-b border-gray-100"
                                                                                             >
-                                                                                                Present
+                                                                                                <CheckCircle className="w-4 h-4" />
+                                                                                                <span>Present</span>
                                                                                             </button>
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Absent', day);
                                                                                                 }}
-                                                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-red-50 text-red-800 cursor-pointer"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-red-50 text-red-800 cursor-pointer flex items-center gap-2 border-b border-gray-100"
                                                                                             >
-                                                                                                Absent
+                                                                                                <XCircle className="w-4 h-4" />
+                                                                                                <span>Absent</span>
                                                                                             </button>
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Late', day);
                                                                                                 }}
-                                                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-yellow-50 text-yellow-800 cursor-pointer"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-yellow-50 text-yellow-800 cursor-pointer flex items-center gap-2 border-b border-gray-100"
                                                                                             >
-                                                                                                Late
+                                                                                                <Clock className="w-4 h-4" />
+                                                                                                <span>Late</span>
                                                                                             </button>
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Excused', day);
                                                                                                 }}
-                                                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-blue-50 text-blue-800 cursor-pointer"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-blue-50 text-blue-800 cursor-pointer flex items-center gap-2"
                                                                                             >
-                                                                                                Excused
+                                                                                                <AlertCircle className="w-4 h-4" />
+                                                                                                <span>Excused</span>
                                                                                             </button>
                                                                                         </div>
                                                                                     )}
@@ -1276,29 +1306,6 @@ const AttendancePage: React.FC = () => {
                                                     })}
                                                 </tbody>
                                             </table>
-                                        </div>
-                                    </div>
-
-                                    {/* Legend */}
-                                    <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-                                        <div className="flex flex-wrap items-center gap-4 text-sm">
-                                            <span className="font-semibold text-gray-700">Legend:</span>
-                                            <span className="flex items-center gap-2">
-                                                <span className="inline-block px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">P</span>
-                                                <span className="text-gray-600">Present</span>
-                                            </span>
-                                            <span className="flex items-center gap-2">
-                                                <span className="inline-block px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">A</span>
-                                                <span className="text-gray-600">Absent</span>
-                                            </span>
-                                            <span className="flex items-center gap-2">
-                                                <span className="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">L</span>
-                                                <span className="text-gray-600">Late</span>
-                                            </span>
-                                            <span className="flex items-center gap-2">
-                                                <span className="inline-block px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs font-medium">E</span>
-                                                <span className="text-gray-600">Excused</span>
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
