@@ -1699,12 +1699,45 @@ const fetchDropdownLists = async () => {
                                             <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} />
                                             <p className="mt-2 text-sm text-gray-600">Loading students...</p>
                                         </div>
-                                    ) : classStudents.length === 0 ? (
-                                        <div className="text-center py-8 text-gray-500">
-                                            No students enrolled in this class.
-                                        </div>
-                                    ) : (
-                                        <div className="overflow-x-auto">
+                                    ) : (() => {
+                                        // Apply filters to students
+                                        const filteredStudents = classStudents.filter((student) => {
+                                            // Apply search filter
+                                            if (filters.search) {
+                                                const searchLower = filters.search.toLowerCase();
+                                                const matchesSearch = 
+                                                    student.full_name?.toLowerCase().includes(searchLower) ||
+                                                    student.student_id?.toLowerCase().includes(searchLower);
+                                                if (!matchesSearch) return false;
+                                            }
+                                            
+                                            // Apply remarks filter
+                                            if (filters.remarks) {
+                                                const key = `${student.id}_${selectedSubjectId}`;
+                                                const gradeData = gridData[key];
+                                                if (!gradeData || gradeData.remarks !== filters.remarks) {
+                                                    return false;
+                                                }
+                                            }
+                                            
+                                            // Apply academic year filter
+                                            if (filters.academic_year_id) {
+                                                const key = `${student.id}_${selectedSubjectId}`;
+                                                const gradeData = gridData[key];
+                                                if (!gradeData || gradeData.academic_year_id !== parseInt(filters.academic_year_id)) {
+                                                    return false;
+                                                }
+                                            }
+                                            
+                                            return true;
+                                        });
+                                        
+                                        return filteredStudents.length === 0 ? (
+                                            <div className="text-center py-8 text-gray-500">
+                                                No students found matching the current filters.
+                                            </div>
+                                        ) : (
+                                            <div className="overflow-x-auto">
                                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                                                 <table className="min-w-full divide-y divide-gray-200">
                                                     <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
@@ -1730,8 +1763,9 @@ const fetchDropdownLists = async () => {
                                                         </tr>
                                                     </thead>
                                                     <tbody className="bg-white divide-y divide-gray-200">
-                                                        {classStudents
-                                                            .filter((student) => {
+                                                        {(() => {
+                                                            // Apply filters to students
+                                                            const filteredStudents = classStudents.filter((student) => {
                                                                 // Apply search filter
                                                                 if (filters.search) {
                                                                     const searchLower = filters.search.toLowerCase();
@@ -1741,7 +1775,7 @@ const fetchDropdownLists = async () => {
                                                                     if (!matchesSearch) return false;
                                                                 }
                                                                 
-                                                                // Apply remarks filter - check if student has a grade with matching remarks
+                                                                // Apply remarks filter
                                                                 if (filters.remarks) {
                                                                     const key = `${student.id}_${selectedSubjectId}`;
                                                                     const gradeData = gridData[key];
@@ -1750,7 +1784,7 @@ const fetchDropdownLists = async () => {
                                                                     }
                                                                 }
                                                                 
-                                                                // Apply academic year filter - check if student has a grade for the selected academic year
+                                                                // Apply academic year filter
                                                                 if (filters.academic_year_id) {
                                                                     const key = `${student.id}_${selectedSubjectId}`;
                                                                     const gradeData = gridData[key];
@@ -1760,8 +1794,9 @@ const fetchDropdownLists = async () => {
                                                                 }
                                                                 
                                                                 return true;
-                                                            })
-                                                            .map((student) => {
+                                                            });
+                                                            
+                                                            return filteredStudents.map((student) => {
                                                             const key = `${student.id}_${selectedSubjectId}`;
                                                             const gradeData = gridData[key] || {};
                                                             
