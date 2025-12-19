@@ -24,9 +24,22 @@ This is the easiest method for Railway deployments. Set the admin credentials as
    - `ADMIN_PASSWORD` is required (must be at least 8 characters)
    - `ADMIN_NAME` is optional (defaults to "Administrator")
 
-### Step 2: Run the Setup Command
+### Step 2: Deploy or Run the Setup Command
 
-**Option A: Via Railway Web Interface Shell (Recommended)**
+**Option A: Automatic Setup (Recommended - Already Configured)**
+
+The `nixpacks.toml` file is already configured to automatically run `admin:setup-from-env` on every deployment. This means:
+
+- ✅ Just set the environment variables in Railway
+- ✅ Deploy your application (or trigger a redeploy)
+- ✅ The admin account will be created/updated automatically during deployment
+- ✅ If variables are not set, the command will skip gracefully (won't break deployment)
+
+**Note:** If you want to prevent automatic password resets on every deployment, you can remove `php artisan admin:setup-from-env &&` from `nixpacks.toml` and run it manually when needed.
+
+**Option B: Manual Run via Railway Shell**
+
+If you want to run it manually without redeploying:
 
 1. Go to Railway dashboard → Your web service → Deployments → Latest deployment
 2. Open the **"Shell"** or **"Terminal"** option
@@ -34,16 +47,6 @@ This is the easiest method for Railway deployments. Set the admin credentials as
    ```bash
    php artisan admin:setup-from-env
    ```
-
-**Option B: Add to Start Command (One-time setup)**
-
-You can also add this to your Railway start command temporarily:
-
-```bash
-php artisan admin:setup-from-env && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
-```
-
-**Important:** Remove `php artisan admin:setup-from-env &&` from the start command after the first run, or it will reset the password on every deployment.
 
 ### Step 3: Log in
 
