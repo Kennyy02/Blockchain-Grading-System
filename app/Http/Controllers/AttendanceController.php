@@ -22,7 +22,9 @@ class AttendanceController extends Controller
             $query = Attendance::with([
                 'student.user',
                 'classSubject.subject',
-                'classSubject.class'
+                'classSubject.class',
+                'classSubject.academicYear',
+                'classSubject.semester'
             ]);
             
             // Apply student filter (accept both integer and string)
@@ -154,7 +156,9 @@ class AttendanceController extends Controller
             $attendance = Attendance::byStudent($studentId)
                 ->with([
                     'classSubject.subject',
-                    'classSubject.class'
+                    'classSubject.class',
+                    'classSubject.academicYear',
+                    'classSubject.semester'
                 ])
                 ->orderBy('attendance_date', 'desc')
                 ->get();

@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Search, Eye, X } from 'lucide-react';
+import { RefreshCw, Users, X } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
-import { 
-    adminBlockchainService,
-    BlockchainTransaction,
-    TransactionStatus,
-    PaginationData,
-} from '../../../services/AdminBlockchainService';
+import { router } from '@inertiajs/react';
+import { adminClassesService, Class } from '../../../services/AdminClassesService';
 
 const PRIMARY_COLOR_CLASS = 'bg-gradient-to-r from-purple-600 to-indigo-600';
 const TEXT_COLOR_CLASS = 'text-purple-600';
@@ -43,206 +39,30 @@ const Notification: React.FC<{ notification: Notification; onClose: () => void }
     );
 };
 
-const TransactionDetailsModal: React.FC<{
-    transaction: BlockchainTransaction;
-    onClose: () => void;
-}> = ({ transaction, onClose }) => {
-    const formatDate = (dateString: string | null) => {
-        if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleString();
-    };
-
-    const statusColor = (status: TransactionStatus) => {
-        switch (status) {
-            case 'confirmed': return 'bg-green-100 text-green-800 border-green-200';
-            case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'failed': return 'bg-red-100 text-red-800 border-red-200';
-            default: return 'bg-gray-100 text-gray-800 border-gray-200';
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4">
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
-                
-                <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
-                    <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4`}>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                <Eye className="w-6 h-6 text-white" />
-                                <h2 className="text-xl font-bold text-white">Transaction Details</h2>
-                            </div>
-                            <button onClick={onClose} className="rounded-full p-2 text-white/80 hover:bg-white/20 transition-colors">
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-                        <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Transaction ID</label>
-                                    <p className="text-sm font-mono bg-white px-3 py-2 rounded-lg border">#{transaction.id}</p>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Status</label>
-                                    <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold border ${statusColor(transaction.status)}`}>
-                                        {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Blockchain Hash</label>
-                                <p className="text-sm font-mono break-all bg-white px-3 py-2 rounded-lg border">{transaction.transaction_hash || 'Not yet generated'}</p>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Type</label>
-                                    <p className="text-sm capitalize bg-white px-3 py-2 rounded-lg border">{transaction.transaction_type.replace('_', ' ')}</p>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Initiated By</label>
-                                    <p className="text-sm bg-white px-3 py-2 rounded-lg border">{transaction.initiator?.name || `User #${transaction.initiated_by}`}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Submitted At</label>
-                                    <p className="text-sm bg-white px-3 py-2 rounded-lg border">{formatDate(transaction.submitted_at)}</p>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Processing Time</label>
-                                    <p className="text-sm bg-white px-3 py-2 rounded-lg border font-semibold">{transaction.processing_time_human || 'N/A'}</p>
-                                </div>
-                            </div>
-
-                            {transaction.attendance && (
-                                <div className="border-t pt-4 mt-4">
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Attendance Details</label>
-                                    <div className="bg-white rounded-lg border p-4 space-y-2">
-                                        <p><strong>Student:</strong> {transaction.attendance.student?.full_name || `${transaction.attendance.student?.first_name} ${transaction.attendance.student?.last_name}`}</p>
-                                        <p><strong>Subject:</strong> {transaction.attendance.class_subject?.subject?.subject_name || 'N/A'}</p>
-                                        <p><strong>Date:</strong> {new Date(transaction.attendance.attendance_date).toLocaleDateString()}</p>
-                                        <p>
-                                            <strong>Status:</strong>{' '}
-                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                                                transaction.attendance.status === 'Present' ? 'bg-green-100 text-green-800 border-green-200' :
-                                                transaction.attendance.status === 'Absent' ? 'bg-red-100 text-red-800 border-red-200' :
-                                                transaction.attendance.status === 'Late' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                                                'bg-gray-100 text-gray-800 border-gray-200'
-                                            } border`}>
-                                                {transaction.attendance.status}
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
 const BlockchainAttendance: React.FC = () => {
     const [notification, setNotification] = useState<Notification | null>(null);
     const [loading, setLoading] = useState(false);
-    const [transactions, setTransactions] = useState<BlockchainTransaction[]>([]);
-    const [filters, setFilters] = useState({
-        search: '',
-        page: 1,
-        per_page: 10,
-    });
-    const [pagination, setPagination] = useState<PaginationData>({
-        current_page: 1,
-        last_page: 1,
-        per_page: 10,
-        total: 0,
-    });
-    const [selectedTransaction, setSelectedTransaction] = useState<BlockchainTransaction | null>(null);
-    const [showModal, setShowModal] = useState(false);
+    const [classes, setClasses] = useState<Class[]>([]);
 
-    const loadTransactions = async () => {
+    const loadClasses = async () => {
         setLoading(true);
         try {
-            // Get all transactions without type filter, then filter client-side
-            const response = await adminBlockchainService.getTransactions({
-                ...filters,
-                type: '', // No type filter - we'll filter client-side
-            });
-            
-            // Filter for attendance-related transactions only
-            const attendanceTransactions = (response.data || []).filter(tx => 
-                tx.transaction_type === 'attendance_creation' || tx.transaction_type === 'attendance_update'
-            );
-            
-            setTransactions(attendanceTransactions);
-            if (response.pagination) {
-                // Update pagination to reflect filtered results
-                setPagination({
-                    ...response.pagination,
-                    total: attendanceTransactions.length,
-                });
+            const response = await adminClassesService.getClasses({ per_page: 9999 });
+            if (response.success) {
+                setClasses(response.data || []);
+            } else {
+                setNotification({ type: 'error', message: response.message || 'Failed to load classes' });
             }
         } catch (error: any) {
-            setNotification({ type: 'error', message: error.message || 'Failed to load transactions' });
+            setNotification({ type: 'error', message: error.message || 'Failed to load classes' });
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        loadTransactions();
-    }, [filters.page]);
-
-    const renderStatusBadge = (status: TransactionStatus) => {
-        const colors = {
-            confirmed: 'bg-green-100 text-green-800 border-green-200',
-            pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-            failed: 'bg-red-100 text-red-800 border-red-200',
-        };
-        return (
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${colors[status]}`}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-            </span>
-        );
-    };
-
-    const Pagination: React.FC<{ pagination: PaginationData; onPageChange: (page: number) => void }> = ({ pagination, onPageChange }) => {
-        if (pagination.last_page <= 1) return null;
-
-        return (
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-gray-700">
-                    Showing <span className="font-semibold">{((pagination.current_page - 1) * pagination.per_page) + 1}</span> to{' '}
-                    <span className="font-semibold">{Math.min(pagination.current_page * pagination.per_page, pagination.total)}</span> of{' '}
-                    <span className="font-semibold">{pagination.total}</span> results
-                </div>
-                <div className="flex space-x-2">
-                    <button
-                        onClick={() => onPageChange(pagination.current_page - 1)}
-                        disabled={pagination.current_page === 1}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
-                    >
-                        Previous
-                    </button>
-                    <button
-                        onClick={() => onPageChange(pagination.current_page + 1)}
-                        disabled={pagination.current_page === pagination.last_page}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
-                    >
-                        Next
-                    </button>
-                </div>
-            </div>
-        );
-    };
+        loadClasses();
+    }, []);
 
     return (
         <AppLayout>
@@ -254,7 +74,7 @@ const BlockchainAttendance: React.FC = () => {
                                 <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
                                     Blockchain Attendance
                                 </h1>
-                                <p className="text-gray-600">View all attendance-related blockchain transactions</p>
+                                <p className="text-gray-600">View student attendance by class</p>
                             </div>
                             <button
                                 onClick={loadTransactions}
@@ -266,96 +86,40 @@ const BlockchainAttendance: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                        <div className="flex items-center">
-                            <Search className="absolute ml-4 h-5 w-5 text-gray-400" />
-                            <input
-                                type="text"
-                                value={filters.search}
-                                onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS}`}
-                                placeholder="Search transactions..."
-                            />
-                        </div>
-                    </div>
-
                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">ID</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Hash</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Student</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Status</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Date</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Submitted</th>
-                                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {loading ? (
-                                        <tr><td colSpan={7} className="px-6 py-12 text-center"><RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} /></td></tr>
-                                    ) : transactions.length === 0 ? (
-                                        <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500">No attendance transactions found</td></tr>
-                                    ) : (
-                                        transactions.map((tx) => (
-                                            <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4 whitespace-nowrap font-mono text-sm">#{tx.id}</td>
-                                                <td className="px-6 py-4 font-mono text-xs max-w-xs truncate">
-                                                    {tx.transaction_hash ? `${tx.transaction_hash.substring(0, 12)}...` : 'Pending'}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                    {tx.attendance?.student?.full_name || `${tx.attendance?.student?.first_name} ${tx.attendance?.student?.last_name}` || 'N/A'}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    {tx.attendance?.status && (
-                                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                                                            tx.attendance.status === 'Present' ? 'bg-green-100 text-green-800 border-green-200' :
-                                                            tx.attendance.status === 'Absent' ? 'bg-red-100 text-red-800 border-red-200' :
-                                                            tx.attendance.status === 'Late' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                                                            'bg-gray-100 text-gray-800 border-gray-200'
-                                                        } border`}>
-                                                            {tx.attendance.status}
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                    {tx.attendance?.attendance_date ? new Date(tx.attendance.attendance_date).toLocaleDateString() : 'N/A'}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                    {new Date(tx.submitted_at).toLocaleDateString()}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedTransaction(tx);
-                                                            setShowModal(true);
-                                                        }}
-                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                                                        title="View Details"
-                                                    >
-                                                        <Eye className="h-5 w-5" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                        <Pagination 
-                            pagination={pagination} 
-                            onPageChange={(page) => setFilters({...filters, page})} 
-                        />
+                        {loading ? (
+                            <div className="flex items-center justify-center py-12">
+                                <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
+                            </div>
+                        ) : classes.length === 0 ? (
+                            <div className="px-6 py-12 text-center text-gray-500">
+                                No classes found
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-gray-200">
+                                {classes.map((classItem) => (
+                                    <div key={classItem.id} className="p-6 hover:bg-gray-50 transition-colors">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-semibold text-gray-900">{classItem.class_code}</h3>
+                                                <p className="text-sm text-gray-600 mt-1">{classItem.class_name}</p>
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    {classItem.student_count || 0} students
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => router.visit(`/admin/blockchain-transactions/attendance/class/${classItem.id}/students`)}
+                                                className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                            >
+                                                <Users className="w-4 h-4 mr-2" />
+                                                View Students
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-
-                    {showModal && selectedTransaction && (
-                        <TransactionDetailsModal
-                            transaction={selectedTransaction}
-                            onClose={() => setShowModal(false)}
-                        />
-                    )}
 
                     {notification && (
                         <Notification

@@ -172,6 +172,21 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         return Inertia::render('Admin/BlockchainAttendance');
     })->name('blockchain-transactions.attendance');
     
+    // Blockchain Class Students for Attendance (View Only)
+    Route::get('/blockchain-transactions/attendance/class/{classId}/students', function ($classId) {
+        return Inertia::render('Admin/BlockchainClassStudentsAttendance', [
+            'classId' => $classId,
+        ]);
+    })->name('blockchain-transactions.attendance.class-students');
+    
+    // Blockchain Student Attendance (View Only)
+    Route::get('/blockchain-transactions/attendance/{studentId}', function (Request $request, $studentId) {
+        return Inertia::render('Admin/BlockchainStudentAttendance', [
+            'studentId' => $studentId,
+            'classId' => $request->query('class_id'),
+        ]);
+    })->name('blockchain-transactions.attendance.student');
+    
     // ==================== COMMUNICATION ====================
     
     // Announcements
