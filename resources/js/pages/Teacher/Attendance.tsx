@@ -1023,7 +1023,7 @@ const AttendancePage: React.FC = () => {
                 )}
 
                 <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div className="relative col-span-2">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <Search className="h-5 w-5 text-gray-400" />
@@ -1040,7 +1040,7 @@ const AttendancePage: React.FC = () => {
                         <select
                             value={filters.class_subject_id}
                             onChange={(e) => setFilters({...filters, class_subject_id: e.target.value, page: 1})}
-                            className={`px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                            className={`px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white cursor-pointer`}
                         >
                             <option value="">Select Classes</option>
                             {classSubjects.map(cs => (
@@ -1048,18 +1048,6 @@ const AttendancePage: React.FC = () => {
                                     {cs.class?.class_code} - {cs.subject?.subject_code}
                                 </option>
                             ))}
-                        </select>
-
-                        <select
-                            value={filters.status}
-                            onChange={(e) => setFilters({...filters, status: e.target.value, page: 1})}
-                            className={`px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
-                        >
-                            <option value="">All Statuses</option>
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                            <option value="Late">Late</option>
-                            <option value="Excused">Excused</option>
                         </select>
                     </div>
                     
