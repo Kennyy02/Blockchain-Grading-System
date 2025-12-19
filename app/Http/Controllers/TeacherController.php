@@ -35,13 +35,22 @@ class TeacherController extends Controller
             $perPage = $request->get('per_page', 15);
             $page = $request->get('page', 1);
 
-            // Execute query with pagination - SIMPLIFIED FOR DEBUGGING
-            $teachers = $query->orderBy('created_at', 'desc')
+            // Execute query with pagination - Load advisory class relationship
+            $teachers = $query->with('advisoryClass')
+                             ->orderBy('created_at', 'desc')
                              ->paginate($perPage, ['*'], 'page', $page);
 
-            // Simplified transformation - just add full_name
+            // Transform teachers to include full_name and advisory_class_name
             $teachers->getCollection()->transform(function ($teacher) {
                 $teacher->full_name = trim($teacher->first_name . ' ' . $teacher->last_name);
+                
+                // Add advisory class name if exists
+                if ($teacher->advisoryClass) {
+                    $teacher->advisory_class_name = $teacher->advisoryClass->class_name ?? $teacher->advisoryClass->class_code ?? null;
+                } else {
+                    $teacher->advisory_class_name = null;
+                }
+                
                 return $teacher;
             });
 
