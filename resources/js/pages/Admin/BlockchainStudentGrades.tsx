@@ -55,17 +55,23 @@ interface StudentGrades {
     units: number;
 }
 
+interface GroupedGrades {
+    academic_year_id: number;
+    semester_id: number;
+    academic_year_name: string;
+    semester_name: string;
+    grades: StudentGrades[];
+}
+
 const BlockchainStudentGrades: React.FC = () => {
     const { props } = usePage();
     const studentId = (props as any).studentId;
     const classId = (props as any).classId;
     
     const [loading, setLoading] = useState(true);
-    const [grades, setGrades] = useState<StudentGrades[]>([]);
+    const [groupedGrades, setGroupedGrades] = useState<GroupedGrades[]>([]);
     const [studentName, setStudentName] = useState('');
     const [className, setClassName] = useState('');
-    const [academicYear, setAcademicYear] = useState('');
-    const [semester, setSemester] = useState('');
     const [yearLevel, setYearLevel] = useState<number | null>(null);
     const [notification, setNotification] = useState<Notification | null>(null);
 
@@ -100,13 +106,7 @@ const BlockchainStudentGrades: React.FC = () => {
             if (classData.success) {
                 setClassName(classData.data.class_code || classData.data.class_name);
                 
-                // Extract academic year, semester, and year level
-                if (classData.data.academic_year) {
-                    setAcademicYear(classData.data.academic_year.year_name || '');
-                }
-                if (classData.data.semester) {
-                    setSemester(classData.data.semester.semester_name || '');
-                }
+                // Extract year level
                 if (classData.data.year_level !== undefined && classData.data.year_level !== null) {
                     setYearLevel(classData.data.year_level);
                 }
@@ -134,15 +134,13 @@ const BlockchainStudentGrades: React.FC = () => {
                     per_page: 9999,
                 });
 
-                // Get all grades for this student, filtered by the class_subject_ids of this class
+                // Get all grades for this student (not filtered by academic year/semester)
                 const classSubjectIds = classSubjectsRes.success && classSubjectsRes.data 
                     ? classSubjectsRes.data.map((cs: any) => cs.id)
                     : [];
                 
                 const response = await adminGradeService.getGrades({
                     student_id: studentId,
-                    academic_year_id: classData.data.academic_year_id,
-                    semester_id: classData.data.semester_id,
                     per_page: 9999,
                 });
 
@@ -159,7 +157,7 @@ const BlockchainStudentGrades: React.FC = () => {
                         type: 'error', 
                         message: classSubjectsRes.message || 'Failed to load class subjects' 
                     });
-                    setGrades([]);
+                    setGroupedGrades([]);
                     return;
                 }
 
@@ -170,7 +168,7 @@ const BlockchainStudentGrades: React.FC = () => {
                         type: 'info', 
                         message: 'No subjects found for this class. Please link subjects to this class first.' 
                     });
-                    setGrades([]);
+                    setGroupedGrades([]);
                     return;
                 }
 
@@ -203,39 +201,93 @@ const BlockchainStudentGrades: React.FC = () => {
 
                 console.log('Grades Map:', Array.from(gradesMap.entries()));
 
-                // Create the grades table structure
-                const gradesTable: StudentGrades[] = classSubjects.map((cs: any) => {
-                    const subjectId = cs.subject?.id || cs.subject_id;
-                    const grade = gradesMap.get(subjectId);
-                    
-                    console.log(`Processing subject ${subjectId}, found grade:`, grade ? 'Yes' : 'No');
-                    
-                    return {
-                        subject: cs.subject || {
-                            id: cs.subject_id,
-                            subject_code: cs.subject_code || '',
-                            subject_name: cs.subject_name || '',
+                // Group grades by academic_year_id and semester_id
+                const gradesByPeriod = new Map<string, { academic_year_id: number; semester_id: number; academic_year_name: string; semester_name: string; grades: Map<number, Grade> }>();
+                
+                if (response.success && response.data && response.data.length > 0) {
+                    response.data.forEach((grade: Grade) => {
+                        // Only process grades that belong to this class
+                        const gradeClassSubjectId = grade.class_subject_id || (grade.class_subject as any)?.id;
+                        if (classSubjectIds.length > 0 && !classSubjectIds.includes(gradeClassSubjectId)) {
+                            return;
+                        }
+                        
+                        const academicYearId = grade.academic_year_id;
+                        const semesterId = grade.semester_id;
+                        const key = `${academicYearId}_${semesterId}`;
+                        
+                        // Get academic year and semester names from the grade object
+                        const academicYearName = (grade as any).academic_year?.year_name || (grade as any).academicYear?.year_name || '';
+                        const semesterName = (grade as any).semester?.semester_name || (grade as any).semester?.semester_name || '';
+                        
+                        if (!gradesByPeriod.has(key)) {
+                            gradesByPeriod.set(key, {
+                                academic_year_id: academicYearId,
+                                semester_id: semesterId,
+                                academic_year_name: academicYearName,
+                                semester_name: semesterName,
+                                grades: new Map()
+                            });
+                        }
+                        
+                        const periodData = gradesByPeriod.get(key)!;
+                        const subjectId = grade.class_subject?.subject?.id || (grade.class_subject as any)?.subject_id || null;
+                        if (subjectId) {
+                            periodData.grades.set(subjectId, grade);
+                        }
+                    });
+                }
+
+                // Create grouped grades structure
+                const grouped: GroupedGrades[] = Array.from(gradesByPeriod.values()).map(periodData => {
+                    // Create the grades table structure for this period
+                    const gradesTable: StudentGrades[] = classSubjects.map((cs: any) => {
+                        const subjectId = cs.subject?.id || cs.subject_id;
+                        const grade = periodData.grades.get(subjectId);
+                        
+                        return {
+                            subject: cs.subject || {
+                                id: cs.subject_id,
+                                subject_code: cs.subject_code || '',
+                                subject_name: cs.subject_name || '',
+                                units: cs.subject?.units || 0,
+                            },
+                            prelim_grade: grade?.prelim_grade || null,
+                            midterm_grade: grade?.midterm_grade || null,
+                            final_grade: grade?.final_grade || null,
+                            final_rating: grade?.final_rating || null,
+                            remarks: grade?.remarks || null,
                             units: cs.subject?.units || 0,
-                        },
-                        prelim_grade: grade?.prelim_grade || null,
-                        midterm_grade: grade?.midterm_grade || null,
-                        final_grade: grade?.final_grade || null,
-                        final_rating: grade?.final_rating || null,
-                        remarks: grade?.remarks || null,
-                        units: cs.subject?.units || 0,
+                        };
+                    });
+
+                    return {
+                        academic_year_id: periodData.academic_year_id,
+                        semester_id: periodData.semester_id,
+                        academic_year_name: periodData.academic_year_name,
+                        semester_name: periodData.semester_name,
+                        grades: gradesTable
                     };
                 });
 
-                console.log('Final grades table:', gradesTable);
-                setGrades(gradesTable);
+                // Sort by academic year (desc) and semester (desc)
+                grouped.sort((a, b) => {
+                    if (a.academic_year_id !== b.academic_year_id) {
+                        return b.academic_year_id - a.academic_year_id;
+                    }
+                    return b.semester_id - a.semester_id;
+                });
+
+                console.log('Final grouped grades:', grouped);
+                setGroupedGrades(grouped);
             }
         } catch (error: any) {
             console.error('Error loading student grades:', error);
-            setNotification({ 
-                type: 'error', 
-                message: error.message || 'Failed to load grades. Please try again or contact support if the issue persists.' 
-            });
-            setGrades([]);
+                setNotification({ 
+                    type: 'error', 
+                    message: error.message || 'Failed to load grades. Please try again or contact support if the issue persists.' 
+                });
+                setGroupedGrades([]);
         } finally {
             setLoading(false);
         }
@@ -280,92 +332,106 @@ const BlockchainStudentGrades: React.FC = () => {
                                             <span className="font-semibold">Grade Level:</span> {yearLevel}
                                         </div>
                                     )}
-                                    {academicYear && (
-                                        <div>
-                                            <span className="font-semibold">Academic Year:</span> {academicYear}
-                                        </div>
-                                    )}
-                                    {semester && (
-                                        <div>
-                                            <span className="font-semibold">Semester:</span> {semester}
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                        <div className="p-6">
-                            {loading ? (
-                                <div className="flex items-center justify-center py-12">
-                                    <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
-                                </div>
-                            ) : (
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full border-collapse border border-gray-300">
-                                        <thead>
-                                            <tr className="bg-gray-100">
-                                                <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">Subject</th>
-                                                <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Prelim</th>
-                                                <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Midterm</th>
-                                                <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Final</th>
-                                                <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Final Rating</th>
-                                                <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Units</th>
-                                                <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Remarks</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {grades.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan={7} className="border border-gray-300 px-4 py-8 text-center text-gray-500">
-                                                        No subjects found for this class
-                                                    </td>
-                                                </tr>
-                                            ) : (
-                                                grades.map((grade, index) => (
-                                                    <tr key={index} className="hover:bg-gray-50">
-                                                        <td className="border border-gray-300 px-4 py-3 text-sm">
-                                                            <div>
-                                                                <div className="font-medium">{grade.subject.subject_code}</div>
-                                                                <div className="text-xs text-gray-600">{grade.subject.subject_name}</div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="border border-gray-300 px-4 py-3 text-center text-sm">
-                                                            {grade.prelim_grade !== null && grade.prelim_grade !== undefined ? grade.prelim_grade : ''}
-                                                        </td>
-                                                        <td className="border border-gray-300 px-4 py-3 text-center text-sm">
-                                                            {grade.midterm_grade !== null && grade.midterm_grade !== undefined ? grade.midterm_grade : ''}
-                                                        </td>
-                                                        <td className="border border-gray-300 px-4 py-3 text-center text-sm">
-                                                            {grade.final_grade !== null && grade.final_grade !== undefined ? grade.final_grade : ''}
-                                                        </td>
-                                                        <td className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">
-                                                            {grade.final_rating !== null && grade.final_rating !== undefined ? grade.final_rating : ''}
-                                                        </td>
-                                                        <td className="border border-gray-300 px-4 py-3 text-center text-sm">
-                                                            {grade.units || ''}
-                                                        </td>
-                                                        <td className="border border-gray-300 px-4 py-3 text-center text-sm">
-                                                            {grade.remarks ? (
-                                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                                    grade.remarks === 'Passed' ? 'bg-green-100 text-green-800' :
-                                                                    grade.remarks === 'Failed' ? 'bg-red-100 text-red-800' :
-                                                                    'bg-yellow-100 text-yellow-800'
-                                                                }`}>
-                                                                    {grade.remarks}
-                                                                </span>
-                                                            ) : ''}
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
+                    {loading ? (
+                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 p-6">
+                            <div className="flex items-center justify-center py-12">
+                                <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
+                            </div>
                         </div>
-                    </div>
+                    ) : groupedGrades.length === 0 ? (
+                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 p-6">
+                            <div className="text-center py-12 text-gray-500">
+                                No grades found for this student
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {groupedGrades.map((group, groupIndex) => (
+                                <div key={`${group.academic_year_id}_${group.semester_id}`} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                                    <div className="bg-gradient-to-r from-purple-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+                                        <div className="flex flex-wrap gap-4 text-sm">
+                                            <div>
+                                                <span className="font-semibold text-gray-700">Academic Year:</span> 
+                                                <span className="ml-2 text-gray-900">{group.academic_year_name || 'N/A'}</span>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold text-gray-700">Semester:</span> 
+                                                <span className="ml-2 text-gray-900">{group.semester_name || 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="p-6">
+                                        <div className="overflow-x-auto">
+                                            <table className="min-w-full border-collapse border border-gray-300">
+                                                <thead>
+                                                    <tr className="bg-gray-100">
+                                                        <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-700">Subject</th>
+                                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Prelim</th>
+                                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Midterm</th>
+                                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Final</th>
+                                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Final Rating</th>
+                                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Units</th>
+                                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold text-gray-700">Remarks</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {group.grades.length === 0 ? (
+                                                        <tr>
+                                                            <td colSpan={7} className="border border-gray-300 px-4 py-8 text-center text-gray-500">
+                                                                No subjects found for this period
+                                                            </td>
+                                                        </tr>
+                                                    ) : (
+                                                        group.grades.map((grade, index) => (
+                                                            <tr key={index} className="hover:bg-gray-50">
+                                                                <td className="border border-gray-300 px-4 py-3 text-sm">
+                                                                    <div>
+                                                                        <div className="font-medium">{grade.subject.subject_code}</div>
+                                                                        <div className="text-xs text-gray-600">{grade.subject.subject_name}</div>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="border border-gray-300 px-4 py-3 text-center text-sm">
+                                                                    {grade.prelim_grade !== null && grade.prelim_grade !== undefined ? grade.prelim_grade : ''}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-4 py-3 text-center text-sm">
+                                                                    {grade.midterm_grade !== null && grade.midterm_grade !== undefined ? grade.midterm_grade : ''}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-4 py-3 text-center text-sm">
+                                                                    {grade.final_grade !== null && grade.final_grade !== undefined ? grade.final_grade : ''}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">
+                                                                    {grade.final_rating !== null && grade.final_rating !== undefined ? grade.final_rating : ''}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-4 py-3 text-center text-sm">
+                                                                    {grade.units || ''}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-4 py-3 text-center text-sm">
+                                                                    {grade.remarks ? (
+                                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                                            grade.remarks === 'Passed' ? 'bg-green-100 text-green-800' :
+                                                                            grade.remarks === 'Failed' ? 'bg-red-100 text-red-800' :
+                                                                            'bg-yellow-100 text-yellow-800'
+                                                                        }`}>
+                                                                            {grade.remarks}
+                                                                        </span>
+                                                                    ) : ''}
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </AppLayout>
