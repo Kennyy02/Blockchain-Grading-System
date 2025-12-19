@@ -369,6 +369,7 @@ const AttendancePage: React.FC = () => {
     
     // Track which cell's dropdown is open
     const [openDropdown, setOpenDropdown] = useState<{ studentId: number; day: number } | null>(null);
+    const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number } | null>(null);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -1178,6 +1179,8 @@ const AttendancePage: React.FC = () => {
                                                                                     <button
                                                                                         onClick={(e) => {
                                                                                             e.stopPropagation();
+                                                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                                                            setDropdownPosition({ top: rect.bottom + window.scrollY + 4, left: rect.left + window.scrollX });
                                                                                             setOpenDropdown(isOpen ? null : { studentId: student.id, day });
                                                                                         }}
                                                                                         className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${getStatusColor(attendance.status)} cursor-pointer hover:opacity-80`}
@@ -1185,8 +1188,11 @@ const AttendancePage: React.FC = () => {
                                                                                     >
                                                                                         {getStatusCode(attendance.status)}
                                                                                     </button>
-                                                                                    {isOpen && (
-                                                                                        <div className="absolute top-full left-0 mt-1 bg-white border-2 border-gray-300 rounded-lg shadow-2xl z-30 min-w-[150px] py-1">
+                                                                                    {isOpen && dropdownPosition && (
+                                                                                        <div 
+                                                                                            className="fixed bg-white border-2 border-gray-300 rounded-lg shadow-2xl z-[9999] min-w-[150px] py-1"
+                                                                                            style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                                                                                        >
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
@@ -1235,13 +1241,18 @@ const AttendancePage: React.FC = () => {
                                                                                     <button
                                                                                         onClick={(e) => {
                                                                                             e.stopPropagation();
+                                                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                                                            setDropdownPosition({ top: rect.bottom + window.scrollY + 4, left: rect.left + window.scrollX });
                                                                                             setOpenDropdown(isOpen ? null : { studentId: student.id, day });
                                                                                         }}
                                                                                         className="w-full h-8 hover:bg-gray-100 rounded cursor-pointer"
                                                                                         title="Click to mark attendance"
                                                                                     />
-                                                                                    {isOpen && (
-                                                                                        <div className="absolute top-full left-0 mt-1 bg-white border-2 border-gray-300 rounded-lg shadow-2xl z-30 min-w-[150px] py-1">
+                                                                                    {isOpen && dropdownPosition && (
+                                                                                        <div 
+                                                                                            className="fixed bg-white border-2 border-gray-300 rounded-lg shadow-2xl z-[9999] min-w-[150px] py-1"
+                                                                                            style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                                                                                        >
                                                                                             <button
                                                                                                 onClick={(e) => {
                                                                                                     e.stopPropagation();
