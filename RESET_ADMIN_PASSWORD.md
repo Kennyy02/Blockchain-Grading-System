@@ -40,17 +40,21 @@ Since your application is deployed on Railway, you need to run this command on t
    railway run php artisan admin:reset-password --email=admin@smms.edu.ph --password=YourNewPassword123
    ```
 
-**Option B: Using Railway Web Interface**
+**Option B: Using Railway Web Interface (Recommended for this case)**
 
-1. Go to your Railway project dashboard
-2. Click on your service
-3. Go to the "Deployments" tab
-4. Click on the latest deployment
-5. Click "View Logs" or use the "Shell" option
-6. Run the command:
+The `railway run` command runs locally with Railway's environment variables, but can't access Railway's internal network. Use the web interface instead:
+
+1. Go to https://railway.app/ and open your project
+2. Click on your **web service** (not the database)
+3. Go to the **"Deployments"** tab
+4. Click on the **latest deployment**
+5. Look for a **"Shell"** or **"Terminal"** button/tab (this opens a shell directly on Railway's server)
+6. In the Railway shell, run:
    ```bash
    php artisan admin:reset-password --email=admin@smms.edu.ph
    ```
+
+**Note:** The Railway web shell runs directly on Railway's servers, so it can access the internal database hostname `mysql.railway.internal`.
 
 ### Step 2: Log in with the new password
 
@@ -76,11 +80,17 @@ exit
 
 ## Troubleshooting
 
+### Error: "getaddrinfo for mysql.railway.internal failed: No such host is known"
+
+**This happens when using `railway run` - it runs locally with Railway's env vars but can't access Railway's internal network.**
+
+**Solution:** Use Railway's **web interface shell** instead (Option B above). The web shell runs directly on Railway's servers and can access the internal database.
+
 ### Error: "No connection could be made because the target machine actively refused it"
 
 **This means you're trying to run the command locally, but your database is on Railway.**
 
-**Solution:** Run the command on Railway using one of the methods above, not on your local machine.
+**Solution:** Run the command on Railway using the web interface shell (Option B), not on your local machine.
 
 ### If the command doesn't work on Railway:
 
