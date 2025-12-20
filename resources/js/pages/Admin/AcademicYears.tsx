@@ -627,4 +627,3 @@ const AcademicYears: React.FC = () => {
 };
 
 export default AcademicYears;
-export default AcademicYears;
