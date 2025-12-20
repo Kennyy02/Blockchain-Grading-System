@@ -111,6 +111,11 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         return Inertia::render('Admin/Students');
     })->name('students');
     
+    // Dropped Students
+    Route::get('/students/dropped', function () {
+        return Inertia::render('Admin/DroppedStudents');
+    })->name('students.dropped');
+    
     // Parents
     Route::get('/parents', function () {
         return Inertia::render('Admin/Parents');

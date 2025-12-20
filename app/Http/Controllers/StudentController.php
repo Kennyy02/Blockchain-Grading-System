@@ -35,11 +35,14 @@ class StudentController extends Controller
             }
             
             // Handle year_level range filter (for education level filtering)
+            // Exclude dropped students from education level filters (they should only appear in dropped filter)
             if ($yearLevelMin = $request->input('year_level_min')) {
                 $yearLevelMax = $request->input('year_level_max', $yearLevelMin);
-                $query->whereBetween('year_level', [(int)$yearLevelMin, (int)$yearLevelMax]);
+                $query->whereBetween('year_level', [(int)$yearLevelMin, (int)$yearLevelMax])
+                      ->where('status', '!=', 'dropped');
             } elseif ($yearLevel = $request->input('year_level')) {
-                $query->byYearLevel((int)$yearLevel);
+                $query->byYearLevel((int)$yearLevel)
+                      ->where('status', '!=', 'dropped');
             }
             
             // Handle status filter (active = enrolled, inactive = not enrolled, dropped = dropped status)
@@ -579,12 +582,12 @@ class StudentController extends Controller
                 ];
             });
             
-            // 7. Count by education level
+            // 7. Count by education level (exclude dropped students)
             $byEducationLevel = [
-                'college' => Student::whereBetween('year_level', [13, 16])->count(),
-                'senior_high' => Student::whereBetween('year_level', [11, 12])->count(),
-                'junior_high' => Student::whereBetween('year_level', [7, 10])->count(),
-                'elementary' => Student::whereBetween('year_level', [1, 6])->count(),
+                'college' => Student::whereBetween('year_level', [13, 16])->where('status', '!=', 'dropped')->count(),
+                'senior_high' => Student::whereBetween('year_level', [11, 12])->where('status', '!=', 'dropped')->count(),
+                'junior_high' => Student::whereBetween('year_level', [7, 10])->where('status', '!=', 'dropped')->count(),
+                'elementary' => Student::whereBetween('year_level', [1, 6])->where('status', '!=', 'dropped')->count(),
             ];
 
             $stats = [

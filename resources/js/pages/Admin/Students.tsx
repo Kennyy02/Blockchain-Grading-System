@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, Plus, Search, Filter, Edit, Trash2, X, RefreshCw, Download, Mail, BookOpen, Clock, Eye, EyeOff, GraduationCap, ChevronDown, CheckCircle, AlertCircle } from 'lucide-react';
+import { router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 // UPDATED IMPORT: Use the new specific service
 import { adminStudentService, Student, StudentFormData, StudentStats, StudentsResponse, ApiResponse, ParentGuardianFormData } from '../../../services/AdminStudentService';
@@ -80,12 +81,12 @@ const getEducationLevelColor = (level: string): string => {
 };
 
 // Education levels for tabs (no "All Levels" - must select one)
+// Note: Dropped students are shown in a separate route/page, not in these filters
 const educationLevels = [
     { id: 'college', label: 'College', icon: '🎓', minGrade: 13, maxGrade: 16 },
     { id: 'senior_high', label: 'Senior High', icon: '📖', minGrade: 11, maxGrade: 12 },
     { id: 'junior_high', label: 'Junior High', icon: '📝', minGrade: 7, maxGrade: 10 },
     { id: 'elementary', label: 'Elementary', icon: '✏️', minGrade: 1, maxGrade: 6 },
-    { id: 'dropped', label: 'Dropped', icon: '❌', minGrade: null, maxGrade: null },
 ];
 
 
@@ -1027,28 +1028,8 @@ const Students: React.FC = () => {
         
         setLoading(true);
         try {
-            // Special handling for dropped students filter
-            if (educationLevelFilter === 'dropped') {
-                const apiFilters = {
-                    search: filters.search,
-                    program: filters.program,
-                    page: filters.page,
-                    per_page: 10,
-                    status: 'dropped', // Filter by dropped status
-                };
-                const response = await adminStudentService.getStudents(apiFilters);
-                if (response.success) {
-                    setStudents(response.data);
-                    if (response.pagination) {
-                        setPagination(response.pagination);
-                    } else if (response.total) { 
-                        setPagination(prev => ({ ...prev, total: response.total }));
-                    }
-                }
-                return;
-            }
-            
             // Map education level to year_level range for API
+            // Note: Dropped students are excluded from education level filters (handled in backend)
             const yearLevelRanges: Record<string, { min: number; max: number }> = {
                 'college': { min: 13, max: 16 },
                 'senior_high': { min: 11, max: 12 },
@@ -1264,6 +1245,13 @@ const Students: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex space-x-3">
+                            <button 
+                                onClick={() => router.visit('/admin/students/dropped')}
+                                className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-lg font-medium"
+                            >
+                                <Trash2 className="h-5 w-5 mr-2" />
+                                Dropped Students
+                            </button>
                             <button 
                                 onClick={handleAdd}
                                 className={`inline-flex items-center px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all shadow-lg font-medium`}
