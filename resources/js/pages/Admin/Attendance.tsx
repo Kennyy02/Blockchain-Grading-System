@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Edit, Trash2, X, RefreshCw, BarChart3, User, BookOpen, CalendarCheck, CalendarX } from 'lucide-react';
+import { Plus, Search, Filter, Edit, Trash2, X, RefreshCw, BarChart3, User, BookOpen, CalendarCheck, CalendarX, Eye } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { 
     adminAttendanceService, 
@@ -64,6 +64,77 @@ const Notification: React.FC<{ notification: Notification; onClose: () => void }
                     >
                         <X className="w-4 h-4" />
                     </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ========================================================================
+// 👁️ VIEW ATTENDANCE MODAL
+// ========================================================================
+
+const ViewAttendanceModal: React.FC<{
+    attendance: Attendance;
+    onClose: () => void;
+    renderStatusTag: (status: AttendanceStatus, color: string) => JSX.Element;
+}> = ({ attendance, onClose, renderStatusTag }) => {
+    return (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
+                
+                <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+                    <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4`}>
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-bold text-white">Attendance Details</h2>
+                            <button onClick={onClose} className="rounded-full p-2 text-white/80 hover:bg-white/20 hover:text-white transition-colors">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="p-6">
+                        {/* Header */}
+                        <div className="mb-6 pb-6 border-b">
+                            <h3 className="text-2xl font-bold text-gray-900">{attendance.student?.full_name || 'N/A'}</h3>
+                            <p className="text-gray-500">{attendance.student?.student_id || 'N/A'}</p>
+                        </div>
+
+                        {/* Info Grid */}
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Student</label>
+                                <p className="text-gray-900 font-medium mt-1">{attendance.student?.full_name || 'N/A'}</p>
+                                <p className="text-sm text-gray-500">{attendance.student?.student_id || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Class / Subject</label>
+                                <p className="text-gray-900 font-medium mt-1">{attendance.class_subject?.subject?.subject_name || 'N/A'}</p>
+                                <p className="text-sm text-gray-500">{attendance.class_subject?.class?.class_code || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</label>
+                                <p className="text-gray-900 font-medium mt-1">
+                                    {new Date(attendance.attendance_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</label>
+                                <div className="mt-1">{renderStatusTag(attendance.status, attendance.status_color)}</div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex justify-end mt-6 pt-6 border-t">
+                            <button
+                                onClick={onClose}
+                                className={`px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium`}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -429,6 +500,11 @@ const AttendancePage: React.FC = () => {
         setShowModal(true);
     };
 
+    const handleView = (attendance: Attendance) => {
+        setSelectedAttendance(attendance);
+        setShowViewModal(true);
+    };
+
     const handleSave = async (data: AttendanceFormData) => {
         setValidationErrors({});
         try {
@@ -558,31 +634,41 @@ const AttendancePage: React.FC = () => {
 
     return (
         <AppLayout>
-            <div className="p-8">
-                <div className="max-w-7xl mx-auto">
+            <div className="min-h-screen bg-[#f3f4f6]">
+                <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
                     {/* Header */}
-                    <div className="mb-8">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900 mb-2">Attendance Management</h1>
-                                <p className="text-gray-600">Track and manage daily student attendance records</p>
+                    <div className="mb-4 sm:mb-6 md:mb-8">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                            <div className="mb-4 sm:mb-6 md:mb-0">
+                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Attendance Management</h1>
+                                <p className="text-xs sm:text-sm text-gray-600">Track and manage daily student attendance records</p>
                             </div>
                             <button
                                 onClick={handleCreate}
-                                className={`flex items-center px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium shadow-lg`}
+                                className={`flex items-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-lg sm:rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium shadow-lg text-xs sm:text-sm md:text-base`}
                             >
-                                <Plus className="w-5 h-5 mr-2" />
-                                Record New Attendance
+                                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                                <span className="hidden sm:inline">Record New Attendance</span>
+                                <span className="sm:hidden">New</span>
                             </button>
                         </div>
                     </div>
 
-                    {/* Stats 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                            <div className="flex items-center justify-between">
+                    {/* Stats - Mobile: Centered with icon below, Desktop: Icon on right */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6 md:mb-8">
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                            {/* Mobile: Centered layout */}
+                            <div className="flex flex-col items-center text-center md:hidden">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Total Records</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">{stats.total || 0}</p>
+                                <div className={`p-2 sm:p-3 rounded-full ${LIGHT_BG_CLASS}`}>
+                                    <CalendarCheck className={`w-5 h-5 sm:w-6 sm:h-6 ${TEXT_COLOR_CLASS}`} />
+                                </div>
+                            </div>
+                            {/* Desktop: Original layout with icon on right */}
+                            <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-500 text-sm font-medium mb-1">Total Records</p>
+                                    <p className="text-sm font-medium text-gray-600 mb-1">Total Records</p>
                                     <p className="text-3xl font-bold text-gray-900">{stats.total || 0}</p>
                                 </div>
                                 <div className={`p-3 ${LIGHT_BG_CLASS} rounded-xl`}>
@@ -591,10 +677,19 @@ const AttendancePage: React.FC = () => {
                             </div>
                         </div>
                         
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                            <div className="flex items-center justify-between">
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                            {/* Mobile: Centered layout */}
+                            <div className="flex flex-col items-center text-center md:hidden">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Attendance Rate</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-green-600 mb-2 sm:mb-3">{Number(stats.attendance_rate ?? 0).toFixed(1)}%</p>
+                                <div className="p-2 sm:p-3 bg-green-50 rounded-full">
+                                    <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+                                </div>
+                            </div>
+                            {/* Desktop: Original layout with icon on right */}
+                            <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-500 text-sm font-medium mb-1">Attendance Rate</p>
+                                    <p className="text-sm font-medium text-gray-600 mb-1">Attendance Rate</p>
                                     <p className="text-3xl font-bold text-green-600">{Number(stats.attendance_rate ?? 0).toFixed(1)}%</p>
                                 </div>
                                 <div className="p-3 bg-green-50 rounded-xl">
@@ -603,10 +698,19 @@ const AttendancePage: React.FC = () => {
                             </div>
                         </div>
                         
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                            <div className="flex items-center justify-between">
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                            {/* Mobile: Centered layout */}
+                            <div className="flex flex-col items-center text-center md:hidden">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Total Absent</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-red-600 mb-2 sm:mb-3">{stats.absent || 0}</p>
+                                <div className="p-2 sm:p-3 bg-red-50 rounded-full">
+                                    <CalendarX className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
+                                </div>
+                            </div>
+                            {/* Desktop: Original layout with icon on right */}
+                            <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-500 text-sm font-medium mb-1">Total Absent</p>
+                                    <p className="text-sm font-medium text-gray-600 mb-1">Total Absent</p>
                                     <p className="text-3xl font-bold text-red-600">{stats.absent || 0}</p>
                                 </div>
                                 <div className="p-3 bg-red-50 rounded-xl">
@@ -615,10 +719,19 @@ const AttendancePage: React.FC = () => {
                             </div>
                         </div>
                         
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                            <div className="flex items-center justify-between">
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                            {/* Mobile: Centered layout */}
+                            <div className="flex flex-col items-center text-center md:hidden">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Total Late</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-yellow-600 mb-2 sm:mb-3">{stats.late || 0}</p>
+                                <div className="p-2 sm:p-3 bg-yellow-50 rounded-full">
+                                    <User className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
+                                </div>
+                            </div>
+                            {/* Desktop: Original layout with icon on right */}
+                            <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-500 text-sm font-medium mb-1">Total Late</p>
+                                    <p className="text-sm font-medium text-gray-600 mb-1">Total Late</p>
                                     <p className="text-3xl font-bold text-yellow-600">{stats.late || 0}</p>
                                 </div>
                                 <div className="p-3 bg-yellow-50 rounded-xl">
@@ -626,27 +739,29 @@ const AttendancePage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>*/}
+                    </div>
 
-                    {/* Filters */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div className="flex items-center">
-                                <Search className="absolute ml-4 h-5 w-5 text-gray-400" />
+                    {/* Filters - Compact on Mobile */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4">
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                                </div>
                                 <input
                                     type="text"
                                     value={filters.search}
                                     onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                    className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
                                     placeholder="Search student..."
                                 />
                             </div>
                             <div className="flex items-center">
-                                <BookOpen className="h-5 w-5 text-gray-400 mr-3" />
+                                <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mr-2 sm:mr-3" />
                                 <select
                                     value={filters.class_subject_id}
                                     onChange={(e) => setFilters({...filters, class_subject_id: e.target.value, page: 1})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                    className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white text-sm sm:text-base`}
                                 >
                                     <option value="">Filter by Subject</option>
                                     {classSubjects.map(cs => (
@@ -657,11 +772,11 @@ const AttendancePage: React.FC = () => {
                                 </select>
                             </div>
                             <div className="flex items-center">
-                                <User className="h-5 w-5 text-gray-400 mr-3" />
+                                <User className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mr-2 sm:mr-3" />
                                 <select
                                     value={filters.student_id}
                                     onChange={(e) => setFilters({...filters, student_id: e.target.value, page: 1})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                    className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white text-sm sm:text-base`}
                                 >
                                     <option value="">Filter by Student</option>
                                     {students.map(student => (
@@ -672,11 +787,11 @@ const AttendancePage: React.FC = () => {
                                 </select>
                             </div>
                             <div className="flex items-center">
-                                <Filter className="h-5 w-5 text-gray-400 mr-3" />
+                                <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mr-2 sm:mr-3" />
                                 <select
                                     value={filters.status}
                                     onChange={(e) => setFilters({...filters, status: e.target.value, page: 1})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                    className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white text-sm sm:text-base`}
                                 >
                                     <option value="">Filter by Status</option>
                                     {ATTENDANCE_STATUS_OPTIONS.map(status => (
@@ -687,56 +802,83 @@ const AttendancePage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Table */}
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                    {/* Table - Responsive: Mobile shows Date + Student + Actions, Desktop shows all columns */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                                     <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Date</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Student</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Class / Subject</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Date</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Student</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Class / Subject</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Status</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {loading ? (
-                                        <tr><td colSpan={5} className="px-6 py-12 text-center"><RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} /></td></tr>
+                                        <tr>
+                                            <td colSpan={5} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
+                                                <div className="flex justify-center">
+                                                    <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
+                                                </div>
+                                            </td>
+                                        </tr>
                                     ) : attendanceRecords.length === 0 ? (
-                                        <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500">No attendance records found</td></tr>
+                                        <tr>
+                                            <td colSpan={5} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
+                                                <div className="flex flex-col items-center">
+                                                    <CalendarCheck className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
+                                                    <p className="text-base sm:text-lg font-medium">No attendance records found</p>
+                                                    <p className="text-xs sm:text-sm">Record new attendance or adjust filters</p>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     ) : (
                                         attendanceRecords.map((record) => (
                                             <tr key={record.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                                <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-700">
                                                     {new Date(record.attendance_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-semibold text-gray-900">{record.student?.full_name || 'N/A'}</div>
+                                                <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900">{record.student?.full_name || 'N/A'}</div>
                                                     <div className="text-xs text-gray-500">{record.student?.student_id || 'N/A'}</div>
+                                                    {/* Show additional info on mobile */}
+                                                    <div className="md:hidden mt-1 space-y-1">
+                                                        <div className="text-xs text-gray-600">{record.class_subject?.subject?.subject_name || 'N/A'}</div>
+                                                        <div className="text-xs text-gray-500">{record.class_subject?.class?.class_code || 'N/A'}</div>
+                                                        <div>{renderStatusTag(record.status, record.status_color)}</div>
+                                                    </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-semibold text-gray-900">{record.class_subject?.subject?.subject_name || 'N/A'}</div>
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900">{record.class_subject?.subject?.subject_name || 'N/A'}</div>
                                                     <div className="text-xs text-gray-500">{record.class_subject?.class?.class_code || 'N/A'}</div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                     {renderStatusTag(record.status, record.status_color)}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                    <div className="flex justify-end space-x-2">
+                                                <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
+                                                    <div className="flex justify-end space-x-1 sm:space-x-2">
+                                                        <button
+                                                            onClick={() => handleView(record)}
+                                                            className="p-1.5 sm:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                            title="View Details"
+                                                        >
+                                                            <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+                                                        </button>
                                                         <button
                                                             onClick={() => handleEdit(record)}
-                                                            className={`p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
+                                                            className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
                                                             title="Edit Record"
                                                         >
-                                                            <Edit className="h-5 w-5" />
+                                                            <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(record)}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                            className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                             title="Delete Record"
                                                         >
-                                                            <Trash2 className="h-5 w-5" />
+                                                            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -763,6 +905,14 @@ const AttendancePage: React.FC = () => {
                             classSubjects={classSubjects}
                             students={students}
                             loadingLists={loadingLists}
+                        />
+                    )}
+
+                    {showViewModal && selectedAttendance && (
+                        <ViewAttendanceModal
+                            attendance={selectedAttendance}
+                            onClose={() => setShowViewModal(false)}
+                            renderStatusTag={renderStatusTag}
                         />
                     )}
 

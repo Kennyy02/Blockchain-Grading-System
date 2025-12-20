@@ -82,10 +82,19 @@ const StatsCards: React.FC<{ stats: BlockchainStats }> = ({ stats }) => {
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6">
             {cards.map((card, idx) => (
-                <div key={idx} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 transform hover:scale-105 transition-all">
-                    <div className="flex items-center justify-between">
+                <div key={idx} className="bg-white rounded-lg sm:rounded-xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100 transform hover:scale-105 transition-all">
+                    {/* Mobile: Centered layout */}
+                    <div className="flex flex-col items-center text-center md:hidden">
+                        <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">{card.title}</p>
+                        <p className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{card.value}</p>
+                        <div className={`${card.color} p-2 sm:p-3 rounded-full`}>
+                            <card.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        </div>
+                    </div>
+                    {/* Desktop: Original layout with icon on right */}
+                    <div className="hidden md:flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">{card.title}</p>
                             <p className="text-2xl font-bold text-gray-900 mt-2">{card.value}</p>
@@ -647,15 +656,15 @@ const BlockchainManagement: React.FC = () => {
     return (
         <AppLayout>
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-                <div className="container mx-auto px-4 py-8">
+                <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
                     {/* Header */}
-                    <div className="mb-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                    <div className="mb-4 sm:mb-6 md:mb-8">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 sm:mb-6">
+                            <div className="mb-4 sm:mb-6 md:mb-0">
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-1 sm:mb-2">
                                     Blockchain Management
                                 </h1>
-                                <p className="text-gray-600">Manage blockchain transactions and certificate verification</p>
+                                <p className="text-xs sm:text-sm text-gray-600">Manage blockchain transactions and certificate verification</p>
                             </div>
                             <button
                                 onClick={() => {
@@ -664,9 +673,9 @@ const BlockchainManagement: React.FC = () => {
                                     else if (activeTab === 'certificates') loadCertificates();
                                     else loadVerifications();
                                 }}
-                                className="flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-all"
+                                className="flex items-center px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-300 transition-all text-xs sm:text-sm"
                             >
-                                <RefreshCw className="w-4 h-4 mr-2" />
+                                <RefreshCw className="w-4 h-4 mr-1 sm:mr-2" />
                                 Refresh
                             </button>
                         </div>
@@ -676,39 +685,41 @@ const BlockchainManagement: React.FC = () => {
                     </div>
 
                     {/* Tabs */}
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-6">
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 mb-4 sm:mb-6">
                         <div className="flex border-b border-gray-200">
                             <button
                                 onClick={() => setActiveTab('transactions')}
-                                className={`flex-1 px-6 py-4 font-semibold transition-all ${
+                                className={`flex-1 px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 font-semibold transition-all text-xs sm:text-sm md:text-base ${
                                     activeTab === 'transactions'
                                         ? 'border-b-2 border-purple-600 text-purple-600 bg-purple-50'
                                         : 'text-gray-600 hover:bg-gray-50'
                                 }`}
                             >
-                                <Hash className="w-5 h-5 inline mr-2" />
-                                Transactions
+                                <Hash className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+                                <span className="hidden sm:inline">Transactions</span>
+                                <span className="sm:hidden">Txns</span>
                             </button>
                             <button
                                 onClick={() => setActiveTab('certificates')}
-                                className={`flex-1 px-6 py-4 font-semibold transition-all ${
+                                className={`flex-1 px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 font-semibold transition-all text-xs sm:text-sm md:text-base ${
                                     activeTab === 'certificates'
                                         ? 'border-b-2 border-purple-600 text-purple-600 bg-purple-50'
                                         : 'text-gray-600 hover:bg-gray-50'
                                 }`}
                             >
-                                <Award className="w-5 h-5 inline mr-2" />
-                                Certificates
+                                <Award className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+                                <span className="hidden sm:inline">Certificates</span>
+                                <span className="sm:hidden">Certs</span>
                             </button>
                             <button
                                 onClick={() => setActiveTab('verify')}
-                                className={`flex-1 px-6 py-4 font-semibold transition-all ${
+                                className={`flex-1 px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 font-semibold transition-all text-xs sm:text-sm md:text-base ${
                                     activeTab === 'verify'
                                         ? 'border-b-2 border-purple-600 text-purple-600 bg-purple-50'
                                         : 'text-gray-600 hover:bg-gray-50'
                                 }`}
                             >
-                                <Shield className="w-5 h-5 inline mr-2" />
+                                <Shield className="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
                                 Verify
                             </button>
                         </div>
@@ -717,72 +728,98 @@ const BlockchainManagement: React.FC = () => {
                     {/* Content based on active tab */}
                     {activeTab === 'transactions' && (
                         <>
-                            {/* Filters */}
-                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                                <div className="flex items-center">
-                                    <Search className="absolute ml-4 h-5 w-5 text-gray-400" />
+                            {/* Filters - Compact on Mobile */}
+                            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                        <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                                    </div>
                                     <input
                                         type="text"
                                         value={transactionFilters.search}
                                         onChange={(e) => setTransactionFilters({...transactionFilters, search: e.target.value, page: 1})}
-                                        className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS}`}
+                                        className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} text-sm sm:text-base`}
                                         placeholder="Search transactions..."
                                     />
                                 </div>
                             </div>
 
-                            {/* Transactions Table */}
-                            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                            {/* Transactions Table - Responsive */}
+                            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                                 <div className="overflow-x-auto">
                                     <table className="min-w-full divide-y divide-gray-200">
                                         <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                                             <tr>
-                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">ID</th>
-                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Hash</th>
-                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Type</th>
-                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Status</th>
-                                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase">Submitted</th>
-                                                <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase">Actions</th>
+                                                <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase whitespace-nowrap">ID</th>
+                                                <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase whitespace-nowrap">Hash</th>
+                                                <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase whitespace-nowrap">Type</th>
+                                                <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase whitespace-nowrap">Status</th>
+                                                <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase whitespace-nowrap">Submitted</th>
+                                                <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase whitespace-nowrap">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {loading ? (
-                                                <tr><td colSpan={6} className="px-6 py-12 text-center"><RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} /></td></tr>
+                                                <tr>
+                                                    <td colSpan={6} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
+                                                        <div className="flex justify-center">
+                                                            <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             ) : transactions.length === 0 ? (
-                                                <tr><td colSpan={6} className="px-6 py-12 text-center text-gray-500">No transactions found</td></tr>
+                                                <tr>
+                                                    <td colSpan={6} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
+                                                        <div className="flex flex-col items-center">
+                                                            <Hash className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
+                                                            <p className="text-base sm:text-lg font-medium">No transactions found</p>
+                                                            <p className="text-xs sm:text-sm">Try adjusting your search or filters</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             ) : (
                                                 transactions.map((tx) => (
                                                     <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
-                                                        <td className="px-6 py-4 whitespace-nowrap font-mono text-sm">#{tx.id}</td>
-                                                        <td className="px-6 py-4 font-mono text-xs max-w-xs truncate">
-                                                            {tx.transaction_hash ? `${tx.transaction_hash.substring(0, 12)}...` : 'Pending'}
+                                                        <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap font-mono text-xs sm:text-sm">#{tx.id}</td>
+                                                        <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+                                                            <div className="font-mono text-xs sm:text-sm text-gray-900 truncate">
+                                                                {tx.transaction_hash ? `${tx.transaction_hash.substring(0, 12)}...` : 'Pending'}
+                                                            </div>
+                                                            {/* Show additional info on mobile */}
+                                                            <div className="md:hidden mt-1 space-y-1">
+                                                                <div className="text-xs text-gray-600 capitalize">{tx.transaction_type.replace('_', ' ')}</div>
+                                                                <div className="flex items-center gap-2">
+                                                                    {renderStatusBadge(tx.status)}
+                                                                    <span className="text-xs text-gray-600">{new Date(tx.submitted_at).toLocaleDateString()}</span>
+                                                                </div>
+                                                            </div>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm capitalize">
+                                                        <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm capitalize">
                                                             {tx.transaction_type.replace('_', ' ')}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">{renderStatusBadge(tx.status)}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                        <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">{renderStatusBadge(tx.status)}</td>
+                                                        <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
                                                             {new Date(tx.submitted_at).toLocaleDateString()}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                            <div className="flex justify-end space-x-2">
+                                                        <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
+                                                            <div className="flex justify-end space-x-1 sm:space-x-2">
                                                                 <button
                                                                     onClick={() => {
                                                                         setSelectedTransaction(tx);
                                                                         setShowTransactionModal(true);
                                                                     }}
-                                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                                                    className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                                     title="View Details"
                                                                 >
-                                                                    <Eye className="h-5 w-5" />
+                                                                    <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                                                                 </button>
                                                                 {tx.status === 'failed' && (
                                                                     <button
                                                                         onClick={() => handleRetryTransaction(tx.id)}
-                                                                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
+                                                                        className="p-1.5 sm:p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                                                                         title="Retry"
                                                                     >
-                                                                        <Zap className="h-5 w-5" />
+                                                                        <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
                                                                     </button>
                                                                 )}
                                                             </div>
@@ -804,8 +841,8 @@ const BlockchainManagement: React.FC = () => {
                     {activeTab === 'certificates' && (
                         <>
                             {/* Header with Create Button */}
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-2xl font-bold text-gray-900">Certificates</h2>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6">
+                                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-0">Certificates</h2>
                                 <button
                                     onClick={() => {
                                         if (students.length === 0 || teachers.length === 0) {
@@ -813,23 +850,26 @@ const BlockchainManagement: React.FC = () => {
                                         }
                                         setShowCreateCertificateModal(true);
                                     }}
-                                    className={`flex items-center px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl hover:opacity-90 transition-all`}
+                                    className={`flex items-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-lg sm:rounded-xl hover:opacity-90 transition-all text-xs sm:text-sm md:text-base`}
                                 >
-                                    <Plus className="w-5 h-5 mr-2" />
-                                    Create Certificate
+                                    <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                                    <span className="hidden sm:inline">Create Certificate</span>
+                                    <span className="sm:hidden">Create</span>
                                 </button>
                             </div>
 
-                            {/* Filters */}
-                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="flex items-center">
-                                        <Search className="absolute ml-4 h-5 w-5 text-gray-400" />
+                            {/* Filters - Compact on Mobile */}
+                            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                            <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                                        </div>
                                         <input
                                             type="text"
                                             value={certificateFilters.search}
                                             onChange={(e) => setCertificateFilters({...certificateFilters, search: e.target.value, page: 1})}
-                                            className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS}`}
+                                            className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} text-sm sm:text-base`}
                                             placeholder="Search certificates..."
                                         />
                                     </div>
