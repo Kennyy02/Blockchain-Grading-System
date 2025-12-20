@@ -435,11 +435,18 @@ class StudentController extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            $student = Student::withTrashed()->findOrFail($id);
+            $student = Student::withTrashed()->with('parents')->findOrFail($id);
             $studentName = $student->first_name . ' ' . $student->last_name;
             
             // Get the associated user_id before deleting
             $userId = $student->user_id;
+            
+            // IMPORTANT: Detach parent relationships (unlink parents, but don't delete them)
+            // This ensures parent records remain in the database even after student deletion
+            if ($student->parents()->count() > 0) {
+                $student->parents()->detach();
+                Log::info("Detached parent relationships for student {$id}. Parent records preserved.");
+            }
             
             // Permanently delete the student from database (force delete)
             $student->forceDelete();
@@ -458,8 +465,8 @@ class StudentController extends Controller
             }
             
             return $request->expectsJson()
-                ? response()->json(['success' => true, 'message' => "Student '{$studentName}' permanently deleted from database"])
-                : redirect()->route('students.index')->with('success', "Student '{$studentName}' permanently deleted from database");
+                ? response()->json(['success' => true, 'message' => "Student '{$studentName}' permanently deleted. Parent relationships unlinked (parents preserved)."])
+                : redirect()->route('students.index')->with('success', "Student '{$studentName}' permanently deleted. Parent relationships unlinked (parents preserved).");
         } catch (\Exception $e) {
             Log::error('Error deleting student: ' . $e->getMessage());
             return $request->expectsJson()
