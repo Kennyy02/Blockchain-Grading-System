@@ -369,6 +369,15 @@ class AdminStudentService {
     }
 
     /**
+     * Drop student (mark as dropped status instead of deleting)
+     */
+    async dropStudent(id: number): Promise<ApiResponse<Student>> {
+        return this.request<Student>(`${this.baseURL}/students/${id}/drop`, {
+            method: 'POST',
+        });
+    }
+
+    /**
      * Delete student
      * Fetches a fresh CSRF token from server before making the request
      */

@@ -203,6 +203,7 @@ Route::prefix('students')->group(function () {
     Route::get('/{id}', [StudentController::class, 'show']);
     Route::get('/{id}/transcript', [StudentController::class, 'getTranscript']);
     Route::put('/{id}', [StudentController::class, 'update']);
+    Route::post('/{id}/drop', [StudentController::class, 'drop']);
     Route::delete('/{id}', [StudentController::class, 'destroy']);
 });
 

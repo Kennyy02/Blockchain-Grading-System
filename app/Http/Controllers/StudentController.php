@@ -432,6 +432,35 @@ class StudentController extends Controller
     }
 
     /**
+     * Drop a student (mark as dropped status).
+     * POST /api/students/{id}/drop
+     */
+    public function drop(Request $request, $id)
+    {
+        try {
+            $student = Student::findOrFail($id);
+            $studentName = $student->first_name . ' ' . $student->last_name;
+            
+            // Update student status to 'dropped' and clear current_class_id
+            $student->update([
+                'status' => 'dropped',
+                'current_class_id' => null,
+            ]);
+            
+            $student->load(['user', 'currentClass', 'parents']);
+            
+            return $request->expectsJson()
+                ? response()->json(['success' => true, 'data' => $student, 'message' => "Student '{$studentName}' has been dropped successfully."])
+                : redirect()->route('students.index')->with('success', "Student '{$studentName}' has been dropped successfully.");
+        } catch (\Exception $e) {
+            Log::error('Error dropping student: ' . $e->getMessage());
+            return $request->expectsJson()
+                ? response()->json(['success' => false, 'message' => 'Failed to drop student', 'error' => $e->getMessage()], 500)
+                : back()->with('error', 'Failed to drop student');
+        }
+    }
+
+    /**
      * Remove the specified student from storage (API & Inertia).
      */
     public function destroy(Request $request, $id)

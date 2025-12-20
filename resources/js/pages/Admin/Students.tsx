@@ -1160,8 +1160,8 @@ const Students: React.FC = () => {
         if (!selectedStudent) return;
 
         try {
-            // UPDATED CALL: Use adminStudentService
-            const response = await adminStudentService.deleteStudent(selectedStudent.id);
+            // Drop student (update status to 'dropped' instead of deleting)
+            const response = await adminStudentService.dropStudent(selectedStudent.id);
             if (response.success) {
                 setNotification({ type: 'success', message: 'Student dropped successfully!' });
                 setShowDeleteModal(false);
