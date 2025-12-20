@@ -645,4 +645,3 @@ const Semesters: React.FC = () => {
 };
 
 export default Semesters;
-export default Semesters;
