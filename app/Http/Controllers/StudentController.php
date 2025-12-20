@@ -435,15 +435,31 @@ class StudentController extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            $student = Student::findOrFail($id);
-            
-            // SIMPLIFIED: Just delete without checking relationships for now
+            $student = Student::withTrashed()->findOrFail($id);
             $studentName = $student->first_name . ' ' . $student->last_name;
-            $student->delete();
+            
+            // Get the associated user_id before deleting
+            $userId = $student->user_id;
+            
+            // Permanently delete the student from database (force delete)
+            $student->forceDelete();
+            
+            // Also delete the associated User record if it exists
+            if ($userId) {
+                try {
+                    $user = User::find($userId);
+                    if ($user) {
+                        $user->forceDelete(); // Permanently delete the user from database
+                    }
+                } catch (\Exception $userException) {
+                    // Log but don't fail the student deletion if user deletion fails
+                    Log::warning('Failed to delete associated user for student: ' . $userException->getMessage());
+                }
+            }
             
             return $request->expectsJson()
-                ? response()->json(['success' => true, 'message' => "Student '{$studentName}' deleted successfully"])
-                : redirect()->route('students.index')->with('success', "Student '{$studentName}' deleted successfully");
+                ? response()->json(['success' => true, 'message' => "Student '{$studentName}' permanently deleted from database"])
+                : redirect()->route('students.index')->with('success', "Student '{$studentName}' permanently deleted from database");
         } catch (\Exception $e) {
             Log::error('Error deleting student: ' . $e->getMessage());
             return $request->expectsJson()

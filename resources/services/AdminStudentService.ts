@@ -125,7 +125,23 @@ class AdminStudentService {
     private baseURL = '/api';
 
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        // Get CSRF token from meta tag (should be in <head>)
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
+        // Fallback: Try to get from Inertia page props if available
+        if (!csrfToken && typeof window !== 'undefined') {
+            try {
+                // Access Inertia's internal page data
+                const inertiaData = (window as any).__INERTIA_DATA__;
+                if (inertiaData?.page?.props?.csrf_token) {
+                    csrfToken = inertiaData.page.props.csrf_token;
+                } else if ((window as any).Inertia?.page?.props?.csrf_token) {
+                    csrfToken = (window as any).Inertia.page.props.csrf_token;
+                }
+            } catch (e) {
+                console.warn('Could not retrieve CSRF token from Inertia props:', e);
+            }
+        }
         
         const defaultOptions: RequestInit = {
             headers: {
@@ -150,6 +166,19 @@ class AdminStudentService {
             }
 
             if (!response.ok) {
+                // Handle 401 Unauthorized - redirect to login
+                if (response.status === 401) {
+                    console.warn('Unauthorized request, redirecting to login...');
+                    window.location.href = '/login';
+                    throw new Error('Unauthorized. Please log in again.');
+                }
+                
+                // Handle 419 CSRF token mismatch
+                if (response.status === 419) {
+                    console.error('CSRF token mismatch. Please refresh the page.');
+                    throw new Error('CSRF token mismatch. Please refresh the page and try again.');
+                }
+                
                 if (data.errors) {
                     const errorMessages = Object.entries(data.errors)
                         .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
