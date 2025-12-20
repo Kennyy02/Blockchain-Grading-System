@@ -1015,7 +1015,7 @@ const Students: React.FC = () => {
         }, 500);
         
         return () => clearTimeout(delayDebounceFn);
-    }, [filters.search, filters.program, filters.status, filters.page, filters.per_page, educationLevelFilter]);
+    }, [filters.search, filters.program, filters.year_level, filters.status, filters.page, filters.per_page, educationLevelFilter]);
 
     const loadStudents = async () => {
         if (!educationLevelFilter) {
@@ -1040,8 +1040,8 @@ const Students: React.FC = () => {
                 program: filters.program,
                 page: filters.page,
                 per_page: 10,
-                year_level_min: range?.min,
-                year_level_max: range?.max,
+                year_level_min: filters.year_level ? parseInt(filters.year_level) : range?.min,
+                year_level_max: filters.year_level ? parseInt(filters.year_level) : range?.max,
                 status: filters.status, // 'active' or 'inactive'
             };
             const response = await adminStudentService.getStudents(apiFilters);
@@ -1385,10 +1385,10 @@ const Students: React.FC = () => {
                                     return (
                                         <button
                                             key={level.id}
-                                            onClick={() => {
-                                                setEducationLevelFilter(level.id);
-                                                setFilters(prev => ({ ...prev, year_level: '', page: 1 }));
-                                            }}
+                                        onClick={() => {
+                                            setEducationLevelFilter(level.id);
+                                            setFilters(prev => ({ ...prev, year_level: '', program: '', page: 1 }));
+                                        }}
                                             className={`flex items-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg sm:rounded-xl font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                                                 educationLevelFilter === level.id
                                                     ? `${PRIMARY_COLOR_CLASS} text-white shadow-md sm:shadow-lg scale-105`
@@ -1428,7 +1428,7 @@ const Students: React.FC = () => {
                     <>
                     {/* Search and Filters - Compact on Mobile */}
                     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
-                        <div className={`grid grid-cols-1 ${(educationLevelFilter === 'college' || educationLevelFilter === 'senior_high') ? 'sm:grid-cols-2 md:grid-cols-3' : 'sm:grid-cols-2'} gap-2 sm:gap-3 md:gap-4`}>
+                        <div className={`grid grid-cols-1 ${(educationLevelFilter === 'college' || educationLevelFilter === 'senior_high') ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3'} gap-2 sm:gap-3 md:gap-4`}>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                                     <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
@@ -1465,6 +1465,34 @@ const Students: React.FC = () => {
                                     </select>
                                 </div>
                             )}
+                            {/* Grade Level filter */}
+                            <div className="flex items-center">
+                                <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mr-2 sm:mr-3 flex-shrink-0" />
+                                <select
+                                    value={filters.year_level}
+                                    onChange={(e) => setFilters({...filters, year_level: e.target.value, page: 1})}
+                                    className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white text-sm sm:text-base`}
+                                >
+                                    <option value="">All Grades</option>
+                                    {getAllGradeLevelOptions()
+                                        .filter(grade => {
+                                            if (!educationLevelFilter) return false;
+                                            const levelMap: Record<string, string> = {
+                                                'college': 'College',
+                                                'senior_high': 'Senior High',
+                                                'junior_high': 'Junior High',
+                                                'elementary': 'Elementary'
+                                            };
+                                            return grade.level === levelMap[educationLevelFilter];
+                                        })
+                                        .map((grade) => (
+                                            <option key={grade.value} value={grade.value.toString()}>
+                                                {grade.label}
+                                            </option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
                             {/* Status filter - Active/Inactive */}
                             <div className="flex items-center">
                                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mr-2 sm:mr-3 flex-shrink-0" />
@@ -1481,21 +1509,20 @@ const Students: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Table - Simplified: Student & ID, Grade, Actions */}
+                    {/* Table - Simplified: Student & ID, Actions */}
                     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                                     <tr>
                                         <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Student & ID</th>
-                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Grade</th>
                                         <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={3} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
+                                            <td colSpan={2} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
                                                 <div className="flex justify-center">
                                                     <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
                                                 </div>
@@ -1503,7 +1530,7 @@ const Students: React.FC = () => {
                                         </tr>
                                     ) : students.length === 0 ? (
                                         <tr>
-                                            <td colSpan={3} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
+                                            <td colSpan={2} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
                                                 <div className="flex flex-col items-center">
                                                     <User className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
                                                     <p className="text-base sm:text-lg font-medium">No students found</p>
@@ -1527,9 +1554,6 @@ const Students: React.FC = () => {
                                                                 <div className="text-xs text-gray-500 truncate">{student.student_id}</div>
                                                             </div>
                                                         </div>
-                                                    </td>
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                                        <div className="text-xs sm:text-sm font-semibold text-gray-900">{formatGradeLevel(student.year_level)}</div>
                                                     </td>
                                                     <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
                                                         <div className="flex justify-end space-x-1 sm:space-x-2">
