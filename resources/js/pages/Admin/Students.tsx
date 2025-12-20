@@ -1336,76 +1336,78 @@ const Students: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Stats Cards - Total, Active, Inactive */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div className="bg-white rounded-2xl shadow-lg p-5 border border-gray-100">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">Total Students</p>
-                                    <p className="text-3xl font-bold text-gray-900">{stats.total_students}</p>
+                    {/* Stats Cards - Total, Active, Inactive - Compact on Mobile */}
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Total</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{stats.total_students}</p>
                                 </div>
-                                <div className={`${LIGHT_BG_CLASS} p-3 rounded-xl`}>
-                                    <User className={`h-7 w-7 ${TEXT_COLOR_CLASS}`} />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-5 border border-green-100">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-green-600 mb-1">Total Active</p>
-                                    <p className="text-3xl font-bold text-green-700">{stats.active_students}</p>
-                                </div>
-                                <div className="bg-green-100 p-3 rounded-xl">
-                                    <User className="h-7 w-7 text-green-600" />
+                                <div className={`${LIGHT_BG_CLASS} p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0`}>
+                                    <User className={`h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 ${TEXT_COLOR_CLASS}`} />
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-5 border border-red-100">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-red-600 mb-1">Total Inactive</p>
-                                    <p className="text-3xl font-bold text-red-700">{stats.inactive_students}</p>
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-green-100">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm font-medium text-green-600 mb-0.5 sm:mb-1 truncate">Active</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-700 leading-tight">{stats.active_students}</p>
                                 </div>
-                                <div className="bg-red-100 p-3 rounded-xl">
-                                    <User className="h-7 w-7 text-red-600" />
+                                <div className="bg-green-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
+                                    <User className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-green-600" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-red-100">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm font-medium text-red-600 mb-0.5 sm:mb-1 truncate">Inactive</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-red-700 leading-tight">{stats.inactive_students}</p>
+                                </div>
+                                <div className="bg-red-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
+                                    <User className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-red-600" />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Education Level Tabs */}
-                    <div className="bg-white rounded-2xl shadow-lg p-3 mb-6 border border-gray-100">
-                        <p className="text-sm text-gray-500 mb-3 px-2">Select an education level to view students:</p>
-                        <div className="flex flex-wrap gap-2">
-                            {educationLevels.map((level) => {
-                                // Get count from stats (all students in DB, not just paginated)
-                                const levelCount = stats.by_education_level?.[level.id as keyof typeof stats.by_education_level] || 0;
-                                
-                                return (
-                                    <button
-                                        key={level.id}
-                                        onClick={() => {
-                                            setEducationLevelFilter(level.id);
-                                            setFilters(prev => ({ ...prev, year_level: '', page: 1 }));
-                                        }}
-                                        className={`flex items-center px-5 py-3 rounded-xl font-medium transition-all ${
-                                            educationLevelFilter === level.id
-                                                ? `${PRIMARY_COLOR_CLASS} text-white shadow-lg scale-105`
-                                                : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-102'
-                                        }`}
-                                    >
-                                        <span className="mr-2 text-lg">{level.icon}</span>
-                                        <span>{level.label}</span>
-                                        <span className={`ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                            educationLevelFilter === level.id
-                                                ? 'bg-white/20 text-white'
-                                                : 'bg-gray-200 text-gray-600'
-                                        }`}>
-                                            {levelCount}
-                                        </span>
-                                    </button>
-                                );
-                            })}
+                    {/* Education Level Tabs - Horizontal Scroll on Mobile */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-2 sm:p-3 mb-4 sm:mb-6 border border-gray-100">
+                        <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 px-1 sm:px-2">Select an education level to view students:</p>
+                        <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
+                            <div className="flex gap-1.5 sm:gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
+                                {educationLevels.map((level) => {
+                                    // Get count from stats (all students in DB, not just paginated)
+                                    const levelCount = stats.by_education_level?.[level.id as keyof typeof stats.by_education_level] || 0;
+                                    
+                                    return (
+                                        <button
+                                            key={level.id}
+                                            onClick={() => {
+                                                setEducationLevelFilter(level.id);
+                                                setFilters(prev => ({ ...prev, year_level: '', page: 1 }));
+                                            }}
+                                            className={`flex items-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg sm:rounded-xl font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                                                educationLevelFilter === level.id
+                                                    ? `${PRIMARY_COLOR_CLASS} text-white shadow-md sm:shadow-lg scale-105`
+                                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-102'
+                                            }`}
+                                        >
+                                            <span className="mr-1.5 sm:mr-2 text-base sm:text-lg">{level.icon}</span>
+                                            <span className="text-xs sm:text-sm md:text-base">{level.label}</span>
+                                            <span className={`ml-1.5 sm:ml-2 px-1.5 sm:px-2 md:px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                                                educationLevelFilter === level.id
+                                                    ? 'bg-white/20 text-white'
+                                                    : 'bg-gray-200 text-gray-600'
+                                            }`}>
+                                                {levelCount}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
@@ -1479,37 +1481,38 @@ const Students: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Table */}
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Student & ID</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Parent/Guardian</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Level</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Program</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Grade</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th> 
-                                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
+                    {/* Table - Horizontal Scroll on Mobile */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                            <div className="inline-block min-w-full align-middle">
+                                <table className="min-w-[800px] sm:min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                        <tr>
+                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Student & ID</th>
+                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Parent/Guardian</th>
+                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Level</th>
+                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Program</th>
+                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Grade</th>
+                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Status</th> 
+                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
+                                        </tr>
+                                    </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={7} className="px-6 py-12 text-center">
+                                            <td colSpan={7} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
                                                 <div className="flex justify-center">
-                                                    <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
+                                                    <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : students.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                                            <td colSpan={7} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
                                                 <div className="flex flex-col items-center">
-                                                    <User className="h-12 w-12 text-gray-300 mb-4" />
-                                                    <p className="text-lg font-medium">No students found</p>
-                                                    <p className="text-sm">Try adjusting your search or filters</p>
+                                                    <User className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
+                                                    <p className="text-base sm:text-lg font-medium">No students found</p>
+                                                    <p className="text-xs sm:text-sm">Try adjusting your search or filters</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1519,65 +1522,65 @@ const Students: React.FC = () => {
                                             const primaryParent = student.parents && student.parents.length > 0 ? student.parents[0] : null;
                                             return (
                                                 <tr key={student.id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                         <div className="flex items-center">
-                                                            <div className={`flex-shrink-0 h-10 w-10 rounded-full ${LIGHT_BG_CLASS} flex items-center justify-center border border-[#003366]`}>
-                                                                <User className={`h-5 w-5 ${TEXT_COLOR_CLASS}`} />
+                                                            <div className={`flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 rounded-full ${LIGHT_BG_CLASS} flex items-center justify-center border border-[#003366]`}>
+                                                                <User className={`h-4 w-4 sm:h-5 sm:w-5 ${TEXT_COLOR_CLASS}`} />
                                                             </div>
-                                                            <div className="ml-4">
-                                                                <div className="text-sm font-semibold text-gray-900">
+                                                            <div className="ml-2 sm:ml-4 min-w-0">
+                                                                <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                                                                     {student.full_name}
                                                                 </div>
-                                                                <div className="text-xs text-gray-500">{student.student_id}</div>
+                                                                <div className="text-xs text-gray-500 truncate">{student.student_id}</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                         {primaryParent ? (
-                                                            <div>
-                                                                <div className="text-sm font-medium text-gray-900">{primaryParent.full_name}</div>
+                                                            <div className="min-w-0">
+                                                                <div className="text-xs sm:text-sm font-medium text-gray-900 truncate">{primaryParent.full_name}</div>
                                                                 <div className="text-xs text-gray-500">{primaryParent.pivot?.relationship || 'Parent'}</div>
                                                             </div>
                                                         ) : (
-                                                            <span className="text-sm text-gray-400">—</span>
+                                                            <span className="text-xs sm:text-sm text-gray-400">—</span>
                                                         )}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getEducationLevelColor(eduLevel)}`}>
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                        <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium border ${getEducationLevelColor(eduLevel)}`}>
                                                             {eduLevel}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm text-gray-900">{student.program || '-'}</div> 
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                        <div className="text-xs sm:text-sm text-gray-900 truncate max-w-[120px]">{student.program || '-'}</div> 
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm font-semibold text-gray-900">{formatGradeLevel(student.year_level)}</div>
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                        <div className="text-xs sm:text-sm font-semibold text-gray-900">{formatGradeLevel(student.year_level)}</div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                         {getActiveStatusTag(student.current_class_id)} 
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                        <div className="flex justify-end space-x-2">
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
+                                                        <div className="flex justify-end space-x-1 sm:space-x-2">
                                                             <button
                                                                 onClick={() => handleView(student)}
-                                                                className={`p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
+                                                                className={`p-1.5 sm:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
                                                                 title="View Details"
                                                             >
-                                                                <Eye className="h-5 w-5" />
+                                                                <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleEdit(student)}
-                                                                className={`p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
+                                                                className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
                                                                 title="Edit Student"
                                                             >
-                                                                <Edit className="h-5 w-5" />
+                                                                <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleDelete(student)}
-                                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                                className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                                 title="Delete Student"
                                                             >
-                                                                <Trash2 className="h-5 w-5" />
+                                                                <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                                                             </button>
                                                         </div>
                                                     </td>
@@ -1587,6 +1590,7 @@ const Students: React.FC = () => {
                                     )}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                         
                         {renderPagination()}
