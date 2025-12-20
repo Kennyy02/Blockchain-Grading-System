@@ -124,14 +124,16 @@ export interface Course {
 class AdminStudentService {
     private baseURL = '/api';
 
-    private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-        // Get CSRF token from meta tag (should be in <head>)
-        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    private getCsrfToken(): string {
+        // Try multiple sources for CSRF token
+        let csrfToken: string | null = null;
         
-        // Fallback: Try to get from Inertia page props if available
+        // 1. Try meta tag first
+        csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || null;
+        
+        // 2. Try Inertia page props
         if (!csrfToken && typeof window !== 'undefined') {
             try {
-                // Access Inertia's internal page data
                 const inertiaData = (window as any).__INERTIA_DATA__;
                 if (inertiaData?.page?.props?.csrf_token) {
                     csrfToken = inertiaData.page.props.csrf_token;
@@ -143,11 +145,30 @@ class AdminStudentService {
             }
         }
         
+        // 3. Try Laravel's default token name
+        if (!csrfToken) {
+            const tokenInput = document.querySelector('input[name="_token"]') as HTMLInputElement;
+            if (tokenInput) {
+                csrfToken = tokenInput.value;
+            }
+        }
+        
+        if (!csrfToken) {
+            console.error('CSRF token not found. Please refresh the page.');
+            throw new Error('CSRF token not found. Please refresh the page.');
+        }
+        
+        return csrfToken;
+    }
+
+    private async request<T>(url: string, options: RequestInit = {}, retryOn419: boolean = true): Promise<ApiResponse<T>> {
+        const csrfToken = this.getCsrfToken();
+        
         const defaultOptions: RequestInit = {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
+                'X-CSRF-TOKEN': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
             },
             credentials: 'same-origin',
@@ -175,8 +196,35 @@ class AdminStudentService {
                 
                 // Handle 419 CSRF token mismatch
                 if (response.status === 419) {
-                    console.error('CSRF token mismatch. Please refresh the page.');
-                    throw new Error('CSRF token mismatch. Please refresh the page and try again.');
+                    console.error('CSRF token mismatch (419). Current token:', csrfToken ? csrfToken.substring(0, 10) + '...' : 'missing');
+                    
+                    if (retryOn419) {
+                        // Try to get a fresh token and retry once
+                        try {
+                            // Force re-read the token from all sources
+                            const freshToken = this.getCsrfToken();
+                            if (freshToken && freshToken !== csrfToken) {
+                                console.log('Token refreshed, retrying request with new token...');
+                                // Retry with fresh token
+                                const retryOptions = {
+                                    ...options,
+                                    headers: {
+                                        ...defaultOptions.headers,
+                                        ...options.headers,
+                                        'X-CSRF-TOKEN': freshToken,
+                                    }
+                                };
+                                return this.request<T>(url, retryOptions, false); // Don't retry again
+                            }
+                        } catch (e) {
+                            console.error('Could not refresh CSRF token:', e);
+                        }
+                    }
+                    
+                    // If we still get 419, show user-friendly error
+                    const errorMsg = 'Your session has expired. Please refresh the page and try again.';
+                    console.error(errorMsg);
+                    throw new Error(errorMsg);
                 }
                 
                 if (data.errors) {
