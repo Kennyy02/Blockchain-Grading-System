@@ -172,70 +172,70 @@ const BookModal: React.FC<{
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4">
+            <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
                 
-                <div className="relative w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
-                    <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4`}>
+                <div className="relative w-full max-w-3xl transform overflow-hidden rounded-xl sm:rounded-2xl bg-white shadow-2xl transition-all">
+                    <div className={`${PRIMARY_COLOR_CLASS} px-4 py-3 sm:px-6 sm:py-4`}>
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-lg sm:text-xl font-bold text-white">
                                 {book ? 'Edit Book' : 'Add New Book'}
                             </h2>
-                            <button onClick={onClose} className="rounded-full p-2 text-white/80 hover:bg-white/20 hover:text-white transition-colors">
-                                <X className="h-5 w-5" />
+                            <button onClick={onClose} className="rounded-full p-1.5 sm:p-2 text-white/80 hover:bg-white/20 hover:text-white transition-colors">
+                                <X className="h-4 w-4 sm:h-5 sm:w-5" />
                             </button>
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                        <div className="grid grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Title *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Title *</label>
                                 <input
                                     type="text"
                                     name="title"
                                     value={formData.title}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                     placeholder="Book Title"
                                     required
                                 />
                                 {errors.title && (<p className="text-red-500 text-xs mt-1">{errors.title[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Author</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Author</label>
                                 <input
                                     type="text"
                                     name="author"
                                     value={formData.author}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                     placeholder="Author Name"
                                 />
                                 {errors.author && (<p className="text-red-500 text-xs mt-1">{errors.author[0]}</p>)}
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">ISBN</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">ISBN</label>
                                 <input
                                     type="text"
                                     name="isbn"
                                     value={formData.isbn}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                     placeholder="ISBN Number"
                                 />
                                 {errors.isbn && (<p className="text-red-500 text-xs mt-1">{errors.isbn[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Category *</label>
                                 <select
                                     name="category_id"
                                     value={formData.category_id}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
                                     required
                                 >
                                     <option value={0}>Select Category</option>
@@ -249,27 +249,27 @@ const BookModal: React.FC<{
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Publisher</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Publisher</label>
                                 <input
                                     type="text"
                                     name="publisher"
                                     value={formData.publisher}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                     placeholder="Publisher Name"
                                 />
                                 {errors.publisher && (<p className="text-red-500 text-xs mt-1">{errors.publisher[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Publication Year</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Publication Year</label>
                                 <input
                                     type="number"
                                     name="publication_year"
                                     value={formData.publication_year || ''}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                     placeholder="YYYY"
                                     min="1000"
                                     max={new Date().getFullYear() + 1}
@@ -278,28 +278,28 @@ const BookModal: React.FC<{
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Total Copies *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Total Copies *</label>
                                 <input
                                     type="number"
                                     name="total_copies"
                                     value={formData.total_copies}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                     min="1"
                                     required
                                 />
                                 {errors.total_copies && (<p className="text-red-500 text-xs mt-1">{errors.total_copies[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Available Copies *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Available Copies *</label>
                                 <input
                                     type="number"
                                     name="available_copies"
                                     value={formData.available_copies}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                     min="0"
                                     max={formData.total_copies}
                                     required
@@ -307,12 +307,12 @@ const BookModal: React.FC<{
                                 {errors.available_copies && (<p className="text-red-500 text-xs mt-1">{errors.available_copies[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Status *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Status *</label>
                                 <select
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
                                     required
                                 >
                                     <option value="available">Available</option>
@@ -325,36 +325,36 @@ const BookModal: React.FC<{
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                            <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Location</label>
                             <input
                                 type="text"
                                 name="location"
                                 value={formData.location}
                                 onChange={handleChange}
-                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                 placeholder="e.g., Shelf A-101"
                             />
                             {errors.location && (<p className="text-red-500 text-xs mt-1">{errors.location[0]}</p>)}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                            <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Description</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
                                 onChange={handleChange}
-                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                 rows={3}
                                 placeholder="Book description or summary..."
                             />
                             {errors.description && (<p className="text-red-500 text-xs mt-1">{errors.description[0]}</p>)}
                         </div>
 
-                        <div className="flex justify-end space-x-3 pt-4 border-t">
-                            <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium" disabled={loading}>
+                        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t">
+                            <button type="button" onClick={onClose} className="w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium" disabled={loading}>
                                 Cancel
                             </button>
-                            <button type="submit" className={`px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium shadow-lg disabled:opacity-50`} disabled={loading}>
+                            <button type="submit" className={`w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 text-sm sm:text-base ${PRIMARY_COLOR_CLASS} text-white rounded-lg sm:rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium shadow-lg disabled:opacity-50`} disabled={loading}>
                                 {loading ? 'Saving...' : book ? 'Update Book' : 'Add Book'}
                             </button>
                         </div>
