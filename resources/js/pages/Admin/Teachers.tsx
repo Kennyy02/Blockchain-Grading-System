@@ -663,115 +663,6 @@ const Teachers: React.FC = () => {
     };
 
 
-    const generatePDF = () => {
-        const printWindow = window.open('', '', 'width=800,height=600');
-        if (!printWindow) return;
-
-        const PDF_BORDER_COLOR = '#003366';
-        const PDF_LIGHT_BG = '#e6f2ff';
-        const PDF_DARKER_BORDER = '#002d5a';
-
-        const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Teachers Report</title>
-                <style>
-                    @page { size: A4; margin: 20mm; }
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { font-family: Arial, sans-serif; font-size: 10pt; line-height: 1.4; color: #333; }
-                    .page { position: relative; min-height: 100vh; padding-bottom: 80px; }
-                    .header { text-align: center; padding: 20px 0; border-bottom: 3px solid ${PDF_BORDER_COLOR}; margin-bottom: 20px; }
-                    .header h1 { color: ${PDF_BORDER_COLOR}; font-size: 24pt; font-weight: bold; margin-bottom: 5px; }
-                    .header .subtitle { color: #666; font-size: 11pt; margin-bottom: 10px; }
-                    .summary { background: ${PDF_LIGHT_BG}; border: 2px solid ${PDF_BORDER_COLOR}; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-                    .summary-item { text-align: center; }
-                    .summary-item .label { font-size: 9pt; color: #666; margin-bottom: 5px; }
-                    .summary-item .value { font-size: 18pt; font-weight: bold; color: ${PDF_BORDER_COLOR}; }
-                    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-                    thead { background: ${PDF_BORDER_COLOR}; color: white; }
-                    th { padding: 10px 8px; text-align: left; font-size: 9pt; font-weight: bold; border: 1px solid ${PDF_DARKER_BORDER}; }
-                    td { padding: 8px; border: 1px solid #ddd; font-size: 9pt; }
-                    tbody tr:nth-child(even) { background: #f9fafb; }
-                    tbody tr:hover { background: ${PDF_LIGHT_BG}; }
-                    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px 20mm; border-top: 2px solid ${PDF_BORDER_COLOR}; background: white; font-size: 8pt; color: #666; }
-                    .footer-content { display: flex; justify-content: space-between; align-items: center; }
-                    @media print { body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
-                </style>
-            </head>
-            <body>
-                <div class="page">
-                    <div class="header">
-                        <h1>TEACHERS REPORT</h1>
-                        <div class="subtitle">Complete list of teachers</div>
-                    </div>
-                    
-                    <div class="summary">
-                        <div class="summary-item">
-                            <div class="label">Total Teachers</div>
-                            <div class="value">${teachers.length}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">Total Classes</div>
-                            <div class="value">${teachers.reduce((sum, t) => sum + (t.classes_count || 0), 0)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="label">Advisory Classes</div>
-                            <div class="value">${teachers.filter(t => t.advisory_class).length}</div>
-                        </div>
-                    </div>
-                    
-                    ${teachers.length > 0 ? `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%;">#</th>
-                                    <th style="width: 15%;">Teacher ID</th>
-                                    <th style="width: 30%;">Name</th>
-                                    <th style="width: 30%;">Email</th>
-                                    <th style="width: 20%;">Classes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${teachers.map((teacher, index) => `
-                                    <tr>
-                                        <td style="text-align: center;">${index + 1}</td>
-                                        <td><strong>${teacher.teacher_id}</strong></td>
-                                        <td>${teacher.full_name || `${teacher.first_name} ${teacher.last_name}`}</td>
-                                        <td>${teacher.email}</td>
-                                        <td style="text-align: center;">${teacher.classes_count || 0}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    ` : `
-                        <div style="text-align: center; padding: 40px; color: #666;">
-                            <p class="text-lg font-medium">No teachers found</p>
-                            <p class="text-sm">Current filters: Search="${filters.search}"</p>
-                        </div>
-                    `}
-                    
-                    <div class="footer">
-                        <div class="footer-content">
-                            <div><strong>Teacher Management System</strong> | Generated on: ${new Date().toLocaleString('en-US')}</div>
-                            <div><strong>CONFIDENTIAL</strong> | Page 1 of 1</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <script>
-                    window.onload = function() {
-                        window.print();
-                        setTimeout(function() { window.close(); }, 100);
-                    };
-                </script>
-            </body>
-            </html>
-        `;
-
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-    };
 
     const renderPagination = () => {
         if (pagination.last_page <= 1) return null;
@@ -870,27 +761,17 @@ const Teachers: React.FC = () => {
                                         <div className="fixed inset-0 z-10" onClick={() => setShowExportDropdown(false)} />
                                         <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-20">
                                             <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Export Teachers</p>
-                                            {[
-                                                { id: 'csv', label: '📄 Export as CSV' },
-                                                { id: 'pdf', label: '📋 Export as PDF' },
-                                            ].map(option => (
-                                                <button
-                                                    key={option.id}
-                                                    onClick={() => {
-                                                        setShowExportDropdown(false);
-                                                        if (option.id === 'csv') {
-                                                            const filename = `teachers_report_${new Date().toISOString().split('T')[0]}.csv`;
-                                                            adminTeacherService.exportTeachersToCSV(teachers, filename);
-                                                            setNotification({ type: 'success', message: `Exported ${teachers.length} teachers to CSV` });
-                                                        } else if (option.id === 'pdf') {
-                                                            generatePDF();
-                                                        }
-                                                    }}
-                                                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                                >
-                                                    <span>{option.label}</span>
-                                                </button>
-                                            ))}
+                                            <button
+                                                onClick={() => {
+                                                    setShowExportDropdown(false);
+                                                    const filename = `teachers_report_${new Date().toISOString().split('T')[0]}.csv`;
+                                                    adminTeacherService.exportTeachersToCSV(teachers, filename);
+                                                    setNotification({ type: 'success', message: `Exported ${teachers.length} teachers to CSV` });
+                                                }}
+                                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                            >
+                                                <span>📄 Export as CSV</span>
+                                            </button>
                                         </div>
                                     </>
                                 )}
