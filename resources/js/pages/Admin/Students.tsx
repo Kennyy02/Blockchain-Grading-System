@@ -1426,30 +1426,30 @@ const Students: React.FC = () => {
                         </div>
                     ) : (
                     <>
-                    {/* Search and Filters */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                        <div className={`grid grid-cols-1 ${(educationLevelFilter === 'college' || educationLevelFilter === 'senior_high') ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
+                    {/* Search and Filters - Compact on Mobile */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
+                        <div className={`grid grid-cols-1 ${(educationLevelFilter === 'college' || educationLevelFilter === 'senior_high') ? 'sm:grid-cols-2 md:grid-cols-3' : 'sm:grid-cols-2'} gap-2 sm:gap-3 md:gap-4`}>
                             <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Search className="h-5 w-5 text-gray-400" />
+                                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                                 </div>
                                 <input
                                     type="text"
                                     value={filters.search}
                                     onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                    className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
                                     placeholder="Search student name or ID..."
                                 />
                             </div>
                             {/* Program filter - only show for College and Senior High */}
                             {(educationLevelFilter === 'college' || educationLevelFilter === 'senior_high') && (
                                 <div className="flex items-center">
-                                    <Filter className="h-5 w-5 text-gray-400 mr-3" />
+                                    <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mr-2 sm:mr-3 flex-shrink-0" />
                                     <select
                                         name="program"
                                         value={filters.program} 
                                         onChange={(e) => setFilters({...filters, program: e.target.value, page: 1})} 
-                                        className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white`}
+                                        className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white text-sm sm:text-base`}
                                     >
                                         <option value="">All {educationLevelFilter === 'college' ? 'Courses' : 'Programs'}</option>
                                         {filterCourses
@@ -1467,11 +1467,11 @@ const Students: React.FC = () => {
                             )}
                             {/* Status filter - Active/Inactive */}
                             <div className="flex items-center">
-                                <Clock className="h-5 w-5 text-gray-400 mr-3" />
+                                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 mr-2 sm:mr-3 flex-shrink-0" />
                                 <select
                                     value={filters.status}
                                     onChange={(e) => setFilters({...filters, status: e.target.value, page: 1})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white`}
+                                    className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white text-sm sm:text-base`}
                                 >
                                     <option value="">All Status</option>
                                     <option value="active">Active (Enrolled)</option>
@@ -1481,26 +1481,21 @@ const Students: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Table - Horizontal Scroll on Mobile */}
+                    {/* Table - Simplified: Student & ID, Grade, Actions */}
                     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-                            <div className="inline-block min-w-full align-middle">
-                                <table className="min-w-[800px] sm:min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                                        <tr>
-                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Student & ID</th>
-                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Parent/Guardian</th>
-                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Level</th>
-                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Program</th>
-                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Grade</th>
-                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Status</th> 
-                                            <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
-                                        </tr>
-                                    </thead>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                    <tr>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Student & ID</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Grade</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
+                                    </tr>
+                                </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={7} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
+                                            <td colSpan={3} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
                                                 <div className="flex justify-center">
                                                     <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
                                                 </div>
@@ -1508,7 +1503,7 @@ const Students: React.FC = () => {
                                         </tr>
                                     ) : students.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
+                                            <td colSpan={3} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
                                                 <div className="flex flex-col items-center">
                                                     <User className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
                                                     <p className="text-base sm:text-lg font-medium">No students found</p>
@@ -1518,16 +1513,14 @@ const Students: React.FC = () => {
                                         </tr>
                                     ) : (
                                         students.map((student) => {
-                                            const eduLevel = getEducationLevel(student.year_level);
-                                            const primaryParent = student.parents && student.parents.length > 0 ? student.parents[0] : null;
                                             return (
                                                 <tr key={student.id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
                                                         <div className="flex items-center">
                                                             <div className={`flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 rounded-full ${LIGHT_BG_CLASS} flex items-center justify-center border border-[#003366]`}>
                                                                 <User className={`h-4 w-4 sm:h-5 sm:w-5 ${TEXT_COLOR_CLASS}`} />
                                                             </div>
-                                                            <div className="ml-2 sm:ml-4 min-w-0">
+                                                            <div className="ml-2 sm:ml-4 min-w-0 flex-1">
                                                                 <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                                                                     {student.full_name}
                                                                 </div>
@@ -1536,28 +1529,7 @@ const Students: React.FC = () => {
                                                         </div>
                                                     </td>
                                                     <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                                        {primaryParent ? (
-                                                            <div className="min-w-0">
-                                                                <div className="text-xs sm:text-sm font-medium text-gray-900 truncate">{primaryParent.full_name}</div>
-                                                                <div className="text-xs text-gray-500">{primaryParent.pivot?.relationship || 'Parent'}</div>
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-xs sm:text-sm text-gray-400">—</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                                        <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium border ${getEducationLevelColor(eduLevel)}`}>
-                                                            {eduLevel}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                                        <div className="text-xs sm:text-sm text-gray-900 truncate max-w-[120px]">{student.program || '-'}</div> 
-                                                    </td>
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                         <div className="text-xs sm:text-sm font-semibold text-gray-900">{formatGradeLevel(student.year_level)}</div>
-                                                    </td>
-                                                    <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                                        {getActiveStatusTag(student.current_class_id)} 
                                                     </td>
                                                     <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
                                                         <div className="flex justify-end space-x-1 sm:space-x-2">
@@ -1590,7 +1562,6 @@ const Students: React.FC = () => {
                                     )}
                                 </tbody>
                             </table>
-                            </div>
                         </div>
                         
                         {renderPagination()}
