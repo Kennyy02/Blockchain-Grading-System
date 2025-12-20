@@ -1509,20 +1509,25 @@ const Students: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Table - Simplified: Student & ID, Actions */}
+                    {/* Table - Responsive: Mobile shows Student & ID + Actions, Desktop shows all columns */}
                     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                                     <tr>
                                         <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Student & ID</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Parent/Guardian</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Level</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Program</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Grade</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Status</th> 
                                         <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={2} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
+                                            <td colSpan={7} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
                                                 <div className="flex justify-center">
                                                     <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
                                                 </div>
@@ -1530,7 +1535,7 @@ const Students: React.FC = () => {
                                         </tr>
                                     ) : students.length === 0 ? (
                                         <tr>
-                                            <td colSpan={2} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
+                                            <td colSpan={7} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
                                                 <div className="flex flex-col items-center">
                                                     <User className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
                                                     <p className="text-base sm:text-lg font-medium">No students found</p>
@@ -1540,6 +1545,8 @@ const Students: React.FC = () => {
                                         </tr>
                                     ) : (
                                         students.map((student) => {
+                                            const eduLevel = getEducationLevel(student.year_level);
+                                            const primaryParent = student.parents && student.parents.length > 0 ? student.parents[0] : null;
                                             return (
                                                 <tr key={student.id} className="hover:bg-gray-50 transition-colors">
                                                     <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
@@ -1554,6 +1561,30 @@ const Students: React.FC = () => {
                                                                 <div className="text-xs text-gray-500 truncate">{student.student_id}</div>
                                                             </div>
                                                         </div>
+                                                    </td>
+                                                    <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                        {primaryParent ? (
+                                                            <div className="min-w-0">
+                                                                <div className="text-xs sm:text-sm font-medium text-gray-900 truncate">{primaryParent.full_name}</div>
+                                                                <div className="text-xs text-gray-500">{primaryParent.pivot?.relationship || 'Parent'}</div>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs sm:text-sm text-gray-400">—</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                        <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium border ${getEducationLevelColor(eduLevel)}`}>
+                                                            {eduLevel}
+                                                        </span>
+                                                    </td>
+                                                    <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                        <div className="text-xs sm:text-sm text-gray-900 truncate max-w-[120px]">{student.program || '-'}</div> 
+                                                    </td>
+                                                    <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                        <div className="text-xs sm:text-sm font-semibold text-gray-900">{formatGradeLevel(student.year_level)}</div>
+                                                    </td>
+                                                    <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                                        {getActiveStatusTag(student.current_class_id)} 
                                                     </td>
                                                     <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
                                                         <div className="flex justify-end space-x-1 sm:space-x-2">
