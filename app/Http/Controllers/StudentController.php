@@ -530,14 +530,17 @@ class StudentController extends Controller
             // 3. Get inactive students count
             $inactiveStudents = Student::whereNull('current_class_id')->count();
             
-            // 4. Group by program and count students
+            // 4. Get dropped students count
+            $droppedStudents = Student::where('status', 'dropped')->count();
+            
+            // 5. Group by program and count students
             $studentsByProgram = Student::select('program')
                 ->selectRaw('count(*) as count')
                 ->groupBy('program')
                 ->orderByDesc('count')
                 ->get();
             
-            // 5. Format the output to match the frontend interface expectation (course/count)
+            // 6. Format the output to match the frontend interface expectation (course/count)
             $byCourse = $studentsByProgram->map(function ($item) {
                 return [
                     'course' => $item->program, // Frontend uses 'course', backend model uses 'program'
@@ -545,7 +548,7 @@ class StudentController extends Controller
                 ];
             });
             
-            // 6. Count by education level
+            // 7. Count by education level
             $byEducationLevel = [
                 'college' => Student::whereBetween('year_level', [13, 16])->count(),
                 'senior_high' => Student::whereBetween('year_level', [11, 12])->count(),
@@ -557,6 +560,7 @@ class StudentController extends Controller
                 'total_students' => $totalStudents,
                 'active_students' => $activeStudents,
                 'inactive_students' => $inactiveStudents,
+                'dropped_students' => $droppedStudents,
                 'by_course' => $byCourse,
                 'by_education_level' => $byEducationLevel,
             ];

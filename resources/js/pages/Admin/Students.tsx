@@ -974,6 +974,7 @@ const Students: React.FC = () => {
         total_students: 0,
         active_students: 0,
         inactive_students: 0,
+        dropped_students: 0,
         by_course: [],
         by_education_level: {
             college: 0,
@@ -1336,8 +1337,8 @@ const Students: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Stats Cards - Total, Active, Inactive - Compact on Mobile */}
-                    <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
+                    {/* Stats Cards - Total, Active, Inactive, Dropped - Compact on Mobile */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
                         <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
                                 <div className="flex-1 min-w-0">
@@ -1368,6 +1369,17 @@ const Students: React.FC = () => {
                                 </div>
                                 <div className="bg-red-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
                                     <User className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-red-600" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-orange-100">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm font-medium text-orange-600 mb-0.5 sm:mb-1 truncate">Dropped</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-orange-700 leading-tight">{stats.dropped_students ?? 0}</p>
+                                </div>
+                                <div className="bg-orange-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
+                                    <User className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-orange-600" />
                                 </div>
                             </div>
                         </div>

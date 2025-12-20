@@ -95,6 +95,7 @@ export interface StudentStats {
     total_students: number;
     active_students: number;
     inactive_students: number;
+    dropped_students: number;
     by_course: { course: string; count: number }[];
     by_education_level: {
         college: number;

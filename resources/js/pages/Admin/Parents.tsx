@@ -19,6 +19,7 @@ const educationLevels = [
     { id: 'senior_high', label: 'Senior High', icon: '📖', minGrade: 11, maxGrade: 12 },
     { id: 'junior_high', label: 'Junior High', icon: '📝', minGrade: 7, maxGrade: 10 },
     { id: 'elementary', label: 'Elementary', icon: '✏️', minGrade: 1, maxGrade: 6 },
+    { id: 'no_students', label: 'No Students', icon: '👤', minGrade: null, maxGrade: null },
 ];
 
 // Get education level from year_level
@@ -1130,6 +1131,7 @@ const Parents: React.FC = () => {
                                         'senior_high': 'Senior High',
                                         'junior_high': 'Junior High',
                                         'elementary': 'Elementary',
+                                        'no_students': 'No Students',
                                     };
                                     const count = stats.by_relationship?.find(
                                         r => r.level === levelNameMap[level.id] || r.relationship === levelNameMap[level.id]

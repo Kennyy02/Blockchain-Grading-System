@@ -33,24 +33,29 @@ class ParentController extends Controller
             // Filter by education level of children
             // IMPORTANT: Also include parents with no children (students_count = 0) so they remain visible
             if ($educationLevel = $request->input('education_level')) {
-                $gradeRanges = [
-                    'College' => [13, 16],
-                    'Senior High' => [11, 12],
-                    'Junior High' => [7, 10],
-                    'Elementary' => [1, 6],
-                ];
-                
-                if (isset($gradeRanges[$educationLevel])) {
-                    [$minGrade, $maxGrade] = $gradeRanges[$educationLevel];
-                    // Show parents who either:
-                    // 1. Have students in this education level, OR
-                    // 2. Have no students at all (so they remain visible after student deletion)
-                    $query->where(function($q) use ($minGrade, $maxGrade) {
-                        $q->whereHas('students', function($studentQuery) use ($minGrade, $maxGrade) {
-                            $studentQuery->whereBetween('year_level', [$minGrade, $maxGrade]);
-                        })
-                        ->orWhereDoesntHave('students'); // Include parents with no children
-                    });
+                // Handle "No Students" filter
+                if ($educationLevel === 'no_students') {
+                    $query->doesntHave('students');
+                } else {
+                    $gradeRanges = [
+                        'College' => [13, 16],
+                        'Senior High' => [11, 12],
+                        'Junior High' => [7, 10],
+                        'Elementary' => [1, 6],
+                    ];
+                    
+                    if (isset($gradeRanges[$educationLevel])) {
+                        [$minGrade, $maxGrade] = $gradeRanges[$educationLevel];
+                        // Show parents who either:
+                        // 1. Have students in this education level, OR
+                        // 2. Have no students at all (so they remain visible after student deletion)
+                        $query->where(function($q) use ($minGrade, $maxGrade) {
+                            $q->whereHas('students', function($studentQuery) use ($minGrade, $maxGrade) {
+                                $studentQuery->whereBetween('year_level', [$minGrade, $maxGrade]);
+                            })
+                            ->orWhereDoesntHave('students'); // Include parents with no children
+                        });
+                    }
                 }
             }
             
@@ -95,10 +100,8 @@ class ParentController extends Controller
             // 1. Get total count of all parents
             $totalParents = ParentModel::count();
 
-            // 2. Get count of verified parents (assuming 'verified' means active user account)
-            $verifiedParents = ParentModel::whereHas('user', function($q) {
-                $q->where('status', 'active');
-            })->count();
+            // 2. Get count of unlinked parents (parents with no students)
+            $unlinkedParents = ParentModel::doesntHave('students')->count();
 
             // 3. Count parents by their children's education level
             $gradeRanges = [
@@ -119,10 +122,17 @@ class ParentController extends Controller
                     'count' => $count,
                 ];
             }
+            
+            // Add count for parents with no students
+            $noStudentsCount = ParentModel::doesntHave('students')->count();
+            $byEducationLevel[] = [
+                'level' => 'No Students',
+                'count' => $noStudentsCount,
+            ];
 
             $stats = [
                 'total_parents' => $totalParents,
-                'verified_parents' => $verifiedParents,
+                'unlinked_parents' => $unlinkedParents,
                 'by_education_level' => $byEducationLevel,
                 // Keep by_relationship for backwards compatibility
                 'by_relationship' => $byEducationLevel,
