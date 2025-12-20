@@ -1245,6 +1245,14 @@ const Students: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex flex-col gap-2 sm:gap-3">
+                        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-3">
+                                    <button 
+                                        onClick={() => loadStudents()}
+                                        className="inline-flex items-center px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm flex-shrink-0 order-first sm:order-last sm:ml-auto"
+                                    >
+                                        <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+                                    </button>
+                                </div>
                             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                                 <button 
                                     onClick={() => router.visit('/admin/students/dropped')}
@@ -1340,14 +1348,7 @@ const Students: React.FC = () => {
                                         </>
                                     )}
                                 </div>
-                                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-3">
-                                    <button 
-                                        onClick={() => loadStudents()}
-                                        className="inline-flex items-center px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm flex-shrink-0 order-first sm:order-last sm:ml-auto"
-                                    >
-                                        <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-                                    </button>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
