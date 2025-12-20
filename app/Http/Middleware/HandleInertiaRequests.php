@@ -20,12 +20,25 @@ class HandleInertiaRequests extends Middleware
 
     /**
      * Determines the current asset version.
+     * This helps Inertia detect when assets have changed and forces a full page reload.
+     * This is critical for deployments to prevent stale asset cache issues.
      *
      * @see https://inertiajs.com/asset-versioning
      */
     public function version(Request $request): ?string
     {
-        return parent::version($request);
+        // Use a combination of app version and build timestamp for cache busting
+        // This ensures assets are refreshed after each deployment
+        $manifestPath = public_path('build/manifest.json');
+        
+        if (file_exists($manifestPath)) {
+            // Use manifest file modification time as version
+            // This changes whenever assets are rebuilt
+            return md5_file($manifestPath);
+        }
+        
+        // Fallback: use app version or deployment timestamp
+        return md5(config('app.version', app()->version()) . config('app.key', ''));
     }
 
     /**
@@ -39,20 +52,33 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
-        return [
-            ...parent::share($request),
-            'csrf_token' => csrf_token(),
-            'name' => config('app.name'),
-            'quote' => ['message' => trim($message), 'author' => trim($author)],
-            'auth' => [
-                'user' => $request->user() ? $request->user()->loadMissing([
+        // Safely get user with error handling for session issues
+        $user = null;
+        try {
+            $user = $request->user();
+            if ($user) {
+                $user->loadMissing([
                     'student.course', 
                     'student.currentClass',
                     'teacher.advisoryClass',
                     'teacher.subjects',
                     'parent.students.course',
                     'parent.students.currentClass'
-                ]) : null,
+                ]);
+            }
+        } catch (\Exception $e) {
+            // If session is invalid, user will be null
+            // This prevents errors during deployment transitions
+            \Log::warning('Session error in Inertia middleware: ' . $e->getMessage());
+        }
+
+        return [
+            ...parent::share($request),
+            'csrf_token' => csrf_token(),
+            'name' => config('app.name'),
+            'quote' => ['message' => trim($message), 'author' => trim($author)],
+            'auth' => [
+                'user' => $user,
             ],
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
