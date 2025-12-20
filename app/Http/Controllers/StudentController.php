@@ -464,6 +464,42 @@ class StudentController extends Controller
     }
 
     /**
+     * Re-enroll a student (change status from dropped to active).
+     * POST /api/students/{id}/re-enroll
+     */
+    public function reEnroll(Request $request, $id)
+    {
+        try {
+            $student = Student::findOrFail($id);
+            $studentName = $student->first_name . ' ' . $student->last_name;
+            
+            // Validate that student is actually dropped
+            if ($student->status !== 'dropped') {
+                return $request->expectsJson()
+                    ? response()->json(['success' => false, 'message' => "Student '{$studentName}' is not dropped and cannot be re-enrolled."], 422)
+                    : back()->with('error', "Student '{$studentName}' is not dropped and cannot be re-enrolled.");
+            }
+            
+            // Update student status to 'active' (or 'inactive' if no class assigned)
+            // Note: current_class_id remains null until they are enrolled in a class
+            $student->update([
+                'status' => 'active',
+            ]);
+            
+            $student->load(['user', 'currentClass', 'parents']);
+            
+            return $request->expectsJson()
+                ? response()->json(['success' => true, 'data' => $student, 'message' => "Student '{$studentName}' has been re-enrolled successfully."])
+                : redirect()->route('students.index')->with('success', "Student '{$studentName}' has been re-enrolled successfully.");
+        } catch (\Exception $e) {
+            Log::error('Error re-enrolling student: ' . $e->getMessage());
+            return $request->expectsJson()
+                ? response()->json(['success' => false, 'message' => 'Failed to re-enroll student', 'error' => $e->getMessage()], 500)
+                : back()->with('error', 'Failed to re-enroll student');
+        }
+    }
+
+    /**
      * Remove the specified student from storage (API & Inertia).
      */
     public function destroy(Request $request, $id)

@@ -204,6 +204,7 @@ Route::prefix('students')->group(function () {
     Route::get('/{id}/transcript', [StudentController::class, 'getTranscript']);
     Route::put('/{id}', [StudentController::class, 'update']);
     Route::post('/{id}/drop', [StudentController::class, 'drop']);
+    Route::post('/{id}/re-enroll', [StudentController::class, 'reEnroll']);
     Route::delete('/{id}', [StudentController::class, 'destroy']);
 });
 

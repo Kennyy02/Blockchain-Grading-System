@@ -382,6 +382,33 @@ class AdminStudentService {
     }
 
     /**
+     * Re-enroll student (change status from dropped to active)
+     * Fetches a fresh CSRF token from server before making the request
+     */
+    async reEnrollStudent(id: number): Promise<ApiResponse<Student>> {
+        // Validate ID
+        if (!id || isNaN(id)) {
+            throw new Error('Invalid student ID provided');
+        }
+        
+        try {
+            // Get a fresh CSRF token from the server
+            const freshToken = await this.getFreshCsrfToken();
+            console.log('Got fresh CSRF token for re-enroll request');
+            
+            return this.request<Student>(`${this.baseURL}/students/${id}/re-enroll`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': freshToken,
+                },
+            });
+        } catch (error) {
+            console.error('Error re-enrolling student:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Drop student (mark as dropped status instead of deleting)
      * Fetches a fresh CSRF token from server before making the request
      */

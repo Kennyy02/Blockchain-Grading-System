@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Search, Filter, Edit, Trash2, X, RefreshCw, Download, Mail, BookOpen, Clock, Eye, EyeOff, GraduationCap, ChevronDown, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
+import { User, Search, Filter, Edit, Trash2, X, RefreshCw, Download, Mail, BookOpen, Clock, Eye, EyeOff, GraduationCap, ChevronDown, CheckCircle, AlertCircle, ArrowLeft, Plus } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { adminStudentService, Student, StudentFormData, StudentStats, StudentsResponse, ApiResponse } from '../../../services/AdminStudentService';
@@ -63,8 +63,12 @@ const DroppedStudents: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
+    const [showReEnrollModal, setShowReEnrollModal] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
     const [notification, setNotification] = useState<Notification | null>(null);
+    const [reEnrollLoading, setReEnrollLoading] = useState(false);
+    const [allDroppedStudents, setAllDroppedStudents] = useState<Student[]>([]);
+    const [loadingAllStudents, setLoadingAllStudents] = useState(false);
     
     const [filters, setFilters] = useState<Filters>({
         search: '',
@@ -187,6 +191,53 @@ const DroppedStudents: React.FC = () => {
         }
     };
 
+    const loadAllDroppedStudents = async () => {
+        setLoadingAllStudents(true);
+        try {
+            const response = await adminStudentService.getStudents({
+                status: 'dropped',
+                per_page: 1000, // Load all dropped students
+            });
+            if (response.success) {
+                setAllDroppedStudents(response.data);
+            }
+        } catch (error) {
+            console.error('Error loading all dropped students:', error);
+        } finally {
+            setLoadingAllStudents(false);
+        }
+    };
+
+    const handleReEnroll = (student: Student) => {
+        setSelectedStudent(student);
+    };
+
+    const handleOpenReEnrollModal = () => {
+        setShowReEnrollModal(true);
+        setSelectedStudent(null);
+        loadAllDroppedStudents();
+    };
+
+    const handleConfirmReEnroll = async () => {
+        if (!selectedStudent) return;
+
+        setReEnrollLoading(true);
+        try {
+            const response = await adminStudentService.reEnrollStudent(selectedStudent.id);
+            if (response.success) {
+                setNotification({ type: 'success', message: `Student '${selectedStudent.full_name}' has been re-enrolled successfully!` });
+                setShowReEnrollModal(false);
+                setSelectedStudent(null);
+                loadStudents();
+                loadStats();
+            }
+        } catch (error: any) {
+            setNotification({ type: 'error', message: error.message || 'Failed to re-enroll student' });
+        } finally {
+            setReEnrollLoading(false);
+        }
+    };
+
     const handlePageChange = (page: number) => {
         setFilters({ ...filters, page });
     };
@@ -213,6 +264,13 @@ const DroppedStudents: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex space-x-3">
+                            <button 
+                                onClick={handleOpenReEnrollModal}
+                                className={`inline-flex items-center px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all shadow-lg font-medium`}
+                            >
+                                <Plus className="h-5 w-5 mr-2" />
+                                Re-Enroll Student
+                            </button>
                             <button 
                                 onClick={() => loadStudents()}
                                 className="inline-flex items-center px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm"
@@ -439,6 +497,134 @@ const DroppedStudents: React.FC = () => {
                                                 Close
                                             </button>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Re-Enroll Modal */}
+                    {showReEnrollModal && (
+                        <div className="fixed inset-0 z-50 overflow-y-auto">
+                            <div className="flex min-h-full items-center justify-center p-4">
+                                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => {
+                                    setShowReEnrollModal(false);
+                                    setSelectedStudent(null);
+                                }}></div>
+                                <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl">
+                                    <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4 rounded-t-2xl`}>
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="text-xl font-bold text-white">Re-Enroll Student</h2>
+                                            <button
+                                                onClick={() => {
+                                                    setShowReEnrollModal(false);
+                                                    setSelectedStudent(null);
+                                                }}
+                                                className="text-white/80 hover:text-white"
+                                            >
+                                                <X className="h-5 w-5" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="p-6">
+                                        {selectedStudent ? (
+                                            // Confirmation view
+                                            <div>
+                                                <div className="flex items-center mb-4">
+                                                    <button
+                                                        onClick={() => setSelectedStudent(null)}
+                                                        className="mr-3 p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                                        disabled={reEnrollLoading}
+                                                    >
+                                                        <ArrowLeft className="h-5 w-5" />
+                                                    </button>
+                                                    <h3 className="text-lg font-semibold text-gray-900">Confirm Re-Enrollment</h3>
+                                                </div>
+                                                <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                                                    <div className="flex items-center mb-3">
+                                                        <User className="h-10 w-10 text-gray-400 mr-3" />
+                                                        <div>
+                                                            <div className="font-medium text-gray-900">{selectedStudent.full_name}</div>
+                                                            <div className="text-sm text-gray-500">{selectedStudent.student_id}</div>
+                                                            {selectedStudent.program && (
+                                                                <div className="text-xs text-gray-400 mt-1">{selectedStudent.program} • {formatGradeLevel(selectedStudent.year_level)}</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <p className="text-gray-600 mb-6">
+                                                    Are you sure you want to re-enroll this student? This will change their status from <strong className="text-orange-600">dropped</strong> to <strong className="text-green-600">active</strong>.
+                                                </p>
+                                                <div className="flex justify-end space-x-3">
+                                                    <button
+                                                        onClick={() => setSelectedStudent(null)}
+                                                        className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                                                        disabled={reEnrollLoading}
+                                                    >
+                                                        Back
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowReEnrollModal(false);
+                                                            setSelectedStudent(null);
+                                                        }}
+                                                        className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                                                        disabled={reEnrollLoading}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        onClick={handleConfirmReEnroll}
+                                                        disabled={reEnrollLoading}
+                                                        className={`px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium shadow-lg disabled:opacity-50`}
+                                                    >
+                                                        {reEnrollLoading ? 'Re-enrolling...' : 'Re-Enroll Student'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            // Student selection view
+                                            <div>
+                                                <p className="text-gray-600 mb-4">Select a student to re-enroll:</p>
+                                                <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                                                    {loadingAllStudents ? (
+                                                        <div className="p-8 text-center">
+                                                            <RefreshCw className="h-8 w-8 animate-spin text-gray-400 mx-auto mb-2" />
+                                                            <p className="text-gray-500">Loading students...</p>
+                                                        </div>
+                                                    ) : allDroppedStudents.length === 0 ? (
+                                                        <div className="p-8 text-center">
+                                                            <User className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                                                            <p className="text-gray-500 font-medium">No dropped students found</p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="divide-y divide-gray-200">
+                                                            {allDroppedStudents.map((student) => (
+                                                                <button
+                                                                    key={student.id}
+                                                                    onClick={() => handleReEnroll(student)}
+                                                                    className="w-full p-4 text-left hover:bg-gray-50 transition-colors"
+                                                                >
+                                                                    <div className="flex items-center justify-between">
+                                                                        <div className="flex items-center flex-1">
+                                                                            <User className="h-8 w-8 text-gray-400 mr-3" />
+                                                                            <div>
+                                                                                <div className="font-medium text-gray-900">{student.full_name}</div>
+                                                                                <div className="text-sm text-gray-500">{student.student_id}</div>
+                                                                                {student.program && (
+                                                                                    <div className="text-xs text-gray-400 mt-1">{student.program} • {formatGradeLevel(student.year_level)}</div>
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                        <ChevronRight className="h-5 w-5 text-gray-400" />
+                                                                    </div>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
