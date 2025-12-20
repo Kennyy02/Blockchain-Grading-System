@@ -48,6 +48,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Get fresh CSRF token for authenticated users
+Route::middleware('auth:sanctum')->get('/csrf-token', function (Request $request) {
+    return response()->json([
+        'success' => true,
+        'csrf_token' => csrf_token(),
+    ]);
+});
+
 // ========================================================================
 // 🔐 PROTECTED API ROUTES - REQUIRE AUTHENTICATION
 // ========================================================================

@@ -314,8 +314,36 @@ class AdminStudentService {
     }
 
     /**
+     * Get fresh CSRF token from server
+     */
+    private async getFreshCsrfToken(): Promise<string> {
+        try {
+            const response = await fetch('/api/csrf-token', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.csrf_token) {
+                    return data.csrf_token;
+                }
+            }
+        } catch (e) {
+            console.warn('Could not fetch fresh CSRF token from server:', e);
+        }
+        
+        // Fallback to getting token from page
+        return this.getCsrfToken();
+    }
+
+    /**
      * Delete student
-     * Refreshes CSRF token from server before making the request
+     * Fetches a fresh CSRF token from server before making the request
      */
     async deleteStudent(id: number): Promise<ApiResponse<null>> {
         // Validate ID
@@ -324,35 +352,20 @@ class AdminStudentService {
         }
         
         try {
-            // First, try to refresh the CSRF token by making a simple request
-            // This ensures the session is active and we have a valid token
-            try {
-                await fetch('/api/students/stats', {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                    }
-                });
-            } catch (e) {
-                // If stats request fails, continue anyway
-                console.warn('Could not refresh session:', e);
-            }
+            // Get a fresh CSRF token from the server
+            const freshToken = await this.getFreshCsrfToken();
+            console.log('Got fresh CSRF token for delete request');
             
-            // Get a fresh CSRF token right before the DELETE request
-            const freshToken = this.getCsrfToken();
-            
-            // Construct the full URL with the student ID - ensure it's absolute
+            // Construct the full URL with the student ID
             const deleteUrl = `${this.baseURL}/students/${id}`;
-            console.log('Deleting student:', { id, url: deleteUrl, baseURL: this.baseURL });
+            console.log('Deleting student:', { id, url: deleteUrl });
             
             // Validate URL construction
             if (!deleteUrl.includes(`/students/${id}`)) {
                 throw new Error(`Invalid URL constructed: ${deleteUrl}. Expected to include /students/${id}`);
             }
             
-            // Make the DELETE request with explicit credentials and fresh token
+            // Make the DELETE request with fresh token
             return this.request<null>(deleteUrl, {
                 method: 'DELETE',
                 headers: {
