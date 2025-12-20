@@ -1079,85 +1079,87 @@ const Parents: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">Total Parents/Guardians</p>
-                                    <p className="text-3xl font-bold text-gray-900">{stats.total_parents}</p>
+                    {/* Stats Cards - Compact on Mobile */}
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Total</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{stats.total_parents}</p>
                                 </div>
-                                <div className={`${LIGHT_BG_CLASS} p-3 rounded-xl`}>
-                                    <Users className={`h-8 w-8 ${TEXT_COLOR_CLASS}`} />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">Verified Accounts</p>
-                                    <p className={`text-3xl font-bold ${TEXT_COLOR_CLASS}`}>{stats.verified_parents}</p>
-                                </div>
-                                <div className={`${LIGHT_BG_CLASS} p-3 rounded-xl`}>
-                                    <Link className={`h-8 w-8 ${TEXT_COLOR_CLASS}`} />
+                                <div className={`${LIGHT_BG_CLASS} p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0`}>
+                                    <Users className={`h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 ${TEXT_COLOR_CLASS}`} />
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">With Linked Students</p>
-                                    <p className={`text-3xl font-bold ${TEXT_COLOR_CLASS}`}>
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Verified</p>
+                                    <p className={`text-xl sm:text-2xl md:text-3xl font-bold ${TEXT_COLOR_CLASS} leading-tight`}>{stats.verified_parents}</p>
+                                </div>
+                                <div className={`${LIGHT_BG_CLASS} p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0`}>
+                                    <Link className={`h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 ${TEXT_COLOR_CLASS}`} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Linked</p>
+                                    <p className={`text-xl sm:text-2xl md:text-3xl font-bold ${TEXT_COLOR_CLASS} leading-tight`}>
                                         {stats.by_relationship?.reduce((sum, item) => sum + (item.count || 0), 0) || 0}
                                     </p>
                                 </div>
-                                <div className={`${LIGHT_BG_CLASS} p-3 rounded-xl`}>
-                                    <Link className={`h-8 w-8 ${TEXT_COLOR_CLASS}`} />
+                                <div className={`${LIGHT_BG_CLASS} p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0`}>
+                                    <Link className={`h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 ${TEXT_COLOR_CLASS}`} />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Education Level Tabs */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                        <p className="text-sm text-gray-600 mb-4">Select an education level to view parents/guardians:</p>
-                        <div className="flex flex-wrap gap-3">
-                            {educationLevels.map((level) => {
-                                // Map level id to the format used in stats
-                                const levelNameMap: Record<string, string> = {
-                                    'college': 'College',
-                                    'senior_high': 'Senior High',
-                                    'junior_high': 'Junior High',
-                                    'elementary': 'Elementary',
-                                };
-                                const count = stats.by_relationship?.find(
-                                    r => r.level === levelNameMap[level.id] || r.relationship === levelNameMap[level.id]
-                                )?.count || 0;
-                                const isSelected = educationLevelFilter === level.id;
-                                
-                                return (
-                                    <button
-                                        key={level.id}
-                                        onClick={() => {
-                                            setEducationLevelFilter(isSelected ? '' : level.id);
-                                            setFilters(prev => ({ ...prev, page: 1 }));
-                                        }}
-                                        className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all ${
-                                            isSelected
-                                                ? `${PRIMARY_COLOR_CLASS} text-white shadow-lg`
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }`}
-                                    >
-                                        <span>{level.icon}</span>
-                                        <span>{level.label}</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                                            isSelected ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-600'
-                                        }`}>
-                                            {count}
-                                        </span>
-                                    </button>
-                                );
-                            })}
+                    {/* Education Level Tabs - Horizontal Scroll on Mobile */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-2 sm:p-3 mb-4 sm:mb-6 border border-gray-100">
+                        <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 px-1 sm:px-2">Select an education level to view parents/guardians:</p>
+                        <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
+                            <div className="flex gap-1.5 sm:gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
+                                {educationLevels.map((level) => {
+                                    // Map level id to the format used in stats
+                                    const levelNameMap: Record<string, string> = {
+                                        'college': 'College',
+                                        'senior_high': 'Senior High',
+                                        'junior_high': 'Junior High',
+                                        'elementary': 'Elementary',
+                                    };
+                                    const count = stats.by_relationship?.find(
+                                        r => r.level === levelNameMap[level.id] || r.relationship === levelNameMap[level.id]
+                                    )?.count || 0;
+                                    const isSelected = educationLevelFilter === level.id;
+                                    
+                                    return (
+                                        <button
+                                            key={level.id}
+                                            onClick={() => {
+                                                setEducationLevelFilter(isSelected ? '' : level.id);
+                                                setFilters(prev => ({ ...prev, page: 1 }));
+                                            }}
+                                            className={`flex items-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg sm:rounded-xl font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                                                isSelected
+                                                    ? `${PRIMARY_COLOR_CLASS} text-white shadow-md sm:shadow-lg scale-105`
+                                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-102'
+                                            }`}
+                                        >
+                                            <span className="mr-1.5 sm:mr-2 text-base sm:text-lg">{level.icon}</span>
+                                            <span className="text-xs sm:text-sm md:text-base">{level.label}</span>
+                                            <span className={`ml-1.5 sm:ml-2 px-1.5 sm:px-2 md:px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                                                isSelected ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-600'
+                                            }`}>
+                                                {count}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
@@ -1170,88 +1172,88 @@ const Parents: React.FC = () => {
                         </div>
                     ) : (
                         <>
-                            {/* Search and Filters */}
-                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
+                            {/* Search and Filters - Compact on Mobile */}
+                            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Search className="h-5 w-5 text-gray-400" />
+                                    <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                        <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                                     </div>
                                     <input
                                         type="text"
                                         value={filters.search}
                                         onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                        className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                        className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
                                         placeholder="Search guardian name or ID..."
                                     />
                                 </div>
                             </div>
 
-                    {/* Table */}
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                    {/* Table - Responsive: Mobile shows Parent/Guardian & Actions, Desktop shows all columns */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                                     <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Parent/Guardian</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Contact Info</th>
-                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Children (Students)</th>
-                                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Parent/Guardian</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Contact Info</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Children (Students)</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={4} className="px-6 py-12 text-center">
+                                            <td colSpan={4} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
                                                 <div className="flex justify-center">
-                                                    <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
+                                                    <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : parents.length === 0 ? (
                                         <tr>
-                                            <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                                            <td colSpan={4} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
                                                 <div className="flex flex-col items-center">
-                                                    <Users className="h-12 w-12 text-gray-300 mb-4" />
-                                                    <p className="text-lg font-medium">No parent/guardian accounts found</p>
-                                                    <p className="text-sm">Add a new guardian or adjust filters</p>
+                                                    <Users className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
+                                                    <p className="text-base sm:text-lg font-medium">No parent/guardian accounts found</p>
+                                                    <p className="text-xs sm:text-sm">Add a new guardian or adjust filters</p>
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : (
                                         parents.map((parent) => (
                                             <tr key={parent.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
                                                     <div className="flex items-center">
-                                                        <div className={`flex-shrink-0 h-10 w-10 rounded-full ${LIGHT_BG_CLASS} flex items-center justify-center border border-[#003366]`}>
-                                                            <Users className={`h-5 w-5 ${TEXT_COLOR_CLASS}`} />
+                                                        <div className={`flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 rounded-full ${LIGHT_BG_CLASS} flex items-center justify-center border border-[#003366]`}>
+                                                            <Users className={`h-4 w-4 sm:h-5 sm:w-5 ${TEXT_COLOR_CLASS}`} />
                                                         </div>
-                                                        <div className="ml-4">
-                                                            <div className="text-sm font-semibold text-gray-900">
+                                                        <div className="ml-2 sm:ml-4 min-w-0 flex-1">
+                                                            <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                                                                 {parent.full_name}
                                                             </div>
-                                                            <div className="text-xs text-gray-500">{parent.relationship_to_student || 'Parent'}</div>
+                                                            <div className="text-xs text-gray-500 truncate">{parent.relationship_to_student || 'Parent'}</div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4">
                                                     <div className="flex flex-col space-y-1">
-                                                        <div className="flex items-center text-sm text-gray-900">
-                                                            <Mail className="h-4 w-4 text-gray-400 mr-2" />
-                                                            {parent.email}
+                                                        <div className="flex items-center text-xs sm:text-sm text-gray-900">
+                                                            <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mr-2" />
+                                                            <span className="truncate">{parent.email}</span>
                                                         </div>
-                                                        <div className="flex items-center text-sm text-gray-500">
-                                                            <Phone className="h-4 w-4 text-gray-400 mr-2" />
-                                                            {parent.phone || 'N/A'}
+                                                        <div className="flex items-center text-xs sm:text-sm text-gray-500">
+                                                            <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mr-2" />
+                                                            <span className="truncate">{parent.phone || 'N/A'}</span>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4">
                                                     <div className="flex flex-col space-y-1">
                                                         {parent.students && parent.students.length > 0 ? (
                                                             parent.students.map((child: any) => (
-                                                                <div key={child.id} className="flex items-center gap-2 text-sm">
-                                                                    <span className="font-medium text-gray-900">{child.full_name}</span>
-                                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                                <div key={child.id} className="flex items-center gap-2 text-xs sm:text-sm">
+                                                                    <span className="font-medium text-gray-900 truncate">{child.full_name}</span>
+                                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${
                                                                         child.year_level >= 13 ? 'bg-purple-100 text-purple-800' :
                                                                         child.year_level >= 11 ? 'bg-blue-100 text-blue-800' :
                                                                         child.year_level >= 7 ? 'bg-green-100 text-green-800' :
@@ -1260,37 +1262,37 @@ const Parents: React.FC = () => {
                                                                         {formatGradeLevelModal(child.year_level)}
                                                                     </span>
                                                                     {child.program && (
-                                                                        <span className="text-xs text-gray-500">({child.program})</span>
+                                                                        <span className="text-xs text-gray-500 truncate">({child.program})</span>
                                                                     )}
                                                                 </div>
                                                             ))
                                                         ) : (
-                                                            <span className="text-sm text-gray-500">No linked students</span>
+                                                            <span className="text-xs sm:text-sm text-gray-500">No linked students</span>
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                    <div className="flex justify-end space-x-2">
+                                                <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
+                                                    <div className="flex justify-end space-x-1 sm:space-x-2">
                                                         <button
                                                             onClick={() => handleView(parent)}
-                                                            className={`p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
+                                                            className={`p-1.5 sm:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
                                                             title="View Details"
                                                         >
-                                                            <Eye className="h-5 w-5" />
+                                                            <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleEdit(parent)}
-                                                            className={`p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
+                                                            className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
                                                             title="Edit Guardian"
                                                         >
-                                                            <Edit className="h-5 w-5" />
+                                                            <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(parent)}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                            className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                             title="Delete Guardian"
                                                         >
-                                                            <Trash2 className="h-5 w-5" />
+                                                            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                     </div>
                                                 </td>
