@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, Plus, Search, Edit, Trash2, X, RefreshCw, Download, Phone, Mail, Users, Eye, EyeOff, ChevronDown, CheckCircle, AlertCircle } from 'lucide-react';
+import { UserCheck, Plus, Search, Edit, Trash2, X, RefreshCw, Download, Phone, Mail, Users, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 // UPDATED IMPORT: Changed from adminService to adminTeacherService
 import { adminTeacherService, Teacher, TeacherFormData } from '../../../services/AdminTeacherService'; 
@@ -512,7 +512,6 @@ const Teachers: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
-    const [showExportDropdown, setShowExportDropdown] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
     const [notification, setNotification] = useState<NotificationData | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
@@ -745,37 +744,19 @@ const Teachers: React.FC = () => {
                                 <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
                             </button>
                             
-                            {/* Export Dropdown */}
-                            <div className="relative">
-                                <button
-                                    onClick={() => setShowExportDropdown(!showExportDropdown)}
-                                    className="inline-flex items-center gap-2 px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm"
-                                    title="Export Teachers Report"
-                                >
-                                    <Download className="h-5 w-5" />
-                                    <span className="text-sm font-medium">Export</span>
-                                    <ChevronDown className={`h-4 w-4 transition-transform ${showExportDropdown ? 'rotate-180' : ''}`} />
-                                </button>
-                                {showExportDropdown && (
-                                    <>
-                                        <div className="fixed inset-0 z-10" onClick={() => setShowExportDropdown(false)} />
-                                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-20">
-                                            <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Export Teachers</p>
-                                            <button
-                                                onClick={() => {
-                                                    setShowExportDropdown(false);
-                                                    const filename = `teachers_report_${new Date().toISOString().split('T')[0]}.csv`;
-                                                    adminTeacherService.exportTeachersToCSV(teachers, filename);
-                                                    setNotification({ type: 'success', message: `Exported ${teachers.length} teachers to CSV` });
-                                                }}
-                                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                            >
-                                                <span>📄 Export as CSV</span>
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+                            {/* Export Button */}
+                            <button
+                                onClick={() => {
+                                    const filename = `teachers_report_${new Date().toISOString().split('T')[0]}.csv`;
+                                    adminTeacherService.exportTeachersToCSV(teachers, filename);
+                                    setNotification({ type: 'success', message: `Exported ${teachers.length} teachers to CSV` });
+                                }}
+                                className="inline-flex items-center gap-2 px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm"
+                                title="Export Teachers to CSV/Excel"
+                            >
+                                <Download className="h-5 w-5" />
+                                <span className="text-sm font-medium">Export</span>
+                            </button>
                         </div>
                     </div>
 
