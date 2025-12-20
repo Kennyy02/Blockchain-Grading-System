@@ -42,12 +42,14 @@ class StudentController extends Controller
                 $query->byYearLevel((int)$yearLevel);
             }
             
-            // Handle status filter (active = enrolled, inactive = not enrolled)
+            // Handle status filter (active = enrolled, inactive = not enrolled, dropped = dropped status)
             if ($status = $request->input('status')) {
                 if ($status === 'active') {
                     $query->whereNotNull('current_class_id');
                 } elseif ($status === 'inactive') {
                     $query->whereNull('current_class_id');
+                } elseif ($status === 'dropped') {
+                    $query->where('status', 'dropped');
                 }
             }
             

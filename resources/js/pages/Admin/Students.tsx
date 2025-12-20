@@ -85,6 +85,7 @@ const educationLevels = [
     { id: 'senior_high', label: 'Senior High', icon: '📖', minGrade: 11, maxGrade: 12 },
     { id: 'junior_high', label: 'Junior High', icon: '📝', minGrade: 7, maxGrade: 10 },
     { id: 'elementary', label: 'Elementary', icon: '✏️', minGrade: 1, maxGrade: 6 },
+    { id: 'dropped', label: 'Dropped', icon: '❌', minGrade: null, maxGrade: null },
 ];
 
 
@@ -911,12 +912,12 @@ const DeleteStudentModal: React.FC<{
                 
                 <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
                     <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4`}>
-                        <h2 className="text-xl font-bold text-white">Delete Student</h2>
+                        <h2 className="text-xl font-bold text-white">Drop Student</h2>
                     </div>
                     
                     <div className="p-6">
                         <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete student <strong className="text-gray-900">{student.full_name} ({student.student_id})</strong>? This action will archive their data.
+                            Are you sure you want to drop student <strong className="text-gray-900">{student.full_name} ({student.student_id})</strong>? This action will mark the student as dropped.
                         </p>
                         
                         <div className="flex justify-end space-x-3">
@@ -924,7 +925,7 @@ const DeleteStudentModal: React.FC<{
                                 Cancel
                             </button>
                             <button onClick={handleDelete} className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all font-medium shadow-lg disabled:opacity-50" disabled={loading}>
-                                {loading ? 'Deleting...' : 'Delete'}
+                                {loading ? 'Dropping...' : 'Drop Student'}
                             </button>
                         </div>
                     </div>
@@ -1026,6 +1027,27 @@ const Students: React.FC = () => {
         
         setLoading(true);
         try {
+            // Special handling for dropped students filter
+            if (educationLevelFilter === 'dropped') {
+                const apiFilters = {
+                    search: filters.search,
+                    program: filters.program,
+                    page: filters.page,
+                    per_page: 10,
+                    status: 'dropped', // Filter by dropped status
+                };
+                const response = await adminStudentService.getStudents(apiFilters);
+                if (response.success) {
+                    setStudents(response.data);
+                    if (response.pagination) {
+                        setPagination(response.pagination);
+                    } else if (response.total) { 
+                        setPagination(prev => ({ ...prev, total: response.total }));
+                    }
+                }
+                return;
+            }
+            
             // Map education level to year_level range for API
             const yearLevelRanges: Record<string, { min: number; max: number }> = {
                 'college': { min: 13, max: 16 },
@@ -1141,13 +1163,13 @@ const Students: React.FC = () => {
             // UPDATED CALL: Use adminStudentService
             const response = await adminStudentService.deleteStudent(selectedStudent.id);
             if (response.success) {
-                setNotification({ type: 'success', message: 'Student deleted successfully!' });
+                setNotification({ type: 'success', message: 'Student dropped successfully!' });
                 setShowDeleteModal(false);
                 loadStudents();
                 loadStats();
             }
         } catch (error: any) {
-            setNotification({ type: 'error', message: error.message || 'Failed to delete student' });
+            setNotification({ type: 'error', message: error.message || 'Failed to drop student' });
         }
     };
 
@@ -1392,7 +1414,13 @@ const Students: React.FC = () => {
                             <div className="flex gap-1.5 sm:gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
                                 {educationLevels.map((level) => {
                                     // Get count from stats (all students in DB, not just paginated)
-                                    const levelCount = stats.by_education_level?.[level.id as keyof typeof stats.by_education_level] || 0;
+                                    // Special handling for dropped students
+                                    const levelCount = level.id === 'dropped' 
+                                        ? (stats.dropped_students || 0)
+                                        : (stats.by_education_level?.[level.id as keyof typeof stats.by_education_level] || 0);
+                                    
+                                    const isDropped = level.id === 'dropped';
+                                    const isSelected = educationLevelFilter === level.id;
                                     
                                     return (
                                         <button
@@ -1402,17 +1430,23 @@ const Students: React.FC = () => {
                                             setFilters(prev => ({ ...prev, year_level: '', program: '', page: 1 }));
                                         }}
                                             className={`flex items-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg sm:rounded-xl font-medium transition-all whitespace-nowrap flex-shrink-0 ${
-                                                educationLevelFilter === level.id
-                                                    ? `${PRIMARY_COLOR_CLASS} text-white shadow-md sm:shadow-lg scale-105`
-                                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-102'
+                                                isSelected
+                                                    ? isDropped
+                                                        ? 'bg-red-600 text-white shadow-md sm:shadow-lg scale-105'
+                                                        : `${PRIMARY_COLOR_CLASS} text-white shadow-md sm:shadow-lg scale-105`
+                                                    : isDropped
+                                                        ? 'bg-red-50 text-red-700 hover:bg-red-100 hover:scale-102'
+                                                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-102'
                                             }`}
                                         >
                                             <span className="mr-1.5 sm:mr-2 text-base sm:text-lg">{level.icon}</span>
                                             <span className="text-xs sm:text-sm md:text-base">{level.label}</span>
                                             <span className={`ml-1.5 sm:ml-2 px-1.5 sm:px-2 md:px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                                educationLevelFilter === level.id
+                                                isSelected
                                                     ? 'bg-white/20 text-white'
-                                                    : 'bg-gray-200 text-gray-600'
+                                                    : isDropped
+                                                        ? 'bg-red-200 text-red-800'
+                                                        : 'bg-gray-200 text-gray-600'
                                             }`}>
                                                 {levelCount}
                                             </span>
@@ -1617,7 +1651,7 @@ const Students: React.FC = () => {
                                                             <button
                                                                 onClick={() => handleDelete(student)}
                                                                 className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                                title="Delete Student"
+                                                                title="Drop Student"
                                                             >
                                                                 <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                                                             </button>
