@@ -1262,7 +1262,6 @@ const Students: React.FC = () => {
                                     <span className="hidden sm:inline">Enroll Student</span>
                                     <span className="sm:hidden">Enroll</span>
                                 </button>
-                                
                                 <div className="relative">
                                     <button 
                                         onClick={() => setShowExportDropdown(!showExportDropdown)}
