@@ -165,10 +165,11 @@ class AdminClassSubjectService {
 
     /**
      * Get class subjects for a specific class or with filters
+     * class_id and teacher_id can be numeric IDs or text for searching (class code/name, teacher name)
      */
     async getClassSubjects(params: {
-        class_id?: number;
-        teacher_id?: number;
+        class_id?: number | string;
+        teacher_id?: number | string;
         academic_year_id?: number;
         semester_id?: number;
         search?: string;

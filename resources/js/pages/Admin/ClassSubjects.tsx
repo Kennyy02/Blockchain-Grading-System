@@ -430,13 +430,24 @@ const ClassSubjects: React.FC = () => {
     const fetchClassSubjects = async () => {
         setLoading(true);
         try {
-            const response: ClassSubjectsResponse = await adminClassSubjectService.getClassSubjects({
-                class_id: filters.class_id ? parseInt(filters.class_id) : undefined,
-                teacher_id: filters.teacher_id ? parseInt(filters.teacher_id) : undefined,
+            // Build filter object - send as-is (backend will handle both numeric IDs and text searches)
+            const filterParams: any = {
                 search: filters.search || undefined,
                 page: filters.page,
                 per_page: filters.per_page
-            });
+            };
+            
+            // Add class_id filter if provided (can be numeric ID or text for searching)
+            if (filters.class_id && filters.class_id.trim() !== '') {
+                filterParams.class_id = filters.class_id.trim();
+            }
+            
+            // Add teacher_id filter if provided (can be numeric ID or text for searching)
+            if (filters.teacher_id && filters.teacher_id.trim() !== '') {
+                filterParams.teacher_id = filters.teacher_id.trim();
+            }
+            
+            const response: ClassSubjectsResponse = await adminClassSubjectService.getClassSubjects(filterParams);
 
             if (response.success && response.data) {
                 setClassSubjects(response.data);
@@ -563,7 +574,7 @@ const ClassSubjects: React.FC = () => {
                                 value={filters.class_id}
                                 onChange={(e) => setFilters({...filters, class_id: e.target.value, page: 1})}
                                 className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
-                                placeholder="Filter by Class ID..."
+                                placeholder="Filter by Class Code or Name..."
                             />
                         </div>
                         {/* Teacher filter */}
@@ -576,7 +587,7 @@ const ClassSubjects: React.FC = () => {
                                 value={filters.teacher_id}
                                 onChange={(e) => setFilters({...filters, teacher_id: e.target.value, page: 1})}
                                 className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
-                                placeholder="Filter by Teacher ID..."
+                                placeholder="Filter by Teacher Name or ID..."
                             />
                         </div>
                         {/* Subject search */}

@@ -30,11 +30,31 @@ class ClassSubjectController extends Controller
             $query = ClassSubject::with($this->eagerLoads);
             
             // Filtering logic
-            if ($classId = $request->input('class_id')) {
-                $query->where('class_id', $classId);
+            if ($classFilter = $request->input('class_id')) {
+                // Check if it's a numeric ID
+                if (is_numeric($classFilter)) {
+                    $query->where('class_id', $classFilter);
+                } else {
+                    // Search by class code or class name
+                    $query->whereHas('class', function($q) use ($classFilter) {
+                        $q->where('class_code', 'like', "%{$classFilter}%")
+                          ->orWhere('class_name', 'like', "%{$classFilter}%");
+                    });
+                }
             }
-            if ($teacherId = $request->input('teacher_id')) {
-                $query->where('teacher_id', $teacherId);
+            if ($teacherFilter = $request->input('teacher_id')) {
+                // Check if it's a numeric ID
+                if (is_numeric($teacherFilter)) {
+                    $query->where('teacher_id', $teacherFilter);
+                } else {
+                    // Search by teacher name or teacher ID
+                    $query->whereHas('teacher', function($q) use ($teacherFilter) {
+                        $q->where('full_name', 'like', "%{$teacherFilter}%")
+                          ->orWhere('teacher_id', 'like', "%{$teacherFilter}%")
+                          ->orWhere('first_name', 'like', "%{$teacherFilter}%")
+                          ->orWhere('last_name', 'like', "%{$teacherFilter}%");
+                    });
+                }
             }
             if ($studentId = $request->input('student_id')) {
                 // Filter by student's current class
