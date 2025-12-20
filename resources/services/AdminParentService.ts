@@ -103,15 +103,53 @@ export interface ParentsResponse extends ApiResponse<Parent[]> {
 class AdminParentService {
     private baseURL = '/api';
 
+    private getCsrfToken(): string {
+        // Try multiple sources for CSRF token
+        let csrfToken: string | null = null;
+        
+        // 1. Try meta tag first
+        csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || null;
+        
+        // 2. Try Inertia page props
+        if (!csrfToken && typeof window !== 'undefined') {
+            try {
+                const inertiaData = (window as any).__INERTIA_DATA__;
+                if (inertiaData?.page?.props?.csrf_token) {
+                    csrfToken = inertiaData.page.props.csrf_token;
+                } else if ((window as any).Inertia?.page?.props?.csrf_token) {
+                    csrfToken = (window as any).Inertia.page.props.csrf_token;
+                }
+            } catch (e) {
+                console.warn('Could not retrieve CSRF token from Inertia props:', e);
+            }
+        }
+        
+        // 3. Try Laravel's default token name
+        if (!csrfToken) {
+            const tokenInput = document.querySelector('input[name="_token"]') as HTMLInputElement;
+            if (tokenInput) {
+                csrfToken = tokenInput.value;
+            }
+        }
+        
+        if (!csrfToken) {
+            console.error('CSRF token not found. Please refresh the page.');
+            throw new Error('CSRF token not found. Please refresh the page.');
+        }
+        
+        return csrfToken;
+    }
+
     private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const csrfToken = this.getCsrfToken();
         
         const defaultOptions: RequestInit = {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
+                'X-CSRF-TOKEN': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
+                ...options.headers,
             },
             credentials: 'same-origin',
         };
@@ -129,6 +167,12 @@ class AdminParentService {
             }
 
             if (!response.ok) {
+                // Handle CSRF token mismatch (419)
+                if (response.status === 419) {
+                    console.error('CSRF token mismatch. The page session may have expired. Please refresh the page.');
+                    throw new Error('Session expired. Please refresh the page and try again.');
+                }
+                
                 if (data.errors) {
                     const errorMessages = Object.entries(data.errors)
                         .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
