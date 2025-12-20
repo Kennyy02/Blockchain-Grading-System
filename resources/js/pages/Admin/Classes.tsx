@@ -1413,9 +1413,9 @@ const Classes: React.FC = () => {
         if (target.closest('button') || target.closest('a')) {
             return;
         }
-        // Open Add Students modal when clicking on the row
+        // Open Students list modal first (which has the Add Students button)
         setSelectedClassForStudents(classItem);
-        setShowAddStudentsModal(true);
+        setShowStudentsModal(true);
     };
 
     const handleStudentsUpdated = () => {
