@@ -140,22 +140,54 @@ class AdminParentService {
         return csrfToken;
     }
 
-    private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-        const csrfToken = this.getCsrfToken();
+    private async refreshCsrfToken(): Promise<string | null> {
+        try {
+            const response = await fetch('/api/csrf-token', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.csrf_token) {
+                    // Update the meta tag with the new token
+                    const metaTag = document.querySelector('meta[name="csrf-token"]');
+                    if (metaTag) {
+                        metaTag.setAttribute('content', data.csrf_token);
+                    }
+                    return data.csrf_token;
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to refresh CSRF token:', error);
+        }
+        return null;
+    }
+
+    private async request<T>(url: string, options: RequestInit = {}, retryOn419: boolean = true): Promise<ApiResponse<T>> {
+        let csrfToken = this.getCsrfToken();
         
-        const defaultOptions: RequestInit = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest',
-                ...options.headers,
-            },
-            credentials: 'same-origin',
+        const makeRequest = async (token: string): Promise<Response> => {
+            const defaultOptions: RequestInit = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...options.headers,
+                },
+                credentials: 'same-origin',
+            };
+
+            return fetch(url, { ...defaultOptions, ...options });
         };
 
         try {
-            const response = await fetch(url, { ...defaultOptions, ...options });
+            let response = await makeRequest(csrfToken);
             const contentType = response.headers.get('content-type');
             let data;
             
@@ -166,13 +198,28 @@ class AdminParentService {
                 throw new Error('Unexpected response format from server');
             }
 
-            if (!response.ok) {
-                // Handle CSRF token mismatch (419)
-                if (response.status === 419) {
-                    console.error('CSRF token mismatch. The page session may have expired. Please refresh the page.');
+            // Handle CSRF token mismatch (419) - retry with fresh token
+            if (response.status === 419 && retryOn419) {
+                console.warn('CSRF token mismatch detected. Attempting to refresh token...');
+                const freshToken = await this.refreshCsrfToken();
+                
+                if (freshToken) {
+                    // Retry the request with the fresh token (only once)
+                    response = await makeRequest(freshToken);
+                    
+                    if (response.headers.get('content-type')?.includes('application/json')) {
+                        data = await response.json();
+                    } else {
+                        const text = await response.text();
+                        throw new Error('Unexpected response format from server');
+                    }
+                } else {
+                    console.error('CSRF token mismatch. Could not refresh token. Please refresh the page.');
                     throw new Error('Session expired. Please refresh the page and try again.');
                 }
-                
+            }
+
+            if (!response.ok) {
                 if (data.errors) {
                     const errorMessages = Object.entries(data.errors)
                         .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
