@@ -1407,6 +1407,17 @@ const Classes: React.FC = () => {
         setShowAddStudentsModal(true);
     };
 
+    const handleRowClick = (classItem: Class, event: React.MouseEvent) => {
+        // Don't trigger if clicking on action buttons or links
+        const target = event.target as HTMLElement;
+        if (target.closest('button') || target.closest('a')) {
+            return;
+        }
+        // Open Add Students modal when clicking on the row
+        setSelectedClassForStudents(classItem);
+        setShowAddStudentsModal(true);
+    };
+
     const handleStudentsUpdated = () => {
         loadClasses();
         loadStats();
@@ -1595,10 +1606,10 @@ const Classes: React.FC = () => {
                                     {loading ? (
                                         <tr>
                                             <td colSpan={6} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
-                                                <div className="flex flex-col items-center justify-center">
+                                            <div className="flex flex-col items-center justify-center">
                                                     <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin mb-2`} />
                                                     <p className="text-sm sm:text-base text-gray-500">Loading classes...</p>
-                                                </div>
+                                            </div>
                                             </td>
                                         </tr>
                                     ) : classes.length === 0 ? (
@@ -1613,7 +1624,11 @@ const Classes: React.FC = () => {
                                         </tr>
                                     ) : (
                                         classes.map((classItem) => (
-                                            <tr key={classItem.id} className="hover:bg-gray-50 transition-colors">
+                                            <tr 
+                                                key={classItem.id} 
+                                                className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                                onClick={(e) => handleRowClick(classItem, e)}
+                                            >
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
                                                     <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{classItem.class_code}</div>
                                                     <div className="text-xs text-gray-500 truncate">{classItem.class_name}</div>
@@ -1628,7 +1643,10 @@ const Classes: React.FC = () => {
                                                             <span className="text-xs text-gray-600">{classItem.adviser_name || 'Unassigned'}</span>
                                                         </div>
                                                         <button
-                                                            onClick={() => handleViewStudents(classItem)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleViewStudents(classItem);
+                                                            }}
                                                             className="text-xs text-gray-900 hover:text-blue-600 transition-colors font-medium"
                                                         >
                                                             {classItem.student_count || 0} {classItem.student_count === 1 ? 'student' : 'students'}
@@ -1648,7 +1666,10 @@ const Classes: React.FC = () => {
                                                 </td>
                                                 <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                     <button
-                                                        onClick={() => handleViewStudents(classItem)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleViewStudents(classItem);
+                                                        }}
                                                         className="text-xs sm:text-sm text-gray-900 hover:text-blue-600 transition-colors font-medium"
                                                         title="Click to view students"
                                                     >
@@ -1658,21 +1679,30 @@ const Classes: React.FC = () => {
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
                                                     <div className="flex justify-end space-x-1 sm:space-x-2">
                                                         <button
-                                                            onClick={() => handleView(classItem)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleView(classItem);
+                                                            }}
                                                             className="p-1.5 sm:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                                             title="View Details"
                                                         >
                                                             <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                         <button
-                                                            onClick={() => handleEdit(classItem)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleEdit(classItem);
+                                                            }}
                                                             className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
                                                             title="Edit Class"
                                                         >
                                                             <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                         <button
-                                                            onClick={() => handleDelete(classItem)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDelete(classItem);
+                                                            }}
                                                             className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                             title="Delete Class"
                                                         >

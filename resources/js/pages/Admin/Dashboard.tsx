@@ -51,8 +51,8 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon: Icon, iconBgCla
         <div className="flex flex-col items-center text-center">
             <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">{title}</p>
             <p className={`text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-3`}>
-                {value}
-            </p>
+                    {value}
+                </p>
             <div className={`p-2 sm:p-3 rounded-full ${iconBgClass}`}>
                 <Icon className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 ${iconColorClass}`} />
             </div>

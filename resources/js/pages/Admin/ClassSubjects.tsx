@@ -625,124 +625,124 @@ const ClassSubjects: React.FC = () => {
         <AppLayout>
             <div className="min-h-screen bg-[#f3f4f6]">
                 <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
-                    {/* Header */}
+                {/* Header */}
                     <div className="mb-4 sm:mb-6 md:mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
                         <div className="mb-4 sm:mb-6 md:mb-0">
                             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Class-Subject Links</h1>
                             <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 md:mt-2">Manage class-subject assignments and schedules</p>
-                        </div>
-                        <button
-                            onClick={() => {
-                                setSelectedClassSubject(null);
-                                setShowModal(true);
-                                setValidationErrors({});
-                            }}
+                    </div>
+                    <button
+                        onClick={() => {
+                            setSelectedClassSubject(null);
+                            setShowModal(true);
+                            setValidationErrors({});
+                        }}
                             className={`${PRIMARY_COLOR_CLASS} ${HOVER_COLOR_CLASS} text-white px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl flex items-center space-x-2 transition-all shadow-lg hover:shadow-xl text-xs sm:text-sm md:text-base`}
-                        >
+                    >
                             <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
                             <span className="hidden sm:inline">Link Class & Subject</span>
                             <span className="sm:hidden">Link</span>
-                        </button>
-                    </div>
+                    </button>
+                </div>
 
                     {/* Filters - Compact on Mobile */}
                     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-                            {/* Class filter */}
-                            <div className="relative">
+                        {/* Class filter */}
+                        <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                                     <Layers className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    value={filters.class_id}
-                                    onChange={(e) => setFilters({...filters, class_id: e.target.value, page: 1})}
-                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
-                                    placeholder="Filter by Class Code or Name..."
-                                />
                             </div>
-                            {/* Teacher filter */}
-                            <div className="relative">
+                            <input
+                                type="text"
+                                value={filters.class_id}
+                                onChange={(e) => setFilters({...filters, class_id: e.target.value, page: 1})}
+                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
+                                placeholder="Filter by Class Code or Name..."
+                            />
+                        </div>
+                        {/* Teacher filter */}
+                        <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                                     <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    value={filters.teacher_id}
-                                    onChange={(e) => setFilters({...filters, teacher_id: e.target.value, page: 1})}
-                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
-                                    placeholder="Filter by Teacher Name or ID..."
-                                />
                             </div>
-                            {/* Subject search */}
-                            <div className="relative">
+                            <input
+                                type="text"
+                                value={filters.teacher_id}
+                                onChange={(e) => setFilters({...filters, teacher_id: e.target.value, page: 1})}
+                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
+                                placeholder="Filter by Teacher Name or ID..."
+                            />
+                        </div>
+                        {/* Subject search */}
+                        <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                                     <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    value={filters.search}
-                                    onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
-                                    placeholder="Search Subject..."
-                                />
                             </div>
+                            <input
+                                type="text"
+                                value={filters.search}
+                                onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
+                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
+                                placeholder="Search Subject..."
+                            />
                         </div>
                     </div>
+                </div>
 
                     {/* Class Subjects table - Responsive: Mobile shows Class & Subject + Actions, Desktop shows all columns */}
                     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                                    <tr>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                <tr>
                                         <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Class</th>
                                         <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Subject</th>
                                         <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Teacher</th>
                                         <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Academic Period</th>
                                         <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {loading ? (
-                                        <tr>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {loading ? (
+                                    <tr>
                                             <td colSpan={5} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
-                                                <div className="flex justify-center">
+                                            <div className="flex justify-center">
                                                     <RefreshCw className={`h-6 w-6 sm:h-8 sm:w-8 ${TEXT_COLOR_CLASS} animate-spin`} />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ) : classSubjects.length === 0 ? (
-                                        <tr>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : classSubjects.length === 0 ? (
+                                    <tr>
                                             <td colSpan={5} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
                                                 <div className="flex flex-col items-center">
                                                     <Link className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
                                                     <p className="text-base sm:text-lg font-medium">No class-subject links found</p>
                                                     <p className="text-xs sm:text-sm">Create a new link or adjust filters</p>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        classSubjects.map((cs) => (
-                                            <tr key={cs.id} className="hover:bg-gray-50 transition-colors">
-                                                {/* Class info */}
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    classSubjects.map((cs) => (
+                                        <tr key={cs.id} className="hover:bg-gray-50 transition-colors">
+                                            {/* Class info */}
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-                                                    <div className="flex items-center">
+                                                <div className="flex items-center">
                                                         <div className={`p-1.5 sm:p-2 rounded-lg mr-2 sm:mr-3 ${LIGHT_BG_CLASS}`}>
                                                             <Layers className={`h-4 w-4 sm:h-5 sm:w-5 ${TEXT_COLOR_CLASS}`} />
-                                                        </div>
-                                                        <div>
-                                                            <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{cs.class_name || 'N/A'}</div>
-                                                        </div>
                                                     </div>
-                                                </td>
-                                                {/* Subject info */}
+                                                    <div>
+                                                            <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{cs.class_name || 'N/A'}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            {/* Subject info */}
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-                                                    <div className="flex items-center">
+                                                <div className="flex items-center">
                                                         <div className={`p-1.5 sm:p-2 rounded-lg mr-2 sm:mr-3 ${LIGHT_BG_CLASS}`}>
                                                             <BookOpen className={`h-4 w-4 sm:h-5 sm:w-5 ${TEXT_COLOR_CLASS}`} />
-                                                        </div>
-                                                        <div>
+                                                    </div>
+                                                    <div>
                                                             <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{cs.subject_name || 'N/A'}</div>
                                                             <div className="text-xs text-gray-500 truncate">{cs.subject_code}</div>
                                                             {/* Show additional info on mobile */}
@@ -756,25 +756,25 @@ const ClassSubjects: React.FC = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                {/* Teacher */}
+                                                </div>
+                                            </td>
+                                            {/* Teacher */}
                                                 <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                                    <div className="flex items-center">
+                                                <div className="flex items-center">
                                                         <div className={`p-1.5 sm:p-2 rounded-lg mr-2 sm:mr-3 ${LIGHT_BG_CLASS}`}>
                                                             <UserCheck className={`h-3 w-3 sm:h-4 sm:w-4 ${TEXT_COLOR_CLASS}`} />
-                                                        </div>
-                                                        <div className="text-xs sm:text-sm text-gray-900">{cs.teacher_name || 'Unassigned'}</div>
                                                     </div>
-                                                </td>
-                                                {/* Academic Period */}
+                                                        <div className="text-xs sm:text-sm text-gray-900">{cs.teacher_name || 'Unassigned'}</div>
+                                                </div>
+                                            </td>
+                                            {/* Academic Period */}
                                                 <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                     <div className="text-xs sm:text-sm text-gray-700">
-                                                        <div className="font-medium">{cs.academic_year_name || `AY ID: ${cs.academic_year_id}`}</div>
-                                                        <div className="text-xs text-gray-500">{cs.semester_name || `Semester ID: ${cs.semester_id}`}</div>
-                                                    </div>
-                                                </td>
-                                                {/* Action buttons */}
+                                                    <div className="font-medium">{cs.academic_year_name || `AY ID: ${cs.academic_year_id}`}</div>
+                                                    <div className="text-xs text-gray-500">{cs.semester_name || `Semester ID: ${cs.semester_id}`}</div>
+                                                </div>
+                                            </td>
+                                            {/* Action buttons */}
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
                                                     <div className="flex justify-end space-x-1 sm:space-x-2">
                                                         <button
@@ -784,42 +784,42 @@ const ClassSubjects: React.FC = () => {
                                                         >
                                                             <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
-                                                        <button
-                                                            onClick={() => handleEdit(cs)}
+                                                    <button
+                                                        onClick={() => handleEdit(cs)}
                                                             className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
-                                                            title="Edit Link"
-                                                        >
+                                                        title="Edit Link"
+                                                    >
                                                             <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(cs)}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(cs)}
                                                             className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                            title="Unlink Subject"
-                                                        >
+                                                        title="Unlink Subject"
+                                                    >
                                                             <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    
-                        {/* Pagination */}
-                        {renderPagination()}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
+                    
+                    {/* Pagination */}
+                    {renderPagination()}
+                </div>
 
                     {/* Modals */}
-                    {showModal && (
-                        <ClassSubjectModal
-                            classSubject={selectedClassSubject}
-                            onClose={() => setShowModal(false)}
-                            onSave={handleSave}
-                            errors={validationErrors}
-                        />
-                    )}
+                {showModal && (
+                    <ClassSubjectModal
+                        classSubject={selectedClassSubject}
+                        onClose={() => setShowModal(false)}
+                        onSave={handleSave}
+                        errors={validationErrors}
+                    />
+                )}
 
                     {showViewModal && selectedClassSubject && (
                         <ViewClassSubjectModal
@@ -828,13 +828,13 @@ const ClassSubjects: React.FC = () => {
                         />
                     )}
 
-                    {/* Toast notification */}
-                    {notification && (
-                        <Notification
-                            notification={notification}
-                            onClose={() => setNotification(null)}
-                        />
-                    )}
+                {/* Toast notification */}
+                {notification && (
+                    <Notification
+                        notification={notification}
+                        onClose={() => setNotification(null)}
+                    />
+                )}
                 </div>
             </div>
         </AppLayout>
