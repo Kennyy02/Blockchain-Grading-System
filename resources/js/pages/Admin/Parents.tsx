@@ -796,6 +796,7 @@ const Parents: React.FC = () => {
                 'senior_high': 'Senior High',
                 'junior_high': 'Junior High',
                 'elementary': 'Elementary',
+                'no_students': 'no_students',
             };
             
             // Build API filter - include the education level filter

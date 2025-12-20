@@ -37,7 +37,8 @@ class ParentController extends Controller
             if ($educationLevel = $request->input('education_level')) {
                 // Handle "No Students" filter
                 // Show ONLY parents who have NO students linked to them at all
-                // Use explicit subquery to check pivot table directly
+                // Use explicit subquery to check pivot table directly - this ensures parents with ANY 
+                // linked students (regardless of student status) are excluded from "No Students" view
                 if ($educationLevel === 'no_students') {
                     $query->whereNotExists(function($subQuery) {
                         $subQuery->select(DB::raw(1))
