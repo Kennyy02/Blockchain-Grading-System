@@ -441,8 +441,32 @@ class StudentController extends Controller
     public function drop(Request $request, $id)
     {
         try {
-            $student = Student::findOrFail($id);
+            $student = Student::with('parents')->findOrFail($id);
             $studentName = $student->first_name . ' ' . $student->last_name;
+            
+            // Detach parent relationships (unlink parents, but don't delete them)
+            // This only detaches THIS student from parents - other siblings remain linked to the same parents
+            $parentIds = [];
+            if ($student->parents()->count() > 0) {
+                // Get parent IDs BEFORE detaching
+                $parents = $student->parents()->get();
+                $parentIds = $parents->pluck('id')->toArray();
+                
+                // Log parent info before detaching
+                Log::info("Before detaching: Student {$id} ({$studentName}) has " . count($parentIds) . " parent(s). Parent IDs: " . implode(', ', $parentIds));
+                
+                // Detach the relationships (this only removes pivot table entries, NOT parent records)
+                $student->parents()->detach();
+                
+                // Verify parents still exist after detaching
+                $parentsAfterDetach = ParentModel::whereIn('id', $parentIds)->get();
+                if ($parentsAfterDetach->count() !== count($parentIds)) {
+                    $missingParentIds = array_diff($parentIds, $parentsAfterDetach->pluck('id')->toArray());
+                    Log::error("CRITICAL: Parent records were deleted during detach! Missing Parent IDs: " . implode(', ', $missingParentIds));
+                } else {
+                    Log::info("After detaching: All " . count($parentIds) . " parent record(s) still exist. Parent IDs: " . implode(', ', $parentIds));
+                }
+            }
             
             // Update student status to 'dropped' and clear current_class_id
             $student->update([
@@ -450,11 +474,11 @@ class StudentController extends Controller
                 'current_class_id' => null,
             ]);
             
-            $student->load(['user', 'currentClass', 'parents']);
+            $student->load(['user', 'currentClass']);
             
             return $request->expectsJson()
-                ? response()->json(['success' => true, 'data' => $student, 'message' => "Student '{$studentName}' has been dropped successfully."])
-                : redirect()->route('students.index')->with('success', "Student '{$studentName}' has been dropped successfully.");
+                ? response()->json(['success' => true, 'data' => $student, 'message' => "Student '{$studentName}' has been dropped successfully and unlinked from parents."])
+                : redirect()->route('students.index')->with('success', "Student '{$studentName}' has been dropped successfully and unlinked from parents.");
         } catch (\Exception $e) {
             Log::error('Error dropping student: ' . $e->getMessage());
             return $request->expectsJson()

@@ -35,8 +35,11 @@ class ParentController extends Controller
             // Parents with students only appear in their children's education level filter
             if ($educationLevel = $request->input('education_level')) {
                 // Handle "No Students" filter
+                // Only show parents who have NO active (non-dropped) students linked
                 if ($educationLevel === 'no_students') {
-                    $query->doesntHave('students');
+                    $query->whereDoesntHave('students', function($studentQuery) {
+                        $studentQuery->where('status', '!=', 'dropped');
+                    });
                 } else {
                     $gradeRanges = [
                         'College' => [13, 16],
@@ -49,8 +52,10 @@ class ParentController extends Controller
                         [$minGrade, $maxGrade] = $gradeRanges[$educationLevel];
                         // Show ONLY parents who have students in this education level
                         // Exclude parents with no students (they should only appear in "No Students" filter)
+                        // Also exclude dropped students from the check
                         $query->whereHas('students', function($studentQuery) use ($minGrade, $maxGrade) {
-                            $studentQuery->whereBetween('year_level', [$minGrade, $maxGrade]);
+                            $studentQuery->whereBetween('year_level', [$minGrade, $maxGrade])
+                                         ->where('status', '!=', 'dropped');
                         });
                     }
                 }
@@ -97,8 +102,10 @@ class ParentController extends Controller
             // 1. Get total count of all parents
             $totalParents = ParentModel::count();
 
-            // 2. Get count of unlinked parents (parents with no students)
-            $unlinkedParents = ParentModel::doesntHave('students')->count();
+            // 2. Get count of unlinked parents (parents with no active students)
+            $unlinkedParents = ParentModel::whereDoesntHave('students', function($q) {
+                $q->where('status', '!=', 'dropped');
+            })->count();
 
             // 3. Count parents by their children's education level
             $gradeRanges = [
@@ -111,7 +118,8 @@ class ParentController extends Controller
             $byEducationLevel = [];
             foreach ($gradeRanges as $level => [$minGrade, $maxGrade]) {
                 $count = ParentModel::whereHas('students', function($q) use ($minGrade, $maxGrade) {
-                    $q->whereBetween('year_level', [$minGrade, $maxGrade]);
+                    $q->whereBetween('year_level', [$minGrade, $maxGrade])
+                      ->where('status', '!=', 'dropped');
                 })->count();
                 
                 $byEducationLevel[] = [
@@ -120,8 +128,10 @@ class ParentController extends Controller
                 ];
             }
             
-            // Add count for parents with no students
-            $noStudentsCount = ParentModel::doesntHave('students')->count();
+            // Add count for parents with no active students
+            $noStudentsCount = ParentModel::whereDoesntHave('students', function($q) {
+                $q->where('status', '!=', 'dropped');
+            })->count();
             $byEducationLevel[] = [
                 'level' => 'No Students',
                 'count' => $noStudentsCount,
