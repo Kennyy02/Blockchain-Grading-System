@@ -442,10 +442,14 @@ class StudentController extends Controller
             $userId = $student->user_id;
             
             // IMPORTANT: Detach parent relationships (unlink parents, but don't delete them)
-            // This ensures parent records remain in the database even after student deletion
+            // This only detaches THIS student from parents - other siblings remain linked to the same parents
+            // Example: If Parent A has Student 1, 2, 3, and we delete Student 1:
+            //   - Student 1's relationship with Parent A is removed
+            //   - Student 2 and 3's relationships with Parent A remain intact
             if ($student->parents()->count() > 0) {
+                $parentIds = $student->parents()->pluck('parent_id')->toArray();
                 $student->parents()->detach();
-                Log::info("Detached parent relationships for student {$id}. Parent records preserved.");
+                Log::info("Detached parent relationships for student {$id} (student: {$studentName}). Parent IDs unlinked: " . implode(', ', $parentIds) . ". Parent records and other children's relationships preserved.");
             }
             
             // Permanently delete the student from database (force delete)

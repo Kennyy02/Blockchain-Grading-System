@@ -179,10 +179,21 @@ class AdminStudentService {
             const contentType = response.headers.get('content-type');
             let data;
             
+            // Handle 419 CSRF token mismatch - Laravel returns HTML page, not JSON
+            if (response.status === 419) {
+                const text = await response.text();
+                console.error('CSRF token mismatch (419). Response:', text.substring(0, 200));
+                throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page (F5) and try again.');
+            }
+            
             if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
             } else {
+                // For non-JSON responses, try to get text and provide better error
                 const text = await response.text();
+                if (response.status >= 400) {
+                    throw new Error(`Server error (${response.status}): ${text.substring(0, 200)}`);
+                }
                 throw new Error('Unexpected response format from server');
             }
 
