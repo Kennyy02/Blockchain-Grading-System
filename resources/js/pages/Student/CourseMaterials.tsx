@@ -136,7 +136,7 @@ const CourseMaterials: React.FC = () => {
     return (
         <AppLayout>
             <Head title="Course Materials" />
-            <div className="min-h-screen bg-gray-100">
+            <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="container mx-auto px-6 py-8">
                     {/* Header */}
                     <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
@@ -145,34 +145,34 @@ const CourseMaterials: React.FC = () => {
                                 <FolderOpen className="h-8 w-8 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-bold text-gray-900">Course Materials</h1>
-                                <p className="text-gray-600 mt-1">Download learning resources for your subjects</p>
+                                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Course Materials</h1>
+                                <p className="text-gray-600 dark:text-white mt-1">Download learning resources for your subjects</p>
                             </div>
                         </div>
-                        <button onClick={() => loadMaterials()} className="p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 shadow-sm">
-                            <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''} text-gray-600`} />
+                        <button onClick={() => loadMaterials()} className="p-3 bg-white dark:bg-gray-800 dark:border-white border border-gray-300 dark:border-white rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm">
+                            <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''} text-gray-600 dark:text-white`} />
                         </button>
                     </div>
 
                     {/* Filters */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg p-6 mb-6 border dark:border-white">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="relative col-span-2">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-white" />
                                 <input
                                     type="text"
                                     value={filters.search}
                                     onChange={(e) => setFilters({...filters, search: e.target.value})}
-                                    className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 ${RING_COLOR_CLASS}`}
+                                    className={`pl-12 w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-900 dark:text-white rounded-xl focus:ring-2 ${RING_COLOR_CLASS}`}
                                     placeholder="Search materials..."
                                 />
                             </div>
                             <div className="flex items-center">
-                                <Filter className="h-5 w-5 text-gray-400 mr-3" />
+                                <Filter className="h-5 w-5 text-gray-400 dark:text-white mr-3" />
                                 <select
                                     value={filters.subject_id}
                                     onChange={(e) => setFilters({...filters, subject_id: e.target.value})}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 ${RING_COLOR_CLASS} bg-white`}
+                                    className={`w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-900 dark:text-white rounded-xl focus:ring-2 ${RING_COLOR_CLASS} bg-white dark:bg-gray-900`}
                                 >
                                     <option value="">All Subjects</option>
                                     {subjects.map(subject => (
@@ -188,36 +188,36 @@ const CourseMaterials: React.FC = () => {
                     {/* Materials Grid */}
                     {loading ? (
                         <div className="flex justify-center items-center py-20">
-                            <RefreshCw className="h-10 w-10 text-blue-500 animate-spin" />
+                            <RefreshCw className="h-10 w-10 text-blue-500 dark:text-white animate-spin" />
                         </div>
                     ) : materials.length === 0 ? (
-                        <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                            <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className={`text-xl font-semibold ${TEXT_COLOR_CLASS} mb-2`}>No Materials Found</h3>
-                            <p className="text-gray-500">No course materials are available for your selected filters.</p>
+                        <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg p-12 text-center border dark:border-white">
+                            <BookOpen className="h-16 w-16 text-gray-300 dark:text-white mx-auto mb-4" />
+                            <h3 className={`text-xl font-semibold ${TEXT_COLOR_CLASS} dark:text-white mb-2`}>No Materials Found</h3>
+                            <p className="text-gray-500 dark:text-white">No course materials are available for your selected filters.</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {materials.map((material) => {
                                 const IconComponent = getFileIcon(material.file_path?.split('.').pop() || '');
                                 return (
-                                    <div key={material.id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                                    <div key={material.id} className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow border dark:border-white">
                                         <div className="flex items-start justify-between mb-4">
                                             <div className={`p-3 rounded-xl ${LIGHT_BG_CLASS}`}>
                                                 <IconComponent className={`h-8 w-8 ${TEXT_COLOR_CLASS}`} />
                                             </div>
                                             <button
                                                 onClick={() => handleDownload(material)}
-                                                className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors"
+                                                className="p-2 bg-green-50 dark:bg-green-900 dark:border-white text-green-600 dark:text-white rounded-lg hover:bg-green-100 dark:hover:bg-green-800 transition-colors border dark:border-white"
                                                 title="Download"
                                             >
                                                 <Download className="h-5 w-5" />
                                             </button>
                                         </div>
-                                        <h3 className="font-semibold text-gray-900 mb-1 truncate" title={material.title}>{material.title}</h3>
-                                        <p className="text-sm text-blue-600 font-medium mb-2">{material.subject?.subject_code} - {material.subject?.subject_name}</p>
-                                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{material.description || 'No description'}</p>
-                                        <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t">
+                                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1 truncate" title={material.title}>{material.title}</h3>
+                                        <p className="text-sm text-blue-600 dark:text-white font-medium mb-2">{material.subject?.subject_code} - {material.subject?.subject_name}</p>
+                                        <p className="text-sm text-gray-500 dark:text-white mb-3 line-clamp-2">{material.description || 'No description'}</p>
+                                        <div className="flex items-center justify-between text-xs text-gray-400 dark:text-white pt-3 border-t dark:border-white">
                                             <span>{formatFileSize(material.file_size)}</span>
                                             <span>{new Date(material.created_at).toLocaleDateString()}</span>
                                         </div>

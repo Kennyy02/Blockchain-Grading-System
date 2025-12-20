@@ -339,9 +339,9 @@ const AdvisoryStudents: React.FC<Props> = ({ classId: propClassId }) => {
                                     {filteredStudents.map((student, index) => (
                                         <tr 
                                             key={student.id}
-                                            className="hover:bg-gray-50 transition-colors"
+                                            className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                         >
-                                            <td className="px-6 py-4 text-sm text-gray-600">
+                                            <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">
                                                 {index + 1}
                                             </td>
                                             <td className="px-6 py-4">
@@ -355,7 +355,7 @@ const AdvisoryStudents: React.FC<Props> = ({ classId: propClassId }) => {
                                                         <User className={`h-5 w-5 ${TEXT_COLOR_CLASS}`} />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-semibold text-gray-900">
+                                                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
                                                             {student.last_name}, {student.first_name}
                                                             {student.middle_name && ` ${student.middle_name.charAt(0)}.`}
                                                         </p>
@@ -366,27 +366,27 @@ const AdvisoryStudents: React.FC<Props> = ({ classId: propClassId }) => {
                                                 {student.email ? (
                                                     <a 
                                                         href={`mailto:${student.email}`}
-                                                        className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                                                        className="flex items-center text-sm text-gray-600 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                                     >
                                                         <Mail className="h-4 w-4 mr-2" />
                                                         {student.email}
                                                     </a>
                                                 ) : (
-                                                    <span className="text-sm text-gray-400">-</span>
+                                                    <span className="text-sm text-gray-400 dark:text-white">-</span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm text-gray-600 capitalize">
+                                                <span className="text-sm text-gray-600 dark:text-white capitalize">
                                                     {student.gender || '-'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full
+                                                <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border dark:border-white
                                                     ${student.enrollment_status === 'enrolled' 
-                                                        ? 'bg-green-100 text-green-700' 
+                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-white' 
                                                         : student.enrollment_status === 'completed'
-                                                        ? 'bg-blue-100 text-blue-700'
-                                                        : 'bg-gray-100 text-gray-700'
+                                                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-white'
+                                                        : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-white'
                                                     }`}
                                                 >
                                                     {student.enrollment_status || 'Active'}
@@ -399,8 +399,8 @@ const AdvisoryStudents: React.FC<Props> = ({ classId: propClassId }) => {
                         </div>
                         
                         {/* Results count */}
-                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-                            <p className="text-sm text-gray-600">
+                        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-white">
+                            <p className="text-sm text-gray-600 dark:text-white">
                                 Showing {filteredStudents.length} of {students.length} students
                             </p>
                         </div>

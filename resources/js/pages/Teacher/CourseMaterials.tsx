@@ -135,7 +135,7 @@ const MaterialModal: React.FC<{
             <div className="flex min-h-full items-center justify-center p-4">
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
                 
-                <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl">
+                <div className="relative w-full max-w-xl bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-2xl border dark:border-white">
                     <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4 rounded-t-2xl`}>
                         <h2 className="text-xl font-bold text-white">
                             {isNew ? 'Upload New Course Material' : `Edit: ${material?.title}`}
@@ -144,12 +144,12 @@ const MaterialModal: React.FC<{
 
                     <form onSubmit={handleSubmit} className="p-6 space-y-5">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Subject <span className="text-red-500">*</span></label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Subject <span className="text-red-500">*</span></label>
                             <select
                                 name="subject_id"
                                 value={formData.subject_id}
                                 onChange={handleChange}
-                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 ${RING_COLOR_CLASS} bg-white`}
+                                className={`w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-900 dark:text-white rounded-xl focus:ring-2 ${RING_COLOR_CLASS} bg-white dark:bg-gray-900`}
                                 required
                             >
                                 <option value={0} disabled>Select Subject</option>
@@ -163,13 +163,13 @@ const MaterialModal: React.FC<{
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Material Title <span className="text-red-500">*</span></label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Material Title <span className="text-red-500">*</span></label>
                             <input
                                 type="text"
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
-                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 ${RING_COLOR_CLASS}`}
+                                className={`w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-900 dark:text-white rounded-xl focus:ring-2 ${RING_COLOR_CLASS}`}
                                 placeholder="e.g., Chapter 1 Lecture Slides"
                                 required
                             />
@@ -177,35 +177,35 @@ const MaterialModal: React.FC<{
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Description (Optional)</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Description (Optional)</label>
                             <textarea
                                 name="description"
                                 value={formData.description || ''}
                                 onChange={handleChange}
                                 rows={3}
-                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 ${RING_COLOR_CLASS}`}
+                                className={`w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-900 dark:text-white rounded-xl focus:ring-2 ${RING_COLOR_CLASS}`}
                                 placeholder="Notes about the material..."
                             />
                         </div>
                         
                         {isNew && (
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Upload File <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Upload File <span className="text-red-500">*</span></label>
                                 <input
                                     type="file"
                                     name="file"
                                     ref={fileInputRef}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100`}
+                                    className={`w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-900 dark:text-white rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-gray-800 file:text-blue-700 dark:file:text-white hover:file:bg-blue-100 dark:hover:file:bg-gray-700`}
                                     required={isNew}
                                 />
-                                {formData.file && (<p className="text-xs text-gray-500 mt-1">Selected: {formData.file.name}</p>)}
+                                {formData.file && (<p className="text-xs text-gray-500 dark:text-white mt-1">Selected: {formData.file.name}</p>)}
                                 {errors.file && (<p className="text-red-500 text-xs mt-1">{errors.file[0]}</p>)}
                             </div>
                         )}
 
-                        <div className="flex justify-end space-x-3 pt-4 border-t">
-                            <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50" disabled={loading}>
+                        <div className="flex justify-end space-x-3 pt-4 border-t dark:border-white">
+                            <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-white rounded-xl text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700" disabled={loading}>
                                 Cancel
                             </button>
                             <button type="submit" className={`px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} disabled:opacity-50`} disabled={loading || (isNew && !formData.file)}>
@@ -349,8 +349,8 @@ const TeacherCourseMaterials: React.FC = () => {
                                 <FolderOpen className="h-8 w-8 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-bold text-gray-900">Course Materials</h1>
-                                <p className="text-gray-600 mt-1">Upload and manage learning resources by subject</p>
+                                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Course Materials</h1>
+                                <p className="text-gray-600 dark:text-white mt-1">Upload and manage learning resources by subject</p>
                             </div>
                         </div>
                         <div className="flex space-x-3">
@@ -358,31 +358,31 @@ const TeacherCourseMaterials: React.FC = () => {
                                 <Upload className="h-5 w-5 mr-2" />
                                 Upload Material
                             </button>
-                            <button onClick={() => loadMaterials()} className="p-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50">
+                            <button onClick={() => loadMaterials()} className="p-3 bg-white dark:bg-gray-800 dark:border-white border border-gray-300 dark:border-white rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
                             </button>
                         </div>
                     </div>
 
                     {/* Filters */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg p-6 mb-6 border dark:border-white">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="relative col-span-2">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-white" />
                                 <input
                                     type="text"
                                     value={filters.search}
                                     onChange={(e) => setFilters({...filters, search: e.target.value})}
-                                    className="pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500"
+                                    className="pl-12 w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500"
                                     placeholder="Search materials..."
                                 />
                             </div>
                             <div className="flex items-center">
-                                <Filter className="h-5 w-5 text-gray-400 mr-3" />
+                                <Filter className="h-5 w-5 text-gray-400 dark:text-white mr-3" />
                                 <select
                                     value={filters.subject_id}
                                     onChange={(e) => setFilters({...filters, subject_id: e.target.value})}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-white"
+                                    className="w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900"
                                 >
                                     <option value="">All Subjects</option>
                                     {subjects.map(subject => (
@@ -423,17 +423,17 @@ const TeacherCourseMaterials: React.FC = () => {
                                                             <IconComponent className={`h-5 w-5 ${TEXT_COLOR_CLASS}`} />
                                                         </div>
                                                         <div>
-                                                            <div className="font-semibold text-gray-900">{material.title}</div>
-                                                            <div className="text-sm text-gray-500 truncate max-w-xs">{material.description || '-'}</div>
+                                                            <div className="font-semibold text-gray-900 dark:text-white">{material.title}</div>
+                                                            <div className="text-sm text-gray-500 dark:text-white truncate max-w-xs">{material.description || '-'}</div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="text-sm font-medium">{material.subject?.subject_code}</div>
-                                                    <div className="text-xs text-gray-500">{material.subject?.subject_name}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-white">{material.subject?.subject_name}</div>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-600">{formatFileSize(material.file_size)}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-600">{new Date(material.created_at).toLocaleDateString()}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">{formatFileSize(material.file_size)}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">{new Date(material.created_at).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4 text-right">
                                                     <div className="flex justify-end space-x-2">
                                                         <button onClick={() => handleDownload(material)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="Download">
