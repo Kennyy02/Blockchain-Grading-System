@@ -493,40 +493,34 @@ const Categories: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Stats Cards - Compact on Mobile */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Total</p>
-                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{stats.total_categories}</p>
-                                </div>
-                                <div className={`${LIGHT_BG_CLASS} p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0`}>
-                                    <Tag className={`h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 ${TEXT_COLOR_CLASS}`} />
+                    {/* Stats Cards - Centered layout with icon below value */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 border border-gray-100">
+                            <div className="flex flex-col items-center text-center">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Total</p>
+                                <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">{stats.total_categories}</p>
+                                <div className={`${LIGHT_BG_CLASS} p-2 sm:p-3 rounded-full`}>
+                                    <Tag className={`h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 ${TEXT_COLOR_CLASS}`} />
                                 </div>
                             </div>
                         </div>
                         
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Active</p>
-                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600 leading-tight">{stats.active_categories}</p>
-                                </div>
-                                <div className="bg-green-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
-                                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-green-600" />
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 border border-gray-100">
+                            <div className="flex flex-col items-center text-center">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Active</p>
+                                <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-600 mb-2 sm:mb-3">{stats.active_categories}</p>
+                                <div className="bg-green-100 p-2 sm:p-3 rounded-full">
+                                    <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-green-600" />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">With Books</p>
-                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 leading-tight">{stats.categories_with_books}</p>
-                                </div>
-                                <div className="bg-blue-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
-                                    <Tag className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-blue-600" />
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 border border-gray-100 col-span-2 sm:col-span-1">
+                            <div className="flex flex-col items-center text-center">
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">With Books</p>
+                                <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600 mb-2 sm:mb-3">{stats.categories_with_books}</p>
+                                <div className="bg-blue-100 p-2 sm:p-3 rounded-full">
+                                    <Tag className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-blue-600" />
                                 </div>
                             </div>
                         </div>

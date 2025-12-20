@@ -1244,32 +1244,36 @@ const Students: React.FC = () => {
                                 <p className="text-gray-600 mt-1">Manage student enrollment, details, and academic status</p>
                             </div>
                         </div>
-                        <div className="flex space-x-3">
-                            <button 
-                                onClick={() => router.visit('/admin/students/dropped')}
-                                className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-lg font-medium"
-                            >
-                                <Trash2 className="h-5 w-5 mr-2" />
-                                Dropped Students
-                            </button>
-                            <button 
-                                onClick={handleAdd}
-                                className={`inline-flex items-center px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all shadow-lg font-medium`}
-                            >
-                                <Plus className="h-5 w-5 mr-2" />
-                                Enroll Student
-                            </button>
-                            
-                            <button 
-                                onClick={() => loadStudents()}
-                                className="inline-flex items-center px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm"
-                            >
-                                <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-                            </button>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="flex flex-wrap gap-3">
+                                <button 
+                                    onClick={() => router.visit('/admin/students/dropped')}
+                                    className="inline-flex items-center px-4 sm:px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-lg font-medium text-sm sm:text-base"
+                                >
+                                    <Trash2 className="h-5 w-5 mr-2" />
+                                    <span className="hidden sm:inline">Dropped Students</span>
+                                    <span className="sm:hidden">Dropped</span>
+                                </button>
+                                <button 
+                                    onClick={handleAdd}
+                                    className={`inline-flex items-center px-4 sm:px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all shadow-lg font-medium text-sm sm:text-base`}
+                                >
+                                    <Plus className="h-5 w-5 mr-2" />
+                                    <span className="hidden sm:inline">Enroll Student</span>
+                                    <span className="sm:hidden">Enroll</span>
+                                </button>
+                                
+                                <button 
+                                    onClick={() => loadStudents()}
+                                    className="inline-flex items-center px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm"
+                                >
+                                    <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+                                </button>
+                            </div>
                             <div className="relative">
                                 <button 
                                     onClick={() => setShowExportDropdown(!showExportDropdown)}
-                                    className="inline-flex items-center gap-2 px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm"
+                                    className="inline-flex items-center gap-2 px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm w-full sm:w-auto justify-center sm:justify-start"
                                     title="Download Students Report"
                                 >
                                     <Download className="h-5 w-5" />
@@ -1284,7 +1288,7 @@ const Students: React.FC = () => {
                                             className="fixed inset-0 z-10" 
                                             onClick={() => setShowExportDropdown(false)}
                                         />
-                                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-20">
+                                        <div className="absolute right-0 sm:right-0 left-0 sm:left-auto mt-2 w-full sm:w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-20">
                                             <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Export Students</p>
                                             {[
                                                 { id: '', label: '📚 All Students', icon: '📚' },
