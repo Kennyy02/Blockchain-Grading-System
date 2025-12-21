@@ -949,102 +949,94 @@ const Grades: React.FC = () => {
                     <div className="mb-4 sm:mb-6 md:mb-8">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                             <div className="mb-4 sm:mb-6 md:mb-0">
-                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Grade Management</h1>
-                                <p className="text-xs sm:text-sm text-gray-600">Manage and track student academic performance</p>
+                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">Grade Management</h1>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Manage and track student academic performance</p>
                             </div>
-                            <button
-                                onClick={handleCreate}
-                                className={`flex items-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-lg sm:rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium shadow-lg text-xs sm:text-sm md:text-base`}
-                            >
-                                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                                <span className="hidden sm:inline">Record New Grade</span>
-                                <span className="sm:hidden">New Grade</span>
-                            </button>
                         </div>
                     </div>
 
                     {/* Stats - Mobile: Centered with icon below, Desktop: Icon on right */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6 md:mb-8">
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6 md:mb-8">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100 dark:border-gray-700">
                             {/* Mobile: Centered layout */}
                             <div className="flex flex-col items-center text-center md:hidden">
-                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Total Grades</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">{stats.total_grades || 0}</p>
-                                <div className={`p-2 sm:p-3 rounded-full ${LIGHT_BG_CLASS}`}>
-                                    <Hash className={`w-5 h-5 sm:w-6 sm:h-6 ${TEXT_COLOR_CLASS}`} />
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-white mb-1 sm:mb-2">Total Grades</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">{stats.total_grades || 0}</p>
+                                <div className={`p-2 sm:p-3 rounded-full ${LIGHT_BG_CLASS} dark:bg-gray-700`}>
+                                    <Hash className={`w-5 h-5 sm:w-6 sm:h-6 ${TEXT_COLOR_CLASS} dark:text-white`} />
                                 </div>
                             </div>
                             {/* Desktop: Original layout with icon on right */}
                             <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">Total Grades</p>
-                                    <p className="text-3xl font-bold text-gray-900">{stats.total_grades || 0}</p>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-white mb-1">Total Grades</p>
+                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total_grades || 0}</p>
                                 </div>
-                                <div className={`p-3 ${LIGHT_BG_CLASS} rounded-xl`}>
-                                    <Hash className={`w-6 h-6 ${TEXT_COLOR_CLASS}`} />
+                                <div className={`p-3 ${LIGHT_BG_CLASS} dark:bg-gray-700 rounded-xl`}>
+                                    <Hash className={`w-6 h-6 ${TEXT_COLOR_CLASS} dark:text-white`} />
                                 </div>
                             </div>
                         </div>
                         
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100 dark:border-gray-700">
                             {/* Mobile: Centered layout */}
                             <div className="flex flex-col items-center text-center md:hidden">
-                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Average Rating</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">{Number(stats.average_final_rating ?? 0).toFixed(1)}%</p>
-                                <div className={`p-2 sm:p-3 rounded-full ${LIGHT_BG_CLASS}`}>
-                                    <BarChart className={`w-5 h-5 sm:w-6 sm:h-6 ${TEXT_COLOR_CLASS}`} />
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-white mb-1 sm:mb-2">Average Rating</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2 sm:mb-3">{Number(stats.average_final_rating ?? 0).toFixed(1)}%</p>
+                                <div className={`p-2 sm:p-3 rounded-full ${LIGHT_BG_CLASS} dark:bg-gray-700`}>
+                                    <BarChart className={`w-5 h-5 sm:w-6 sm:h-6 ${TEXT_COLOR_CLASS} dark:text-white`} />
                                 </div>
                             </div>
                             {/* Desktop: Original layout with icon on right */}
                             <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">Average Rating</p>
-                                    <p className="text-3xl font-bold text-gray-900">{Number(stats.average_final_rating ?? 0).toFixed(1)}%</p>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-white mb-1">Average Rating</p>
+                                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{Number(stats.average_final_rating ?? 0).toFixed(1)}%</p>
                                 </div>
-                                <div className={`p-3 ${LIGHT_BG_CLASS} rounded-xl`}>
-                                    <BarChart className={`w-6 h-6 ${TEXT_COLOR_CLASS}`} />
+                                <div className={`p-3 ${LIGHT_BG_CLASS} dark:bg-gray-700 rounded-xl`}>
+                                    <BarChart className={`w-6 h-6 ${TEXT_COLOR_CLASS} dark:text-white`} />
                                 </div>
                             </div>
                         </div>
                         
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100 dark:border-gray-700">
                             {/* Mobile: Centered layout */}
                             <div className="flex flex-col items-center text-center md:hidden">
-                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Passing Rate</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-green-600 mb-2 sm:mb-3">{Number(stats.passing_rate ?? 0).toFixed(1)}%</p>
-                                <div className="p-2 sm:p-3 bg-green-50 rounded-full">
-                                    <Award className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-white mb-1 sm:mb-2">Passing Rate</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mb-2 sm:mb-3">{Number(stats.passing_rate ?? 0).toFixed(1)}%</p>
+                                <div className="p-2 sm:p-3 bg-green-50 dark:bg-green-900/30 rounded-full">
+                                    <Award className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
                                 </div>
                             </div>
                             {/* Desktop: Original layout with icon on right */}
                             <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">Passing Rate</p>
-                                    <p className="text-3xl font-bold text-green-600">{Number(stats.passing_rate ?? 0).toFixed(1)}%</p>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-white mb-1">Passing Rate</p>
+                                    <p className="text-3xl font-bold text-green-600 dark:text-green-400">{Number(stats.passing_rate ?? 0).toFixed(1)}%</p>
                                 </div>
-                                <div className="p-3 bg-green-50 rounded-xl">
-                                    <Award className="w-6 h-6 text-green-600" />
+                                <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-xl">
+                                    <Award className="w-6 h-6 text-green-600 dark:text-green-400" />
                                 </div>
                             </div>
                         </div>
                         
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100 dark:border-gray-700">
                             {/* Mobile: Centered layout */}
                             <div className="flex flex-col items-center text-center md:hidden">
-                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Failed</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-red-600 mb-2 sm:mb-3">{stats.failed_count || 0}</p>
-                                <div className="p-2 sm:p-3 bg-red-50 rounded-full">
-                                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-white mb-1 sm:mb-2">Failed</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-red-600 dark:text-red-400 mb-2 sm:mb-3">{stats.failed_count || 0}</p>
+                                <div className="p-2 sm:p-3 bg-red-50 dark:bg-red-900/30 rounded-full">
+                                    <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
                                 </div>
                             </div>
                             {/* Desktop: Original layout with icon on right */}
                             <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">Failed</p>
-                                    <p className="text-3xl font-bold text-red-600">{stats.failed_count || 0}</p>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-white mb-1">Failed</p>
+                                    <p className="text-3xl font-bold text-red-600 dark:text-red-400">{stats.failed_count || 0}</p>
                                 </div>
-                                <div className="p-3 bg-red-50 rounded-xl">
-                                    <Zap className="w-6 h-6 text-red-600" />
+                                <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-xl">
+                                    <Zap className="w-6 h-6 text-red-600 dark:text-red-400" />
                                 </div>
                             </div>
                         </div>
@@ -1112,19 +1104,19 @@ const Grades: React.FC = () => {
                     </div>
 
                     {/* Table - Responsive: Mobile shows Student + Actions, Desktop shows all columns */}
-                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-700">
                                     <tr>
-                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Student</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Class / Subject</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Rating</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Remarks</th> 
-                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap">Student</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap">Class / Subject</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap">Rating</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap">Remarks</th> 
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     {loading ? (
                                         <tr>
                                             <td colSpan={5} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
@@ -1145,27 +1137,33 @@ const Grades: React.FC = () => {
                                         </tr>
                                     ) : (
                                         grades.map((grade) => (
-                                            <tr key={grade.id} className="hover:bg-gray-50 transition-colors">
+                                            <tr key={grade.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900">{grade.student?.full_name || 'N/A'}</div>
-                                                    <div className="text-xs text-gray-500">{grade.student?.student_id || 'N/A'}</div>
+                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">{grade.student?.full_name || 'N/A'}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">{grade.student?.student_id || 'N/A'}</div>
                                                     {/* Show additional info on mobile */}
-                                                    <div className="md:hidden mt-1 space-y-1">
-                                                        <div className="text-xs text-gray-600">{grade.class_subject?.subject?.subject_name || 'N/A'}</div>
-                                                        <div className="text-xs text-gray-500">{grade.class_subject?.class?.class_code || 'N/A'} ({grade.class_subject?.subject?.subject_code || 'N/A'})</div>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-xs font-bold text-gray-900">
-                                                                {grade.final_rating != null ? Number(grade.final_rating).toFixed(2) : '0.00'}%
-                                                            </span>
-                                                            {renderRemarksTag(grade.remarks)}
+                                                    <div className="md:hidden mt-2 space-y-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                                        <div className="text-xs text-gray-600 dark:text-gray-400">{grade.class_subject?.subject?.subject_name || 'N/A'}</div>
+                                                        <div className="text-xs text-gray-500 dark:text-gray-500">{grade.class_subject?.class?.class_code || 'N/A'} ({grade.class_subject?.subject?.subject_code || 'N/A'})</div>
+                                                        <div className="flex items-center justify-between gap-2 pt-1">
+                                                            <div>
+                                                                <span className="text-xs text-gray-500 dark:text-gray-400">Final Rating: </span>
+                                                                <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                                                                    {grade.final_rating != null ? Number(grade.final_rating).toFixed(2) : '0.00'}%
+                                                                </span>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-xs text-gray-500 dark:text-gray-400 mr-1">Remarks: </span>
+                                                                {renderRemarksTag(grade.remarks)}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900">{grade.class_subject?.subject?.subject_name || 'N/A'}</div>
-                                                    <div className="text-xs text-gray-500">{grade.class_subject?.class?.class_code || 'N/A'} ({grade.class_subject?.subject?.subject_code || 'N/A'})</div>
+                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">{grade.class_subject?.subject?.subject_name || 'N/A'}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">{grade.class_subject?.class?.class_code || 'N/A'} ({grade.class_subject?.subject?.subject_code || 'N/A'})</div>
                                                 </td>
-                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-bold text-gray-900">
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400">
                                                     {grade.final_rating != null ? Number(grade.final_rating).toFixed(2) : '0.00'}%
                                                 </td>
                                                 <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
