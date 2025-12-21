@@ -521,7 +521,7 @@ const AcademicYears: React.FC = () => {
                     </div>
 
                     {/* Stats Cards - Mobile: Centered with icon below, Desktop: Icon on right */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6">
                         <div className="bg-white dark:bg-transparent rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100 dark:border-white md:col-span-2">
                             {/* Mobile: Centered layout */}
                             <div className="flex flex-col items-center text-center md:hidden">
