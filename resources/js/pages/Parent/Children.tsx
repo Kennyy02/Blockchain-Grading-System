@@ -92,11 +92,11 @@ const ChildCard: React.FC<{
     const { student, totalSubjects, overallAvgGrade, overallAttendanceRate } = childInfo;
 
     return (
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all">
             <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
-                    <div className="p-3 bg-blue-100 rounded-xl mr-4">
-                        <GraduationCap className="h-6 w-6 text-blue-700" />
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl mr-4">
+                        <GraduationCap className="h-6 w-6 text-blue-700 dark:text-blue-400" />
                     </div>
                     <div>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -107,10 +107,10 @@ const ChildCard: React.FC<{
                 </div>
                 <button
                     onClick={() => onViewDetails(student.id)}
-                    className={`px-4 py-2 ${TEXT_COLOR_CLASS} border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium flex items-center`}
+                    className={`px-4 py-2 ${TEXT_COLOR_CLASS} dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium flex items-center`}
                 >
                     View Details
-                    <ChevronRight className="h-4 w-4 ml-1" />
+                    <ChevronRight className="h-4 w-4 ml-1 dark:text-white" />
                 </button>
             </div>
 
@@ -141,38 +141,38 @@ const ChildCard: React.FC<{
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center">
-                    <Award className="h-5 w-5 text-indigo-600 mr-2" />
+                    <Award className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mr-2" />
                     <div>
                         <p className="text-xs text-gray-400 dark:text-gray-500">Average Grade</p>
-                        <p className="text-lg font-bold text-indigo-600">
+                        <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                             {overallAvgGrade.toFixed(2)}%
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center">
-                    <ClipboardCheck className="h-5 w-5 text-green-600 mr-2" />
+                    <ClipboardCheck className="h-5 w-5 text-green-600 dark:text-green-400 mr-2" />
                     <div>
-                        <p className="text-xs text-gray-400">Attendance Rate</p>
-                        <p className="text-lg font-bold text-green-600">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">Attendance Rate</p>
+                        <p className="text-lg font-bold text-green-600 dark:text-green-400">
                             {overallAttendanceRate.toFixed(2)}%
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex gap-2">
                     <a
                         href={`/parent/grades?student_id=${student.id}`}
-                        className={`flex-1 px-3 py-2 text-center text-sm font-medium ${TEXT_COLOR_CLASS} border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors`}
+                        className={`flex-1 px-3 py-2 text-center text-sm font-medium ${TEXT_COLOR_CLASS} dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}
                     >
                         View Grades
                     </a>
                     <a
                         href={`/parent/attendance?student_id=${student.id}`}
-                        className={`flex-1 px-3 py-2 text-center text-sm font-medium ${TEXT_COLOR_CLASS} border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors`}
+                        className={`flex-1 px-3 py-2 text-center text-sm font-medium ${TEXT_COLOR_CLASS} dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}
                     >
                         View Attendance
                     </a>
@@ -265,32 +265,32 @@ const ParentChildrenPage: React.FC = () => {
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Children</h1>
                         {user && parent && (
-                            <p className="mt-2 text-gray-600">
+                            <p className="mt-2 text-gray-600 dark:text-gray-400">
                                 View and manage information for your {children.length} {children.length === 1 ? 'child' : 'children'}
                             </p>
                         )}
                     </div>
                     <button 
                         onClick={fetchChildrenData}
-                        className={`inline-flex items-center px-4 py-2 bg-white border border-gray-300 ${TEXT_COLOR_CLASS} rounded-xl ${HOVER_COLOR_CLASS} transition-all shadow-sm`}
+                        className={`inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 ${TEXT_COLOR_CLASS} dark:text-white rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm`}
                         disabled={loading}
                     >
-                        <RefreshCw className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''} dark:text-white`} />
                         {loading ? 'Loading...' : 'Refresh Data'}
                     </button>
                 </div>
 
                 {/* Search Bar */}
                 {childrenInfo.length > 0 && (
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                             <input
                                 type="text"
                                 placeholder="Search by name or student ID..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                             />
                         </div>
                     </div>
@@ -298,20 +298,20 @@ const ParentChildrenPage: React.FC = () => {
 
                 {/* Loading State */}
                 {loading ? (
-                    <div className="py-20 text-center text-gray-500">
+                    <div className="py-20 text-center text-gray-500 dark:text-gray-400">
                         <RefreshCw className={`h-12 w-12 mx-auto ${TEXT_COLOR_CLASS} dark:text-white animate-spin`} />
-                        <p className="mt-4 text-lg">Loading your children's information...</p>
+                        <p className="mt-4 text-lg dark:text-white">Loading your children's information...</p>
                     </div>
                 ) : childrenInfo.length === 0 ? (
-                    <div className="py-20 text-center text-gray-500">
-                        <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                        <p className="text-lg">No children linked to your account.</p>
-                        <p className="text-sm mt-2">Please contact the administrator to link your children's accounts.</p>
+                    <div className="py-20 text-center text-gray-500 dark:text-gray-400">
+                        <Users className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+                        <p className="text-lg dark:text-white">No children linked to your account.</p>
+                        <p className="text-sm mt-2 dark:text-gray-400">Please contact the administrator to link your children's accounts.</p>
                     </div>
                 ) : filteredChildren.length === 0 ? (
-                    <div className="py-20 text-center text-gray-500">
-                        <Search className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                        <p className="text-lg">No children found matching your search.</p>
+                    <div className="py-20 text-center text-gray-500 dark:text-gray-400">
+                        <Search className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+                        <p className="text-lg dark:text-white">No children found matching your search.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

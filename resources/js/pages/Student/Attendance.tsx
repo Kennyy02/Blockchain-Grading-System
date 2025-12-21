@@ -111,11 +111,11 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.El
         <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-white">
             <div className="flex items-center justify-between">
                 <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{title}</p>
-                    <p className={`text-3xl font-bold ${color}`}>{displayValue}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-white mb-1">{title}</p>
+                    <p className={`text-3xl font-bold ${color} dark:text-white`}>{displayValue}</p>
                 </div>
-                <div className={`${bgColor} p-3 rounded-xl`}>
-                    <Icon className={`h-8 w-8 ${color}`} />
+                <div className={`${bgColor} dark:bg-gray-700 p-3 rounded-xl`}>
+                    <Icon className={`h-8 w-8 ${color} dark:text-white`} />
                 </div>
             </div>
         </div>
@@ -343,25 +343,25 @@ const MyAttendance: React.FC = () => {
                     onClose={() => setNotification(null)} 
                 />
             )}
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-900">
                 <div className="container mx-auto px-4 py-8">
                     <div className="mb-6">
                         <div>
-                            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+                            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent mb-4">
                                 My Attendance
                             </h1>
                             <div className="mb-4">
                                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">{studentName || user?.name || 'Student'}</h2>
                                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-300">
                                     {className && (
-                                        <div>
+                                        <div className="dark:text-white">
                                             <span className="font-semibold">Class:</span> {className}
                                         </div>
                                     )}
                                     {yearLevel !== null && (() => {
                                         const { label, value } = formatGradeYearLevel(yearLevel);
                                         return (
-                                            <div>
+                                            <div className="dark:text-white">
                                                 <span className="font-semibold">{label}:</span> {value}
                                             </div>
                                         );

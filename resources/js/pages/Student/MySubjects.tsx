@@ -331,17 +331,17 @@ const MySubjects: React.FC = () => {
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-white">
                             <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-900 dark:border-white">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Subject</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Class/Section</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Units</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Description</th>
-                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Details</th>
+                                    <th className="px-3 sm:px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Subject</th>
+                                    <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Class/Section</th>
+                                    <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Units</th>
+                                    <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Description</th>
+                                    <th className="px-3 sm:px-6 py-4 text-right text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider">Details</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-white">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center">
+                                        <td colSpan={2} className="px-3 sm:px-6 py-12 text-center">
                                             <div className="flex justify-center">
                                                 <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} dark:text-white animate-spin`} />
                                             </div>
@@ -350,13 +350,13 @@ const MySubjects: React.FC = () => {
                                     </tr>
                                 ) : !studentId ? (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
+                                        <td colSpan={2} className="px-3 sm:px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                                             Student profile not found. Please contact the administrator.
                                         </td>
                                     </tr>
                                 ) : filteredSubjects.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
+                                        <td colSpan={2} className="px-3 sm:px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                                             {searchTerm 
                                                 ? 'No subjects match your search.'
                                                 : 'You are not currently enrolled in any subjects. Please ensure you are enrolled in a class.'
@@ -367,7 +367,7 @@ const MySubjects: React.FC = () => {
                                     filteredSubjects.map((subject) => (
                                         <tr key={subject.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                             {/* Subject info */}
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            <td className="px-3 sm:px-6 py-4">
                                                 <div className="flex items-center">
                                                     <div className={`p-2 rounded-lg mr-3 ${LIGHT_BG_CLASS}`}>
                                                         <BookOpen className={`h-5 w-5 ${TEXT_COLOR_CLASS} dark:text-white`} />
@@ -378,8 +378,8 @@ const MySubjects: React.FC = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            {/* Class/Section */}
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            {/* Class/Section - Hidden on mobile */}
+                                            <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-700 dark:text-white">
                                                     {classInfo?.class_code || subject.class_code || 'N/A'}
                                                 </div>
@@ -387,26 +387,27 @@ const MySubjects: React.FC = () => {
                                                     Section {classInfo?.section || subject.section || 'N/A'}
                                                 </div>
                                             </td>
-                                            {/* Units */}
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            {/* Units - Hidden on mobile */}
+                                            <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                                                 <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${LIGHT_BG_CLASS} ${TEXT_COLOR_CLASS} dark:text-white`}>
                                                     {subject.units} units
                                                 </span>
                                             </td>
-                                            {/* Description */}
-                                            <td className="px-6 py-4">
+                                            {/* Description - Hidden on mobile */}
+                                            <td className="hidden md:table-cell px-6 py-4">
                                                 <div className="text-sm text-gray-700 dark:text-white max-w-xs truncate">
                                                     {subject.subject_description || 'No description available'}
                                                 </div>
                                             </td>
                                             {/* Action */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-right">
+                                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right">
                                                 <button 
                                                     onClick={() => setSelectedSubject(subject)}
-                                                    className={`flex items-center ml-auto px-3 py-2 text-sm font-medium border border-gray-300 dark:border-white rounded-lg ${TEXT_COLOR_CLASS} hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`}
+                                                    className={`flex items-center ml-auto px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium border border-gray-300 dark:border-white rounded-lg ${TEXT_COLOR_CLASS} dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`}
                                                 >
-                                                    <Info className="h-4 w-4 mr-1" />
-                                                    View Details
+                                                    <Info className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                                                    <span className="hidden sm:inline">View Details</span>
+                                                    <span className="sm:hidden">Details</span>
                                                 </button>
                                             </td>
                                         </tr>
@@ -418,8 +419,8 @@ const MySubjects: React.FC = () => {
 
                     {/* Footer with summary */}
                     {!loading && filteredSubjects.length > 0 && (
-                        <div className="px-6 py-4 border-t border-gray-200 dark:border-white bg-gray-50 dark:bg-gray-900">
-                            <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
+                        <div className="px-3 sm:px-6 py-4 border-t border-gray-200 dark:border-white bg-gray-50 dark:bg-gray-900">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 text-sm text-gray-600 dark:text-gray-300">
                                 <span>Showing {filteredSubjects.length} of {subjects.length} subjects</span>
                                 <span className="font-medium">Total: {totalUnits} units</span>
                             </div>
