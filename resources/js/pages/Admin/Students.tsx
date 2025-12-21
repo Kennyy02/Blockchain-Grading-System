@@ -1414,7 +1414,7 @@ const Students: React.FC = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-2 sm:p-3 mb-4 sm:mb-6 border border-gray-100 dark:border-gray-700">
                         <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3 px-1 sm:px-2">Select an education level to view students:</p>
                         <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
-                            <div className="flex gap-1.5 sm:gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
+                            <div className="flex gap-1.5 sm:gap-2 min-w-max sm:min-w-6 sm:flex-wrap">
                                 {educationLevels.map((level) => {
                                     // Get count from stats (all students in DB, not just paginated)
                                     // Special handling for dropped students
