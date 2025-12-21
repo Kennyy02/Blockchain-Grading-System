@@ -327,6 +327,7 @@ const StudentModal: React.FC<{
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
+                                        autoComplete="email"
                                         className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-800 dark:text-gray-100`}
                                         placeholder="student@example.com"
                                         required
@@ -355,16 +356,16 @@ const StudentModal: React.FC<{
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                                 <div>
                                     <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">First Name</label>
-                                    <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} required/>
+                                    <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} autoComplete="given-name" className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} required/>
                                     {errors.first_name && (<p className="text-red-500 text-xs mt-1">{errors.first_name[0]}</p>)}
                                 </div>
                                 <div>
                                     <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Middle Name</label>
-                                    <input type="text" name="middle_name" value={formData.middle_name} onChange={handleChange} className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} />
+                                    <input type="text" name="middle_name" value={formData.middle_name} onChange={handleChange} autoComplete="additional-name" className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} />
                                 </div>
                                 <div>
                                     <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Last Name</label>
-                                    <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} required/>
+                                    <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} autoComplete="family-name" className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} required/>
                                     {errors.last_name && (<p className="text-red-500 text-xs mt-1">{errors.last_name[0]}</p>)}
                                 </div>
                             </div>
@@ -433,7 +434,7 @@ const StudentModal: React.FC<{
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <div>
                                     <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Phone</label>
-                                    <input type="text" name="phone" value={formData.phone} onChange={handleChange} className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} placeholder="+63 XXX XXX XXXX"/>
+                                    <input type="text" name="phone" value={formData.phone} onChange={handleChange} autoComplete="tel" className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} placeholder="+63 XXX XXX XXXX"/>
                                     {errors.phone && (<p className="text-red-500 text-xs mt-1">{errors.phone[0]}</p>)}
                                 </div>
                                 <div>
@@ -457,6 +458,7 @@ const StudentModal: React.FC<{
                                     name="address" 
                                     value={formData.address || ''} 
                                     onChange={handleChange} 
+                                    autoComplete="street-address"
                                     className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="Complete address"
                                 />
@@ -473,6 +475,7 @@ const StudentModal: React.FC<{
                                             name="password"
                                             value={formData.password}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                                            autoComplete={student ? "new-password" : "new-password"}
                                             className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all pr-10 sm:pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                             required={!student}
                                         />
@@ -498,6 +501,7 @@ const StudentModal: React.FC<{
                                             name="password_confirmation"
                                             value={formData.password_confirmation}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                                            autoComplete="new-password"
                                             className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all pr-10 sm:pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                             required={!student}
                                         />
@@ -620,6 +624,7 @@ const StudentModal: React.FC<{
                                             name="email" 
                                             value={formData.parent_guardian?.email || ''} 
                                             onChange={handleParentChange} 
+                                            autoComplete="email"
                                             className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-800 dark:text-gray-100`}
                                             placeholder="parent@example.com"
                                         />
@@ -657,6 +662,7 @@ const StudentModal: React.FC<{
                                             name="phone" 
                                             value={formData.parent_guardian?.phone || ''} 
                                             onChange={handleParentChange} 
+                                            autoComplete="tel"
                                             className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-800 dark:text-gray-100`}
                                             placeholder="+63 XXX XXX XXXX"
                                         />
@@ -670,6 +676,7 @@ const StudentModal: React.FC<{
                                         name="address" 
                                         value={formData.parent_guardian?.address || ''} 
                                         onChange={handleParentChange} 
+                                        autoComplete="street-address"
                                         className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-800 dark:text-gray-100`}
                                         placeholder="Complete address"
                                     />
@@ -684,6 +691,7 @@ const StudentModal: React.FC<{
                                                 name="password" 
                                                 value={formData.parent_guardian?.password || ''} 
                                                 onChange={handleParentChange} 
+                                                autoComplete="new-password"
                                                 className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all pr-10 sm:pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                                 placeholder="Parent login password"
                                             />
@@ -708,7 +716,8 @@ const StudentModal: React.FC<{
                                                 type={showParentPassword ? "text" : "password"}
                                                 name="password_confirmation" 
                                                 value={formData.parent_guardian?.password_confirmation || ''} 
-                                                onChange={handleParentChange} 
+                                                onChange={handleParentChange}
+                                                autoComplete="new-password" 
                                                 className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all pr-10 sm:pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                                 placeholder="Confirm password"
                                             />

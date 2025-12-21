@@ -110,6 +110,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 type="email"
                                 value={data.email}
                                 readOnly
+                                autoComplete="email"
                                 className="w-full bg-white/20 border-0 text-gray-300 rounded-xl px-4 py-3 cursor-not-allowed"
                             />
                         </div>

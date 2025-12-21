@@ -330,12 +330,12 @@ const ParentModal: React.FC<{
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">First Name</label>
-                                    <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} required/>
+                                    <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} autoComplete="given-name" className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} required/>
                                     {errors.first_name && (<p className="text-red-500 text-xs mt-1">{errors.first_name[0]}</p>)}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Last Name</label>
-                                    <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} required/>
+                                    <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} autoComplete="family-name" className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} required/>
                                     {errors.last_name && (<p className="text-red-500 text-xs mt-1">{errors.last_name[0]}</p>)}
                                 </div>
                             </div>
@@ -343,7 +343,7 @@ const ParentModal: React.FC<{
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Email</label>
-                                    <input type="email" name="email" value={formData.email} onChange={handleChange} className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} placeholder="parent@example.com" required/>
+                                    <input type="email" name="email" value={formData.email} onChange={handleChange} autoComplete="email" className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} placeholder="parent@example.com" required/>
                                     {errors.email && (<p className="text-red-500 text-xs mt-1">{errors.email[0]}</p>)}
                                 </div>
                                 <div>
@@ -389,14 +389,14 @@ const ParentModal: React.FC<{
                                 </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Phone</label>
-                                <input type="text" name="phone" value={formData.phone} onChange={handleChange} className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} placeholder="+63 XXX XXX XXXX"/>
+                                <input type="text" name="phone" value={formData.phone} onChange={handleChange} autoComplete="tel" className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} placeholder="+63 XXX XXX XXXX"/>
                                 {errors.phone && (<p className="text-red-500 text-xs mt-1">{errors.phone[0]}</p>)}
                                 </div>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Address</label>
-                                <input type="text" name="address" value={formData.address || ''} onChange={handleChange} className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} placeholder="Complete address"/>
+                                <input type="text" name="address" value={formData.address || ''} onChange={handleChange} autoComplete="street-address" className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`} placeholder="Complete address"/>
                                 {errors.address && (<p className="text-red-500 text-xs mt-1">{errors.address[0]}</p>)}
                             </div>
 
@@ -410,6 +410,7 @@ const ParentModal: React.FC<{
                                             name="password"
                                             value={formData.password}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                                            autoComplete={parent ? "new-password" : "new-password"}
                                             className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                             required={!parent}
                                         />
@@ -435,6 +436,7 @@ const ParentModal: React.FC<{
                                             name="password_confirmation"
                                             value={formData.password_confirmation}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                                            autoComplete="new-password"
                                             className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                             required={!parent}
                                         />

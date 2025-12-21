@@ -202,6 +202,7 @@ const TeacherModal: React.FC<{
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
+                                        autoComplete="email"
                                         className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                         placeholder="teacher@example.com"
                                         required
@@ -236,6 +237,7 @@ const TeacherModal: React.FC<{
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleChange}
+                                        autoComplete="tel"
                                         className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                         placeholder="+63 XXX XXX XXXX"
                                     />
@@ -252,6 +254,7 @@ const TeacherModal: React.FC<{
                                     name="address"
                                     value={formData.address || ''}
                                     onChange={handleChange}
+                                    autoComplete="street-address"
                                     className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="Complete address"
                                 />
@@ -270,6 +273,7 @@ const TeacherModal: React.FC<{
                                             name="password"
                                             value={formData.password}
                                             onChange={handleChange}
+                                            autoComplete={teacher ? "new-password" : "new-password"}
                                             className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                             required={!teacher}
                                         />
@@ -295,6 +299,7 @@ const TeacherModal: React.FC<{
                                             name="password_confirmation"
                                             value={formData.password_confirmation}
                                             onChange={handleChange}
+                                            autoComplete="new-password"
                                             className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                             required={!teacher}
                                         />
