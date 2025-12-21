@@ -435,19 +435,6 @@ const ParentDashboard: React.FC = () => {
                         </div>
                     ) : stats.children.length > 0 ? (
                         <>
-                            {/* Stats Summary - Minimal Total Children Only */}
-                            <div className="mb-4 sm:mb-6 md:mb-8">
-                                <div className="inline-block">
-                                    <StatCard 
-                                        title="Total Children" 
-                                        value={stats.overallStats.totalChildren} 
-                                        icon={Users} 
-                                        iconBgClass="bg-blue-50 dark:bg-blue-900/20"
-                                        iconColorClass="text-blue-600 dark:text-blue-400"
-                                    />
-                                </div>
-                            </div>
-
                             {/* Individual Child Sections */}
                             {stats.children.map((child, index) => (
                                 <ChildSection 
