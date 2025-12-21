@@ -244,8 +244,8 @@ const Dashboard: React.FC = () => {
 
                     {/* Quick Navigation */}
                     <div className="bg-white dark:bg-gray-800 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100 dark:border-gray-700 space-y-3 sm:space-y-4 mb-4 sm:mb-6 md:mb-8">
-                        <h2 className={`text-lg sm:text-xl font-bold ${TEXT_COLOR_CLASS} flex items-center`}>
-                            <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
+                        <h2 className={`text-lg sm:text-xl font-bold ${TEXT_COLOR_CLASS} dark:text-white flex items-center`}>
+                            <BookOpen className={`h-5 w-5 sm:h-6 sm:w-6 mr-2 ${TEXT_COLOR_CLASS} dark:text-white`} />
                             Quick Navigation
                         </h2>
                         
@@ -274,10 +274,10 @@ const QuickNavLink: React.FC<{ title: string; href: string; icon: React.ElementT
         className={`flex items-center justify-between p-2.5 sm:p-3 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg sm:rounded-xl ${TEXT_COLOR_CLASS} hover:bg-[#e6f2ff] dark:hover:bg-gray-700 transition-colors`}
     >
         <div className="flex items-center">
-            <Icon className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 ${TEXT_COLOR_CLASS}`} />
+            <Icon className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 ${TEXT_COLOR_CLASS} dark:text-white`} />
             <span className="text-sm sm:text-base font-medium text-gray-800 dark:text-white">{title}</span>
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 opacity-60">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 opacity-60 dark:text-white dark:opacity-80">
             <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
         </svg>
     </a>

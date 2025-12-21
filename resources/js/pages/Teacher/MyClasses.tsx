@@ -605,10 +605,10 @@ const MyClasses: React.FC = () => {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div>
-                                                        <p className="text-sm font-medium text-gray-900">
+                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">
                                                             {classSubject.subject?.subject_name || 'N/A'}
                                                         </p>
-                                                        <p className="text-xs text-gray-500">
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">
                                                             {classSubject.subject?.subject_code}
                                                         </p>
                                                     </div>

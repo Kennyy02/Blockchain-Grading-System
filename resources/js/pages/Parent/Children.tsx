@@ -99,7 +99,7 @@ const ChildCard: React.FC<{
                         <GraduationCap className="h-6 w-6 text-blue-700" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-gray-900">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                             {student.full_name || `${student.first_name} ${student.last_name}`}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">Student ID: {student.student_id}</p>
@@ -117,25 +117,25 @@ const ChildCard: React.FC<{
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                 <div>
                     <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Program</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {student.course?.course_name || student.program || 'N/A'}
                     </p>
                 </div>
                 <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Grade Level</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Grade Level</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {formatGradeLevel(student.year_level)}
                     </p>
                 </div>
                 <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Section</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Section</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {student.section || 'N/A'}
                     </p>
                 </div>
                 <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Total Subjects</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Total Subjects</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {totalSubjects}
                     </p>
                 </div>
@@ -263,7 +263,7 @@ const ParentChildrenPage: React.FC = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">My Children</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Children</h1>
                         {user && parent && (
                             <p className="mt-2 text-gray-600">
                                 View and manage information for your {children.length} {children.length === 1 ? 'child' : 'children'}

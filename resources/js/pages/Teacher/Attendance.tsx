@@ -221,7 +221,7 @@ const AttendanceModal: React.FC<{
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                         Class & Subject *
                                     </label>
                                     <select
@@ -246,7 +246,7 @@ const AttendanceModal: React.FC<{
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                         Student *
                                     </label>
                                     <select
@@ -269,7 +269,7 @@ const AttendanceModal: React.FC<{
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                         Date *
                                     </label>
                                     <input
@@ -284,7 +284,7 @@ const AttendanceModal: React.FC<{
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                         Status *
                                     </label>
                                     <select
@@ -308,7 +308,7 @@ const AttendanceModal: React.FC<{
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                                className="px-6 py-3 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                                 disabled={loading}
                             >
                                 Cancel
@@ -907,7 +907,7 @@ const AttendancePage: React.FC = () => {
             case 'Absent': return 'bg-red-100 text-red-800';
             case 'Late': return 'bg-yellow-100 text-yellow-800';
             case 'Excused': return 'bg-blue-100 text-blue-800';
-            default: return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white';
         }
     };
 
@@ -1030,11 +1030,11 @@ const AttendancePage: React.FC = () => {
             <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-900">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 flex items-center">
-                            <ClipboardCheck className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 mr-2 sm:mr-3 ${TEXT_COLOR_CLASS}`} />
+                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+                            <ClipboardCheck className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 mr-2 sm:mr-3 ${TEXT_COLOR_CLASS} dark:text-white`} />
                             <span className="break-words">Student Attendance Management</span>
                         </h1>
-                        <p className="mt-2 text-sm sm:text-base text-gray-600">Track and manage student attendance for your classes</p>
+                        <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">Track and manage student attendance for your classes</p>
                     </div>
                     <div className="flex items-center">
                         <button
@@ -1088,7 +1088,7 @@ const AttendancePage: React.FC = () => {
                     {!selectedClassId ? (
                         // Class Selection View
                         <div>
-                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Select a Class</h3>
+                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">Select a Class</h3>
                             {loadingLists ? (
                                 <div className="text-center py-8">
                                     <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} />
@@ -1107,7 +1107,7 @@ const AttendancePage: React.FC = () => {
                                             className="p-4 sm:p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-[#003366] hover:shadow-lg transition-all text-left cursor-pointer group"
                                         >
                                             <div className="flex items-center justify-between mb-2">
-                                                <h4 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-[#003366] break-words">
+                                                <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-[#003366] dark:group-hover:text-white break-words">
                                                     {classItem.class_code}
                                                 </h4>
                                                 <Users className="w-5 h-5 text-gray-400 group-hover:text-[#003366] flex-shrink-0" />
@@ -1137,10 +1137,10 @@ const AttendancePage: React.FC = () => {
                                         Back to Classes
                                     </button>
                                     <div>
-                                        <h3 className="text-lg font-semibold text-gray-900">
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                             {classes.find(c => c.id === selectedClassId)?.class_code || 'Mark Attendance'}
                                         </h3>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
                                             {classes.find(c => c.id === selectedClassId)?.class_name || ''}
                                         </p>
                                     </div>
@@ -1181,7 +1181,7 @@ const AttendancePage: React.FC = () => {
                             {filters.class_subject_id && (
                                 <div className="mt-6 pt-6 border-t border-gray-200">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-lg font-semibold text-gray-900">Mark Attendance</h3>
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Mark Attendance</h3>
                                     </div>
                                     
                                     {loadingClassStudents ? (
@@ -1203,22 +1203,22 @@ const AttendancePage: React.FC = () => {
                                                     onClick={goToPreviousMonth}
                                                     className="p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
                                                 >
-                                                    <ChevronLeft className="w-5 h-5 text-gray-700" />
+                                                    <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-white" />
                                                 </button>
-                                                <div className="text-lg font-semibold text-gray-900">
+                                                <div className="text-lg font-semibold text-gray-900 dark:text-white">
                                                     {monthNames[currentMonth]} / {currentYear}
                                                 </div>
                                                 <button
                                                     onClick={goToNextMonth}
-                                                    className="p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                                                    className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer"
                                                 >
-                                                    <ChevronRight className="w-5 h-5 text-gray-700" />
+                                                    <ChevronRight className="w-5 h-5 text-gray-700 dark:text-white" />
                                                 </button>
                                             </div>
                                             <div className="flex items-center gap-4">
                                                 {/* Legend */}
                                                 <div className="flex flex-wrap items-center gap-3 text-sm">
-                                                    <span className="font-semibold text-gray-700">Legend:</span>
+                                                    <span className="font-semibold text-gray-700 dark:text-white">Legend:</span>
                                                     <span className="flex items-center gap-1.5">
                                                         <span className="inline-block px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">P</span>
                                                         <span className="text-gray-600 text-xs">Present</span>
@@ -1252,14 +1252,14 @@ const AttendancePage: React.FC = () => {
                                             <table className="w-full border-collapse border border-gray-300 text-sm">
                                                 <thead>
                                                     <tr className="bg-gray-100">
-                                                        <th className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-700 sticky left-0 bg-gray-100 z-10">
+                                                        <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left font-semibold text-gray-700 dark:text-white sticky left-0 bg-gray-100 dark:bg-gray-800 z-10">
                                                             Name
                                                         </th>
                                                         {/* Date headers */}
                                                         {calendarDays.map((day) => (
                                                             <th
                                                                 key={day}
-                                                                className="border border-gray-300 px-2 py-2 text-center font-semibold text-gray-700 min-w-[40px]"
+                                                                className="border border-gray-300 dark:border-gray-700 px-2 py-2 text-center font-semibold text-gray-700 dark:text-white min-w-[40px]"
                                                             >
                                                                 {day}
                                                             </th>
@@ -1285,8 +1285,8 @@ const AttendancePage: React.FC = () => {
                                                         return (
                                                             <tr key={student.id} className="hover:bg-gray-50">
                                                                 <td className="border border-gray-300 px-4 py-3 sticky left-0 bg-white z-10">
-                                                                    <div className="text-sm sm:text-base font-semibold text-gray-900">{student.full_name}</div>
-                                                                    <div className="text-xs text-gray-600">{student.student_id}</div>
+                                                                    <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">{student.full_name}</div>
+                                                                    <div className="text-xs text-gray-600 dark:text-gray-400">{student.student_id}</div>
                                                                 </td>
                                                                 {/* Attendance cells for each day */}
                                                                 {calendarDays.map((day) => {
