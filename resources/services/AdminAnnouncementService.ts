@@ -213,6 +213,11 @@ class AdminAnnouncementService {
                         }
                         throw new Error('Unexpected response format from server');
                     }
+                    
+                    // If retry succeeded, log success (but only if it was a 419 retry)
+                    if (response.ok) {
+                        console.log('✅ Request succeeded after CSRF token refresh');
+                    }
                 } else {
                     console.error('CSRF token mismatch. Could not refresh token. Please refresh the page.');
                     throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page (F5) and try again.');

@@ -118,7 +118,7 @@ const SubjectModal: React.FC<{
             <div className="flex min-h-full items-center justify-center p-4">
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
                 
-                <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+                <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-2xl transition-all">
                     <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4`}>
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-bold text-white">
@@ -130,29 +130,29 @@ const SubjectModal: React.FC<{
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    <form onSubmit={handleSubmit} className="p-6 space-y-6 dark:bg-gray-800">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Subject Code</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Subject Code</label>
                                 <input
                                     type="text"
                                     name="subject_code"
                                     value={formData.subject_code}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="e.g., MAR-101"
                                     required
                                 />
                                 {errors.subject_code && (<p className="text-red-500 text-xs mt-1">{errors.subject_code[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Subject Name</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Subject Name</label>
                                 <input
                                     type="text"
                                     name="subject_name" 
                                     value={formData.subject_name} 
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="e.g., Marine Ecology"
                                     required
                                 />
@@ -161,13 +161,13 @@ const SubjectModal: React.FC<{
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Units</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Units</label>
                             <input
                                 type="number"
                                 name="units"
                                 value={formData.units}
                                 onChange={handleChange}
-                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                 min="1"
                                 required
                             />
@@ -175,20 +175,20 @@ const SubjectModal: React.FC<{
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Description (Optional)</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Description (Optional)</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
                                 onChange={handleChange}
-                                className={`w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                 rows={3}
                                 placeholder="Brief summary of the subject content."
                             />
                             {errors.description && (<p className="text-red-500 text-xs mt-1">{errors.description[0]}</p>)}
                         </div>
 
-                        <div className="flex justify-end space-x-3 pt-4 border-t">
-                            <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium" disabled={loading}>
+                        <div className="flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
+                            <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium" disabled={loading}>
                                 Cancel
                             </button>
                             <button type="submit" className={`px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium shadow-lg disabled:opacity-50`} disabled={loading}>
@@ -215,7 +215,7 @@ const ViewSubjectModal: React.FC<{
             <div className="flex min-h-full items-center justify-center p-4">
                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
                 
-                <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+                <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-2xl transition-all">
                     <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4`}>
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-bold text-white">Subject Details</h2>
@@ -225,42 +225,42 @@ const ViewSubjectModal: React.FC<{
                         </div>
                     </div>
                     
-                    <div className="p-6">
+                    <div className="p-6 dark:bg-gray-800">
                         {/* Header with Icon */}
-                        <div className="flex items-center mb-6 pb-6 border-b">
+                        <div className="flex items-center mb-6 pb-6 border-b dark:border-gray-700">
                             <div className={`${LIGHT_BG_CLASS} p-4 rounded-full mr-4`}>
                                 <BookOpen className={`h-12 w-12 ${TEXT_COLOR_CLASS}`} />
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-gray-900">{subject.subject_name}</h3>
-                                <p className="text-gray-500">{subject.subject_code}</p>
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{subject.subject_name}</h3>
+                                <p className="text-gray-500 dark:text-gray-400">{subject.subject_code}</p>
                             </div>
                         </div>
 
                         {/* Info Grid */}
                         <div className="grid grid-cols-2 gap-6">
                             <div>
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Subject Code</label>
-                                <p className="text-gray-900 font-medium mt-1">{subject.subject_code}</p>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Subject Code</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{subject.subject_code}</p>
                             </div>
                             <div>
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Subject Name</label>
-                                <p className="text-gray-900 font-medium mt-1">{subject.subject_name}</p>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Subject Name</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{subject.subject_name}</p>
                             </div>
                             <div>
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Units</label>
-                                <p className="text-gray-900 font-medium mt-1">{subject.units}</p>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Units</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{subject.units}</p>
                             </div>
                             {subject.description && (
                                 <div className="col-span-2">
-                                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</label>
-                                    <p className="text-gray-900 font-medium mt-1">{subject.description}</p>
+                                    <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</label>
+                                    <p className="text-gray-900 dark:text-white font-medium mt-1">{subject.description}</p>
                                 </div>
                             )}
                         </div>
 
                         {/* Footer */}
-                        <div className="flex justify-end mt-6 pt-6 border-t">
+                        <div className="flex justify-end mt-6 pt-6 border-t dark:border-gray-700">
                             <button
                                 onClick={onClose}
                                 className={`px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium`}
@@ -300,22 +300,22 @@ const DeleteSubjectModal: React.FC<{
             <div className="flex min-h-full items-center justify-center p-4">
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
                 
-                <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+                <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-2xl transition-all">
                     <div className="bg-red-600 px-6 py-4">
                         <h2 className="text-xl font-bold text-white">Confirm Deletion</h2>
                     </div>
                     
-                    <div className="p-6">
-                        <p className="text-gray-600 mb-4">
+                    <div className="p-6 dark:bg-gray-800">
+                        <p className="text-gray-600 dark:text-gray-300 mb-4">
                             Are you absolutely sure you want to delete the subject: 
-                            <strong className="text-red-700 block mt-1">{subject.subject_code} - {subject.subject_name}</strong>? 
+                            <strong className="text-red-700 dark:text-red-400 block mt-1">{subject.subject_code} - {subject.subject_name}</strong>? 
                             This action cannot be undone.
                         </p>
                         
-                        <div className="flex justify-end space-x-3 pt-4 border-t">
+                        <div className="flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
                             <button
                                 onClick={onClose}
-                                className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                                className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                                 disabled={loading}
                             >
                                 Cancel
@@ -508,8 +508,8 @@ const Subjects: React.FC = () => {
                                 <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Subject Management</h1>
-                                <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Manage curriculum, subject details, and units</p>
+                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Subject Management</h1>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5 sm:mt-1">Manage curriculum, subject details, and units</p>
                             </div>
                         </div>
                         <div className="flex space-x-2 sm:space-x-3">
@@ -524,7 +524,7 @@ const Subjects: React.FC = () => {
                             
                             <button 
                                 onClick={() => { loadSubjects(); loadStats(); }}
-                                className="inline-flex items-center px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 bg-white border border-gray-300 text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-50 transition-all shadow-sm"
+                                className="inline-flex items-center px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg sm:rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm"
                             >
                                 <RefreshCw className={`h-4 w-4 sm:h-5 sm:w-5 ${loading ? 'animate-spin' : ''}`} />
                             </button>
@@ -533,11 +533,11 @@ const Subjects: React.FC = () => {
 
                     {/* Stats Cards - Mobile: Centered with icon below, Desktop: Icon on right */}
                     <div className="grid grid-cols-1 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6">
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-100 dark:border-gray-700">
                             {/* Mobile: Centered layout */}
                             <div className="flex flex-col items-center text-center md:hidden">
-                                <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Total Subjects</p>
-                                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">{stats.total_subjects}</p>
+                                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">Total Subjects</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">{stats.total_subjects}</p>
                                 <div className={`${LIGHT_BG_CLASS} p-2 sm:p-3 rounded-full`}>
                                     <Hash className={`h-5 w-5 sm:h-6 sm:w-6 ${TEXT_COLOR_CLASS}`} />
                                 </div>
@@ -545,8 +545,8 @@ const Subjects: React.FC = () => {
                             {/* Desktop: Original layout with icon on right */}
                             <div className="hidden md:flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600 mb-1">Total Subjects</p>
-                                    <p className="text-3xl font-bold text-gray-900">{stats.total_subjects}</p>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Total Subjects</p>
+                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total_subjects}</p>
                                 </div>
                                 <div className={`${LIGHT_BG_CLASS} p-3 rounded-xl`}>
                                     <Hash className={`h-8 w-8 ${TEXT_COLOR_CLASS}`} />
@@ -556,17 +556,17 @@ const Subjects: React.FC = () => {
                     </div>
 
                     {/* Filters - Compact on Mobile */}
-                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100 dark:border-gray-700">
                         <div className="grid grid-cols-1 gap-3 sm:gap-4">
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <input
                                     type="text"
                                     value={filters.search}
                                     onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
+                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="Search code or name..."
                                 />
                             </div>
@@ -574,19 +574,19 @@ const Subjects: React.FC = () => {
                     </div>
 
                     {/* Table - Responsive: Mobile shows Code & Name + Actions, Desktop shows all columns */}
-                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-700">
                                     <tr>
-                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Code</th>
-                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Name</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Units</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Description</th>
-                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Code</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Name</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Units</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Description</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     {loading ? (
                                         <tr>
                                             <td colSpan={5} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
@@ -597,53 +597,53 @@ const Subjects: React.FC = () => {
                                         </tr>
                                     ) : subjects.length === 0 ? (
                                         <tr>
-                                            <td colSpan={5} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
+                                            <td colSpan={5} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500 dark:text-gray-400">
                                                 <div className="flex flex-col items-center">
-                                                    <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
-                                                    <p className="text-base sm:text-lg font-medium">No subjects found</p>
-                                                    <p className="text-xs sm:text-sm">Add a new subject or adjust filters</p>
+                                                    <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 dark:text-gray-600 mb-3 sm:mb-4" />
+                                                    <p className="text-base sm:text-lg font-medium dark:text-gray-200">No subjects found</p>
+                                                    <p className="text-xs sm:text-sm dark:text-gray-400">Add a new subject or adjust filters</p>
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : (
                                         subjects.map((subject) => (
-                                            <tr key={subject.id} className="hover:bg-gray-50 transition-colors">
+                                            <tr key={subject.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{subject.subject_code}</div>
+                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">{subject.subject_code}</div>
                                                 </td>
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-                                                    <div className="text-xs sm:text-sm text-gray-900 truncate">{subject.subject_name}</div>
+                                                    <div className="text-xs sm:text-sm text-gray-900 dark:text-white truncate">{subject.subject_name}</div>
                                                     {/* Show additional info on mobile */}
                                                     <div className="md:hidden mt-1 space-y-1">
                                                         <div className="flex items-center gap-2 flex-wrap">
-                                                            <span className="text-xs text-gray-600">{subject.units} units</span>
+                                                            <span className="text-xs text-gray-600 dark:text-gray-400">{subject.units} units</span>
                                                             {subject.description && (
-                                                                <span className="text-xs text-gray-500 truncate">{subject.description}</span>
+                                                                <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{subject.description}</span>
                                                             )}
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-700">{subject.units}</td>
-                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 max-w-xs truncate text-xs sm:text-sm text-gray-500">{subject.description || 'N/A'}</td>
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-700 dark:text-gray-300">{subject.units}</td>
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 max-w-xs truncate text-xs sm:text-sm text-gray-500 dark:text-gray-400">{subject.description || 'N/A'}</td>
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
                                                     <div className="flex justify-end space-x-1 sm:space-x-2">
                                                         <button
                                                             onClick={() => handleView(subject)}
-                                                            className="p-1.5 sm:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                            className="p-1.5 sm:p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
                                                             title="View Details"
                                                         >
                                                             <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleEdit(subject)}
-                                                            className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
+                                                            className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} dark:hover:bg-gray-700 rounded-lg transition-colors`}
                                                             title="Edit Subject"
                                                         >
                                                             <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(subject)}
-                                                            className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                            className="p-1.5 sm:p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                                             title="Delete Subject"
                                                         >
                                                             <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />

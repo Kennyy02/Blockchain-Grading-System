@@ -175,7 +175,7 @@ const BookModal: React.FC<{
             <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
                 
-                <div className="relative w-full max-w-3xl transform overflow-hidden rounded-xl sm:rounded-2xl bg-white shadow-2xl transition-all">
+                <div className="relative w-full max-w-3xl transform overflow-hidden rounded-xl sm:rounded-2xl bg-white dark:bg-gray-800 shadow-2xl transition-all">
                     <div className={`${PRIMARY_COLOR_CLASS} px-4 py-3 sm:px-6 sm:py-4`}>
                         <div className="flex items-center justify-between">
                             <h2 className="text-lg sm:text-xl font-bold text-white">
@@ -187,29 +187,29 @@ const BookModal: React.FC<{
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+                    <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6 dark:bg-gray-800">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Title *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Title *</label>
                                 <input
                                     type="text"
                                     name="title"
                                     value={formData.title}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="Book Title"
                                     required
                                 />
                                 {errors.title && (<p className="text-red-500 text-xs mt-1">{errors.title[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Author</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Author</label>
                                 <input
                                     type="text"
                                     name="author"
                                     value={formData.author}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="Author Name"
                                 />
                                 {errors.author && (<p className="text-red-500 text-xs mt-1">{errors.author[0]}</p>)}
@@ -218,24 +218,24 @@ const BookModal: React.FC<{
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">ISBN</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">ISBN</label>
                                 <input
                                     type="text"
                                     name="isbn"
                                     value={formData.isbn}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="ISBN Number"
                                 />
                                 {errors.isbn && (<p className="text-red-500 text-xs mt-1">{errors.isbn[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Category *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Category *</label>
                                 <select
                                     name="category_id"
                                     value={formData.category_id}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     required
                                 >
                                     <option value={0}>Select Category</option>
@@ -251,25 +251,25 @@ const BookModal: React.FC<{
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Publisher</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Publisher</label>
                                 <input
                                     type="text"
                                     name="publisher"
                                     value={formData.publisher}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="Publisher Name"
                                 />
                                 {errors.publisher && (<p className="text-red-500 text-xs mt-1">{errors.publisher[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Publication Year</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Publication Year</label>
                                 <input
                                     type="number"
                                     name="publication_year"
                                     value={formData.publication_year || ''}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="YYYY"
                                     min="1000"
                                     max={new Date().getFullYear() + 1}
@@ -280,26 +280,26 @@ const BookModal: React.FC<{
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Total Copies *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Total Copies *</label>
                                 <input
                                     type="number"
                                     name="total_copies"
                                     value={formData.total_copies}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     min="1"
                                     required
                                 />
                                 {errors.total_copies && (<p className="text-red-500 text-xs mt-1">{errors.total_copies[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Available Copies *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Available Copies *</label>
                                 <input
                                     type="number"
                                     name="available_copies"
                                     value={formData.available_copies}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     min="0"
                                     max={formData.total_copies}
                                     required
@@ -307,12 +307,12 @@ const BookModal: React.FC<{
                                 {errors.available_copies && (<p className="text-red-500 text-xs mt-1">{errors.available_copies[0]}</p>)}
                             </div>
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Status *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Status *</label>
                                 <select
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white`}
+                                    className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     required
                                 >
                                     <option value="available">Available</option>
@@ -325,33 +325,33 @@ const BookModal: React.FC<{
                         </div>
 
                         <div>
-                            <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Location</label>
+                            <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Location</label>
                             <input
                                 type="text"
                                 name="location"
                                 value={formData.location}
                                 onChange={handleChange}
-                                className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                 placeholder="e.g., Shelf A-101"
                             />
                             {errors.location && (<p className="text-red-500 text-xs mt-1">{errors.location[0]}</p>)}
                         </div>
 
                         <div>
-                            <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Description</label>
+                            <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Description</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
                                 onChange={handleChange}
-                                className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                 rows={3}
                                 placeholder="Book description or summary..."
                             />
                             {errors.description && (<p className="text-red-500 text-xs mt-1">{errors.description[0]}</p>)}
                         </div>
 
-                        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t">
-                            <button type="button" onClick={onClose} className="w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium" disabled={loading}>
+                        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t dark:border-gray-700">
+                            <button type="button" onClick={onClose} className="w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium" disabled={loading}>
                                 Cancel
                             </button>
                             <button type="submit" className={`w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 text-sm sm:text-base ${PRIMARY_COLOR_CLASS} text-white rounded-lg sm:rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium shadow-lg disabled:opacity-50`} disabled={loading}>
@@ -390,22 +390,22 @@ const DeleteBookModal: React.FC<{
             <div className="flex min-h-full items-center justify-center p-4">
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
                 
-                <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+                <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-2xl transition-all">
                     <div className="bg-red-600 px-6 py-4">
                         <h2 className="text-xl font-bold text-white">Confirm Deletion</h2>
                     </div>
                     
-                    <div className="p-6">
-                        <p className="text-gray-600 mb-4">
+                    <div className="p-6 dark:bg-gray-800">
+                        <p className="text-gray-600 dark:text-gray-300 mb-4">
                             Are you absolutely sure you want to delete the book: 
-                            <strong className="text-red-700 block mt-1">{book.title}</strong>? 
+                            <strong className="text-red-700 dark:text-red-400 block mt-1">{book.title}</strong>? 
                             This action cannot be undone.
                         </p>
                         
-                        <div className="flex justify-end space-x-3 pt-4 border-t">
+                        <div className="flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
                             <button
                                 onClick={onClose}
-                                className="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                                className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                                 disabled={loading}
                             >
                                 Cancel
@@ -652,8 +652,8 @@ const Library: React.FC = () => {
                                 <LibraryIcon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Library Management</h1>
-                                <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Manage library books and catalog</p>
+                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Library Management</h1>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5 sm:mt-1">Manage library books and catalog</p>
                             </div>
                         </div>
                         <div className="flex space-x-2 sm:space-x-3">
@@ -668,7 +668,7 @@ const Library: React.FC = () => {
                             
                             <button 
                                 onClick={() => { loadBooks(); loadStats(); }}
-                                className="inline-flex items-center px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 bg-white border border-gray-300 text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-50 transition-all shadow-sm"
+                                className="inline-flex items-center px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg sm:rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm"
                             >
                                 <RefreshCw className={`h-4 w-4 sm:h-5 sm:w-5 ${loading ? 'animate-spin' : ''}`} />
                             </button>
@@ -677,47 +677,47 @@ const Library: React.FC = () => {
 
                     {/* Stats Cards - Compact on Mobile */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100 dark:border-gray-700">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Available</p>
-                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600 leading-tight">{stats.available_books}</p>
+                                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 truncate">Available</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400 leading-tight">{stats.available_books}</p>
                                 </div>
-                                <div className="bg-green-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
-                                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-green-600" />
+                                <div className="bg-green-100 dark:bg-green-900/30 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
+                                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-green-600 dark:text-green-400" />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100 dark:border-gray-700">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Borrowed</p>
-                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-600 leading-tight">{stats.borrowed_books || 0}</p>
+                                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 truncate">Borrowed</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-600 dark:text-yellow-400 leading-tight">{stats.borrowed_books || 0}</p>
                                 </div>
-                                <div className="bg-yellow-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
-                                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-yellow-600" />
+                                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
+                                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-yellow-600 dark:text-yellow-400" />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100 dark:border-gray-700">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Lost</p>
-                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600 leading-tight">{stats.lost_books || 0}</p>
+                                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 truncate">Lost</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600 dark:text-red-400 leading-tight">{stats.lost_books || 0}</p>
                                 </div>
-                                <div className="bg-red-100 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
-                                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-red-600" />
+                                <div className="bg-red-100 dark:bg-red-900/30 p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0">
+                                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 text-red-600 dark:text-red-400" />
                                 </div>
                             </div>
                         </div>
                         
-                        <div className="bg-white rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md sm:shadow-lg p-2 sm:p-4 md:p-5 border border-gray-100 dark:border-gray-700">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1 truncate">Total</p>
-                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{stats.total_books}</p>
+                                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 truncate">Total</p>
+                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">{stats.total_books}</p>
                                 </div>
                                 <div className={`${LIGHT_BG_CLASS} p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl flex-shrink-0`}>
                                     <BookOpen className={`h-4 w-4 sm:h-5 sm:w-5 md:h-7 md:w-7 ${TEXT_COLOR_CLASS}`} />
@@ -727,17 +727,17 @@ const Library: React.FC = () => {
                     </div>
 
                     {/* Filters - Compact on Mobile */}
-                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100 dark:border-gray-700">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                                    <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <input
                                     type="text"
                                     value={filters.search}
                                     onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
+                                    className={`pl-10 sm:pl-12 w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                     placeholder="Search by title, author, ISBN..."
                                 />
                             </div>
@@ -745,7 +745,7 @@ const Library: React.FC = () => {
                                 <select
                                     value={filters.category}
                                     onChange={(e) => setFilters({...filters, category: e.target.value, page: 1})}
-                                    className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base`}
+                                    className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                 >
                                     <option value="">All Categories</option>
                                     {categoryFilters.map((category) => (
@@ -759,20 +759,20 @@ const Library: React.FC = () => {
                     </div>
 
                     {/* Table - Responsive: Mobile shows Title & Actions, Desktop shows all columns */}
-                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-700">
                                     <tr>
-                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Title</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Author</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Category</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Copies</th>
-                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Status</th>
-                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Title</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Author</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Category</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Copies</th>
+                                        <th className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Status</th>
+                                        <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-right text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     {loading ? (
                                         <tr>
                                             <td colSpan={6} className="px-3 sm:px-6 py-8 sm:py-12 text-center">
@@ -783,23 +783,23 @@ const Library: React.FC = () => {
                                         </tr>
                                     ) : books.length === 0 ? (
                                         <tr>
-                                            <td colSpan={6} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500">
+                                            <td colSpan={6} className="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500 dark:text-gray-400">
                                                 <div className="flex flex-col items-center">
-                                                    <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-3 sm:mb-4" />
-                                                    <p className="text-base sm:text-lg font-medium">No books found</p>
-                                                    <p className="text-xs sm:text-sm">Add a new book or adjust filters</p>
+                                                    <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 dark:text-gray-600 mb-3 sm:mb-4" />
+                                                    <p className="text-base sm:text-lg font-medium dark:text-gray-200">No books found</p>
+                                                    <p className="text-xs sm:text-sm dark:text-gray-400">Add a new book or adjust filters</p>
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : (
                                         books.map((book) => (
-                                            <tr key={book.id} className="hover:bg-gray-50 transition-colors">
+                                            <tr key={book.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                                 <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{book.title}</div>
-                                                    {book.isbn && <div className="text-xs text-gray-500 truncate">ISBN: {book.isbn}</div>}
+                                                    <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">{book.title}</div>
+                                                    {book.isbn && <div className="text-xs text-gray-500 dark:text-gray-400 truncate">ISBN: {book.isbn}</div>}
                                                     {/* Show additional info on mobile */}
                                                     <div className="md:hidden mt-1 space-y-1">
-                                                        <div className="text-xs text-gray-600">Author: {book.author || 'N/A'}</div>
+                                                        <div className="text-xs text-gray-600 dark:text-gray-400">Author: {book.author || 'N/A'}</div>
                                                         <div className="flex items-center gap-2 flex-wrap">
                                                             {book.category ? (
                                                                 <span 
@@ -809,18 +809,18 @@ const Library: React.FC = () => {
                                                                     {book.category.name}
                                                                 </span>
                                                             ) : (
-                                                                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                                                                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                                                                     N/A
                                                                 </span>
                                                             )}
-                                                            <span className="text-xs text-gray-600">{book.available_copies} / {book.total_copies}</span>
+                                                            <span className="text-xs text-gray-600 dark:text-gray-400">{book.available_copies} / {book.total_copies}</span>
                                                             <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getStatusBadgeColor(book.status)}`}>
                                                                 {book.status}
                                                             </span>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">{book.author || 'N/A'}</td>
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900 dark:text-white">{book.author || 'N/A'}</td>
                                                 <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                     {book.category ? (
                                                         <span 
@@ -830,12 +830,12 @@ const Library: React.FC = () => {
                                                             {book.category.name}
                                                         </span>
                                                     ) : (
-                                                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                                                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                                                             N/A
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-700">
+                                                <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                                                     {book.available_copies} / {book.total_copies}
                                                 </td>
                                                 <td className="hidden md:table-cell px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
@@ -847,14 +847,14 @@ const Library: React.FC = () => {
                                                     <div className="flex justify-end space-x-1 sm:space-x-2">
                                                         <button
                                                             onClick={() => handleEdit(book)}
-                                                            className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg transition-colors`}
+                                                            className={`p-1.5 sm:p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} dark:hover:bg-gray-700 rounded-lg transition-colors`}
                                                             title="Edit Book"
                                                         >
                                                             <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(book)}
-                                                            className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                            className="p-1.5 sm:p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                                             title="Delete Book"
                                                         >
                                                             <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
