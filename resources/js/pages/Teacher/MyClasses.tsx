@@ -695,7 +695,6 @@ const MyClasses: React.FC = () => {
                     />
                 )}
             </div>
-        </div>
         </AppLayout>
     );
 };
