@@ -1282,12 +1282,12 @@ const Students: React.FC = () => {
                                 <div className="relative flex-shrink-0">
                                     <button 
                                         onClick={() => setShowExportDropdown(!showExportDropdown)}
-                                        className="inline-flex items-center gap-2 px-4 sm:px-6 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm whitespace-nowrap font-medium text-sm sm:text-base"
+                                        className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-6 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm whitespace-nowrap font-medium text-xs sm:text-base"
                                         title="Download Students Report"
                                     >
-                                        <Download className="h-5 w-3" />
-                                        <span>Export</span>
-                                        <ChevronDown className={`h-4 w-3 transition-transform ${showExportDropdown ? 'rotate-180' : ''}`} />
+                                        <Download className="h-4 w-4 sm:h-5 sm:w-5" />
+                                        <span className="hidden sm:inline">Export</span>
+                                        <ChevronDown className={`h-3 w-3 sm:h-4 sm:w-4 transition-transform ${showExportDropdown ? 'rotate-180' : ''}`} />
                                     </button>
                                     
                                     {/* Export Dropdown Menu */}
