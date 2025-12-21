@@ -147,34 +147,6 @@ const Notification: React.FC<{ notification: Notification; onClose: () => void }
     );
 };
 
-const StatCard: React.FC<{ 
-    title: string; 
-    value: string | number; 
-    icon: React.ElementType; 
-    color: string;
-    subtitle?: string;
-}> = ({ title, value, icon: Icon, color, subtitle }) => {
-    const displayValue = (typeof value === 'number' && isNaN(value)) ? 'N/A' : value;
-    const bgColor = color.replace('text-', 'bg-').replace('-600', '-100').replace('[#003366]', '[#003366]/10');
-    
-    return (
-        <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-white hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-white mb-1">{title}</p>
-                    <p className={`text-3xl font-bold ${color}`}>{displayValue}</p>
-                    {subtitle && (
-                        <p className="text-xs text-gray-500 dark:text-white mt-1">{subtitle}</p>
-                    )}
-                </div>
-                <div className={`${bgColor} p-3 rounded-xl`}>
-                    <Icon className={`h-8 w-8 ${color}`} />
-                </div>
-            </div>
-        </div>
-    );
-};
-
 const ClassCard: React.FC<{ classSubject: ClassSubject }> = ({ classSubject }) => {
     return (
         <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg border border-gray-100 dark:border-white hover:shadow-xl transition-all hover:scale-[1.02] overflow-hidden">
@@ -716,17 +688,16 @@ const MyClasses: React.FC = () => {
                     </div>
                 </div>
 
-                    {notification && (
-                        <Notification
-                            notification={notification}
-                            onClose={() => setNotification(null)}
-                        />
-                    )}
-                </div>
+                {notification && (
+                    <Notification
+                        notification={notification}
+                        onClose={() => setNotification(null)}
+                    />
+                )}
             </div>
+        </div>
         </AppLayout>
     );
 };
 
-export default MyClasses;
 export default MyClasses;

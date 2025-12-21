@@ -315,6 +315,11 @@ Route::middleware(['auth', 'verified', 'checkRole:student'])->prefix('student')-
         return Inertia::render('Student/MySubjects');
     })->name('my-subjects');
     
+    // My Classes
+    Route::get('/my-classes', function () {
+        return Inertia::render('Student/MyClasses');
+    })->name('my-classes');
+    
     // My Grades
     Route::get('/grades', function () {
         return Inertia::render('Student/Grades');
