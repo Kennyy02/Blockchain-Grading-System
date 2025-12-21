@@ -32,8 +32,8 @@
         </style>
 
         <title inertia>{{ config('app.name', 'signapal') }}</title>
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.bunny.net" crossorigin="anonymous">
+        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- ✅ Favicon added (no need npm run dev) -->
         <link rel="icon" type="image/png" href="/logo.jpg">

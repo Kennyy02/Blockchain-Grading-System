@@ -48,3 +48,4 @@ class CreateClassSubjectsSeeder extends Seeder
 
 
 
+
