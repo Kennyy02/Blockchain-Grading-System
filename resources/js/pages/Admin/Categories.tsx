@@ -90,6 +90,9 @@ const CategoryModal: React.FC<{
         is_active: category?.is_active ?? true,
         sort_order: category?.sort_order || 0,
     });
+    
+    // Use string for sort_order input to allow empty field
+    const [sortOrderInput, setSortOrderInput] = useState<string>(category?.sort_order?.toString() || '');
 
     const [loading, setLoading] = useState(false);
 
@@ -106,14 +109,24 @@ const CategoryModal: React.FC<{
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         
-        setFormData(prev => ({ 
-            ...prev, 
-            [name]: type === 'checkbox' 
-                ? (e.target as HTMLInputElement).checked
-                : type === 'number'
-                ? parseInt(value) || 0
-                : value 
-        }));
+        if (name === 'sort_order') {
+            // Allow empty string for sort_order
+            setSortOrderInput(value);
+            const numValue = value === '' ? undefined : parseInt(value);
+            setFormData(prev => ({ 
+                ...prev, 
+                sort_order: (value === '' || isNaN(numValue!)) ? undefined : numValue
+            }));
+        } else {
+            setFormData(prev => ({ 
+                ...prev, 
+                [name]: type === 'checkbox' 
+                    ? (e.target as HTMLInputElement).checked
+                    : type === 'number'
+                    ? parseInt(value) || 0
+                    : value 
+            }));
+        }
     };
 
     return (
@@ -190,12 +203,13 @@ const CategoryModal: React.FC<{
                                     <input
                                         type="number"
                                         name="sort_order"
-                                        value={formData.sort_order}
+                                        value={sortOrderInput}
                                         onChange={handleChange}
                                         className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                                         min="0"
+                                        placeholder="Enter sort order"
                                     />
-                                    {errors.sort_order && (<p className="text-red-500 text-xs mt-1">{errors.sort_order[0]}</p>)}
+                                    {errors.sort_order && (<p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.sort_order[0]}</p>)}
                                 </div>
                                 <div>
                                     <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">Status</label>

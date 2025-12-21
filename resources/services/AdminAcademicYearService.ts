@@ -94,6 +94,7 @@ class AdminAcademicYearService {
 
     private async refreshCsrfToken(): Promise<string> {
         try {
+            console.log('Fetching fresh CSRF token from /api/csrf-token...');
             const response = await fetch(`${this.baseURL}/csrf-token`, {
                 method: 'GET',
                 headers: {
@@ -102,17 +103,23 @@ class AdminAcademicYearService {
                 },
                 credentials: 'same-origin',
             });
+            
             if (!response.ok) {
-                throw new Error('Failed to fetch new CSRF token');
+                console.error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
+                throw new Error(`Failed to fetch new CSRF token: ${response.status}`);
             }
+            
             const data = await response.json();
             if (data.success && data.csrf_token) {
+                console.log('Successfully retrieved fresh CSRF token');
                 const metaTag = document.querySelector('meta[name="csrf-token"]');
                 if (metaTag) {
                     metaTag.setAttribute('content', data.csrf_token);
+                    console.log('Updated meta tag with new CSRF token');
                 }
                 return data.csrf_token;
             }
+            console.error('Invalid CSRF token response:', data);
             throw new Error('Invalid CSRF token response');
         } catch (error) {
             console.error('Error refreshing CSRF token:', error);

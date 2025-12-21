@@ -86,9 +86,12 @@ const SubjectModal: React.FC<{
     const [formData, setFormData] = useState<SubjectFormData>({
         subject_code: subject?.subject_code || '',
         subject_name: subject?.subject_name || '', 
-        units: subject?.units || 3,
+        units: subject?.units || 0,
         description: subject?.description || '',
-    }); 
+    });
+    
+    // Use string for units input to allow empty field
+    const [unitsInput, setUnitsInput] = useState<string>(subject?.units?.toString() || ''); 
 
     const [loading, setLoading] = useState(false);
 
@@ -105,12 +108,20 @@ const SubjectModal: React.FC<{
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
         
-        setFormData(prev => ({ 
-            ...prev, 
-            [name]: type === 'number' 
-                ? parseInt(value) || 0 
-                : value 
-        }));
+        if (name === 'units') {
+            // Allow empty string for units
+            setUnitsInput(value);
+            const numValue = value === '' ? 0 : parseInt(value);
+            setFormData(prev => ({ 
+                ...prev, 
+                units: isNaN(numValue) ? 0 : numValue
+            }));
+        } else {
+            setFormData(prev => ({ 
+                ...prev, 
+                [name]: value 
+            }));
+        }
     };
 
     return (
@@ -165,13 +176,13 @@ const SubjectModal: React.FC<{
                             <input
                                 type="number"
                                 name="units"
-                                value={formData.units}
+                                value={unitsInput}
                                 onChange={handleChange}
                                 className={`w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
-                                min="1"
-                                required
+                                min="0"
+                                placeholder="Enter units"
                             />
-                            {errors.units && (<p className="text-red-500 text-xs mt-1">{errors.units[0]}</p>)}
+                            {errors.units && (<p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.units[0]}</p>)}
                         </div>
 
                         <div>
