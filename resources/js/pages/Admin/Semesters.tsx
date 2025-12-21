@@ -214,6 +214,111 @@ const SemesterModal: React.FC<{
 };
 
 // ========================================================================
+// 👁️ VIEW SEMESTER MODAL
+// ========================================================================
+
+const ViewSemesterModal: React.FC<{
+    semesterItem: Semester;
+    onClose: () => void;
+    formatShortDate: (dateString: string) => string;
+}> = ({ semesterItem, onClose, formatShortDate }) => {
+    return (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
+                
+                <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-2xl transition-all">
+                    <div className={`${PRIMARY_COLOR_CLASS} px-6 py-4`}>
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-bold text-white">Semester Details</h2>
+                            <button onClick={onClose} className="rounded-full p-2 text-white/80 hover:bg-white/20 hover:text-white transition-colors">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="p-6 dark:bg-gray-800">
+                        <div className="flex items-center mb-6 pb-6 border-b dark:border-gray-700">
+                            <div className={`${LIGHT_BG_CLASS} dark:bg-gray-700 p-4 rounded-full mr-4`}>
+                                <Layers className={`h-12 w-12 ${TEXT_COLOR_CLASS} dark:text-white`} />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{semesterItem.semester_name}</h3>
+                                <p className="text-gray-500 dark:text-gray-400">{semesterItem.academic_year?.year_name || 'N/A'}</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Semester Name</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{semesterItem.semester_name}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Academic Year</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{semesterItem.academic_year?.year_name || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Start Date</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{formatShortDate(semesterItem.start_date)}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">End Date</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{formatShortDate(semesterItem.end_date)}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Classes</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{semesterItem.classes_count || 0}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Grades</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">{semesterItem.grades_count || 0}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Is Current</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">
+                                    {semesterItem.is_current ? (
+                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300">
+                                            Yes
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
+                                            No
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</label>
+                                <p className="text-gray-900 dark:text-white font-medium mt-1">
+                                    {semesterItem.status ? (
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                                            semesterItem.status === 'current' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300' :
+                                            semesterItem.status === 'active' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300' :
+                                            'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300'
+                                        }`}>
+                                            {semesterItem.status.charAt(0).toUpperCase() + semesterItem.status.slice(1)}
+                                        </span>
+                                    ) : 'N/A'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end mt-6 pt-6 border-t dark:border-gray-700">
+                            <button
+                                onClick={onClose}
+                                className={`px-6 py-3 ${PRIMARY_COLOR_CLASS} text-white rounded-xl ${HOVER_COLOR_CLASS} transition-all font-medium`}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ========================================================================
 // 塘 MAIN SEMESTERS PAGE
 // ========================================================================
 

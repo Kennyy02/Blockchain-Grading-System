@@ -197,7 +197,7 @@ class AdminAnnouncementService {
 
             // Handle 419 CSRF token mismatch - retry with fresh token
             if (response.status === 419 && retryOn419) {
-                console.warn('CSRF token mismatch detected. Attempting to refresh token...');
+                // Silently refresh token and retry - no console warnings needed
                 const freshToken = await this.refreshCsrfToken();
                 
                 if (freshToken) {
@@ -214,10 +214,7 @@ class AdminAnnouncementService {
                         throw new Error('Unexpected response format from server');
                     }
                     
-                    // If retry succeeded, log success (but only if it was a 419 retry)
-                    if (response.ok) {
-                        console.log('✅ Request succeeded after CSRF token refresh');
-                    }
+                    // Silently succeed - no console log needed since this is expected behavior
                 } else {
                     console.error('CSRF token mismatch. Could not refresh token. Please refresh the page.');
                     throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page (F5) and try again.');
