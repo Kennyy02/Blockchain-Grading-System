@@ -435,29 +435,17 @@ const ParentDashboard: React.FC = () => {
                         </div>
                     ) : stats.children.length > 0 ? (
                         <>
-                            {/* Stats Summary - Main KPIs - Matching Admin Style */}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6 md:mb-8">
-                                <StatCard 
-                                    title="Total Children" 
-                                    value={stats.overallStats.totalChildren} 
-                                    icon={Users} 
-                                    iconBgClass="bg-blue-50 dark:bg-blue-900/20"
-                                    iconColorClass="text-blue-600 dark:text-blue-400"
-                                />
-                                <StatCard 
-                                    title="Average Grade (All Children)" 
-                                    value={`${(stats.overallStats.avgGradeAcrossChildren ?? 0).toFixed(2)}%`} 
-                                    icon={Award} 
-                                    iconBgClass="bg-purple-50 dark:bg-purple-900/20"
-                                    iconColorClass="text-purple-600 dark:text-purple-400"
-                                />
-                                <StatCard 
-                                    title="Average Attendance (All Children)" 
-                                    value={`${(stats.overallStats.avgAttendanceAcrossChildren ?? 0).toFixed(2)}%`} 
-                                    icon={TrendingUp} 
-                                    iconBgClass="bg-green-50 dark:bg-green-900/20"
-                                    iconColorClass="text-green-600 dark:text-green-400"
-                                />
+                            {/* Stats Summary - Minimal Total Children Only */}
+                            <div className="mb-4 sm:mb-6 md:mb-8">
+                                <div className="inline-block">
+                                    <StatCard 
+                                        title="Total Children" 
+                                        value={stats.overallStats.totalChildren} 
+                                        icon={Users} 
+                                        iconBgClass="bg-blue-50 dark:bg-blue-900/20"
+                                        iconColorClass="text-blue-600 dark:text-blue-400"
+                                    />
+                                </div>
                             </div>
 
                             {/* Individual Child Sections */}
