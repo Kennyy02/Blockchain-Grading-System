@@ -340,7 +340,7 @@ const TeacherCourseMaterials: React.FC = () => {
     return (
         <AppLayout>
             <Head title="Course Materials" />
-            <div className="min-h-screen bg-gray-100">
+            <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="container mx-auto px-6 py-8">
                     {/* Header */}
                     <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
@@ -359,7 +359,7 @@ const TeacherCourseMaterials: React.FC = () => {
                                 Upload Material
                             </button>
                             <button onClick={() => loadMaterials()} className="p-3 bg-white dark:bg-gray-800 dark:border-white border border-gray-300 dark:border-white rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`h-5 w-5 text-gray-700 dark:text-white ${loading ? 'animate-spin' : ''}`} />
                             </button>
                         </div>
                     </div>
@@ -396,53 +396,53 @@ const TeacherCourseMaterials: React.FC = () => {
                     </div>
 
                     {/* Materials Table */}
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                    <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg overflow-hidden border dark:border-white">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-white">
+                            <thead className="bg-gray-50 dark:bg-gray-900">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Material</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Subject</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Size</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Date</th>
-                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-600 uppercase">Actions</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Material</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Subject</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Size</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Date</th>
+                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-white uppercase">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-gray-100 dark:divide-white bg-white dark:bg-gray-800">
                                 {loading ? (
-                                    <tr><td colSpan={5} className="px-6 py-12 text-center"><RefreshCw className="h-8 w-8 text-blue-500 animate-spin mx-auto" /></td></tr>
+                                    <tr><td colSpan={5} className="px-6 py-12 text-center"><RefreshCw className="h-8 w-8 text-blue-500 dark:text-blue-400 animate-spin mx-auto" /></td></tr>
                                 ) : materials.length === 0 ? (
-                                    <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500">No materials found. Click "Upload Material" to add one.</td></tr>
+                                    <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-white">No materials found. Click "Upload Material" to add one.</td></tr>
                                 ) : (
                                     materials.map((material) => {
                                         const IconComponent = getFileIcon(material.file_path?.split('.').pop() || '');
                                         return (
-                                            <tr key={material.id} className="hover:bg-gray-50">
+                                            <tr key={material.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center">
-                                                        <div className={`p-2 rounded-lg mr-3 ${LIGHT_BG_CLASS}`}>
-                                                            <IconComponent className={`h-5 w-5 ${TEXT_COLOR_CLASS}`} />
+                                                        <div className={`p-2 rounded-lg mr-3 ${LIGHT_BG_CLASS} dark:bg-gray-700`}>
+                                                            <IconComponent className={`h-5 w-5 ${TEXT_COLOR_CLASS} dark:text-white`} />
                                                         </div>
                                                         <div>
                                                             <div className="font-semibold text-gray-900 dark:text-white">{material.title}</div>
-                                                            <div className="text-sm text-gray-500 dark:text-white truncate max-w-xs">{material.description || '-'}</div>
+                                                            <div className="text-sm text-gray-500 dark:text-gray-300 truncate max-w-xs">{material.description || '-'}</div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <div className="text-sm font-medium">{material.subject?.subject_code}</div>
-                                                    <div className="text-xs text-gray-500 dark:text-white">{material.subject?.subject_name}</div>
+                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">{material.subject?.subject_code}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-300">{material.subject?.subject_name}</div>
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">{formatFileSize(material.file_size)}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">{new Date(material.created_at).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4 text-right">
                                                     <div className="flex justify-end space-x-2">
-                                                        <button onClick={() => handleDownload(material)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="Download">
+                                                        <button onClick={() => handleDownload(material)} className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg" title="Download">
                                                             <Download className="h-5 w-5" />
                                                         </button>
-                                                        <button onClick={() => handleEdit(material)} className={`p-2 ${TEXT_COLOR_CLASS} ${LIGHT_HOVER_CLASS} rounded-lg`} title="Edit">
+                                                        <button onClick={() => handleEdit(material)} className={`p-2 ${TEXT_COLOR_CLASS} dark:text-white ${LIGHT_HOVER_CLASS} dark:hover:bg-gray-700 rounded-lg`} title="Edit">
                                                             <Edit className="h-5 w-5" />
                                                         </button>
-                                                        <button onClick={() => handleDelete(material)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="Delete">
+                                                        <button onClick={() => handleDelete(material)} className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg" title="Delete">
                                                             <Trash2 className="h-5 w-5" />
                                                         </button>
                                                     </div>
