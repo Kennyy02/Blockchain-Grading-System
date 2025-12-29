@@ -820,7 +820,7 @@ const ViewStudentModal: React.FC<{
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">First Name</label>
                                 <p className="text-gray-900 dark:text-gray-100 font-medium mt-1">{student.first_name}</p>
