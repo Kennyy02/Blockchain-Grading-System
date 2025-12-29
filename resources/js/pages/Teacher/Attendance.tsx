@@ -1064,7 +1064,7 @@ const AttendancePage: React.FC = () => {
                                     fetchAttendanceForDate();
                                 }
                             }}
-                            className={`flex items-center justify-center px-4 py-2 border border-gray-300 rounded-xl text-sm font-medium ${TEXT_COLOR_CLASS} hover:bg-gray-50 transition-colors`}
+                            className={`flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-white rounded-xl text-sm font-medium ${TEXT_COLOR_CLASS} dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}
                         >
                             <RefreshCw className="h-4 w-4 mr-2" />
                             Refresh

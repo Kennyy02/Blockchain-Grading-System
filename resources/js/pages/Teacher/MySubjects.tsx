@@ -213,7 +213,7 @@ const MySubjects: React.FC = () => {
                         </div>
                         <button
                             onClick={fetchMySubjects}
-                            className={`inline-flex items-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 border border-gray-300 dark:border-gray-700 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-base font-medium ${TEXT_COLOR_CLASS} bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}
+                            className={`inline-flex items-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 border border-gray-300 dark:border-gray-700 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-base font-medium ${TEXT_COLOR_CLASS} bg-white dark:bg-gray-800 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}
                         >
                             <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                             <span className="hidden sm:inline">Refresh</span>
