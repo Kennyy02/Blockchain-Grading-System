@@ -401,71 +401,150 @@ const TeacherCourseMaterials: React.FC = () => {
 
                     {/* Materials Table */}
                     <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg overflow-hidden border dark:border-white">
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-white">
-                            <thead className="bg-gray-50 dark:bg-gray-900">
-                                <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Material</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Subject</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Size</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Date</th>
-                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-white uppercase">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-white bg-white dark:bg-gray-800">
-                                {loading ? (
-                                    <tr><td colSpan={5} className="px-6 py-12 text-center"><RefreshCw className="h-8 w-8 text-blue-500 dark:text-blue-400 animate-spin mx-auto" /></td></tr>
-                                ) : materials.length === 0 ? (
-                                    <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-white">No materials found. Click "Upload Material" to add one.</td></tr>
-                                ) : (
-                                    materials.map((material) => {
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-white">
+                                <thead className="bg-gray-50 dark:bg-gray-900">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Material</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Subject</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Size</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-white uppercase">Date</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-600 dark:text-white uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 dark:divide-white bg-white dark:bg-gray-800">
+                                    {loading ? (
+                                        <tr><td colSpan={5} className="px-6 py-12 text-center"><RefreshCw className="h-8 w-8 text-blue-500 dark:text-blue-400 animate-spin mx-auto" /></td></tr>
+                                    ) : materials.length === 0 ? (
+                                        <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-white">No materials found. Click "Upload Material" to add one.</td></tr>
+                                    ) : (
+                                        materials.map((material) => {
+                                            const IconComponent = getFileIcon(material.file_path?.split('.').pop() || '');
+                                            return (
+                                                <tr key={material.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center">
+                                                            <div className={`p-2 rounded-lg mr-3 ${LIGHT_BG_CLASS} dark:bg-gray-700`}>
+                                                                <IconComponent className={`h-5 w-5 ${TEXT_COLOR_CLASS} dark:text-white`} />
+                                                            </div>
+                                                            <div>
+                                                                <div className="font-semibold text-gray-900 dark:text-white">{material.title}</div>
+                                                                <div className="text-sm text-gray-500 dark:text-gray-300 truncate max-w-xs">{material.description || '-'}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="text-sm font-medium text-gray-900 dark:text-white">{material.subject?.subject_code}</div>
+                                                        <div className="text-xs text-gray-500 dark:text-gray-300">{material.subject?.subject_name}</div>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">{formatFileSize(material.file_size)}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">{new Date(material.created_at).toLocaleDateString()}</td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <div className="flex justify-end space-x-2">
+                                                            <button 
+                                                                onClick={() => handleDownload(material)} 
+                                                                disabled={downloadingId === material.id}
+                                                                className={`p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors ${downloadingId === material.id ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                                                                title="Download Material"
+                                                            >
+                                                                {downloadingId === material.id ? (
+                                                                    <RefreshCw className="h-5 w-5 animate-spin" />
+                                                                ) : (
+                                                                    <Download className="h-5 w-5" />
+                                                                )}
+                                                            </button>
+                                                            <button onClick={() => handleEdit(material)} className={`p-2 ${TEXT_COLOR_CLASS} dark:text-white ${LIGHT_HOVER_CLASS} dark:hover:bg-gray-700 rounded-lg`} title="Edit">
+                                                                <Edit className="h-5 w-5" />
+                                                            </button>
+                                                            <button onClick={() => handleDelete(material)} className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg" title="Delete">
+                                                                <Trash2 className="h-5 w-5" />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Card View */}
+                        <div className="md:hidden">
+                            {loading ? (
+                                <div className="px-6 py-12 text-center"><RefreshCw className="h-8 w-8 text-blue-500 dark:text-blue-400 animate-spin mx-auto" /></div>
+                            ) : materials.length === 0 ? (
+                                <div className="px-6 py-12 text-center text-gray-500 dark:text-white">No materials found. Click "Upload Material" to add one.</div>
+                            ) : (
+                                <div className="divide-y divide-gray-200 dark:divide-white">
+                                    {materials.map((material) => {
                                         const IconComponent = getFileIcon(material.file_path?.split('.').pop() || '');
                                         return (
-                                            <tr key={material.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center">
-                                                        <div className={`p-2 rounded-lg mr-3 ${LIGHT_BG_CLASS} dark:bg-gray-700`}>
+                                            <div key={material.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <div className="flex items-start justify-between mb-3">
+                                                    <div className="flex items-center flex-1 min-w-0">
+                                                        <div className={`p-2 rounded-lg mr-3 flex-shrink-0 ${LIGHT_BG_CLASS} dark:bg-gray-700`}>
                                                             <IconComponent className={`h-5 w-5 ${TEXT_COLOR_CLASS} dark:text-white`} />
                                                         </div>
-                                                        <div>
-                                                            <div className="font-semibold text-gray-900 dark:text-white">{material.title}</div>
-                                                            <div className="text-sm text-gray-500 dark:text-gray-300 truncate max-w-xs">{material.description || '-'}</div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="font-semibold text-gray-900 dark:text-white truncate">{material.title}</div>
+                                                            <div className="text-sm text-gray-500 dark:text-gray-300 truncate">{material.description || '-'}</div>
                                                         </div>
                                                     </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">{material.subject?.subject_code}</div>
-                                                    <div className="text-xs text-gray-500 dark:text-gray-300">{material.subject?.subject_name}</div>
-                                                </td>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">{formatFileSize(material.file_size)}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-white">{new Date(material.created_at).toLocaleDateString()}</td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <div className="flex justify-end space-x-2">
-                                                        <button 
-                                                            onClick={() => handleDownload(material)} 
-                                                            disabled={downloadingId === material.id}
-                                                            className={`p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors ${downloadingId === material.id ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                                                            title="Download Material"
-                                                        >
-                                                            {downloadingId === material.id ? (
-                                                                <RefreshCw className="h-5 w-5 animate-spin" />
-                                                            ) : (
-                                                                <Download className="h-5 w-5" />
-                                                            )}
-                                                        </button>
-                                                        <button onClick={() => handleEdit(material)} className={`p-2 ${TEXT_COLOR_CLASS} dark:text-white ${LIGHT_HOVER_CLASS} dark:hover:bg-gray-700 rounded-lg`} title="Edit">
-                                                            <Edit className="h-5 w-5" />
-                                                        </button>
-                                                        <button onClick={() => handleDelete(material)} className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg" title="Delete">
-                                                            <Trash2 className="h-5 w-5" />
-                                                        </button>
+                                                </div>
+                                                
+                                                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                                    <div className="flex items-center space-x-4">
+                                                        <span>{material.subject?.subject_code}</span>
+                                                        <span>{formatFileSize(material.file_size)}</span>
+                                                        <span>{new Date(material.created_at).toLocaleDateString()}</span>
                                                     </div>
-                                                </td>
-                                            </tr>
+                                                </div>
+
+                                                {/* Actions - Prominently displayed on mobile */}
+                                                <div className="flex justify-end space-x-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                                    <button 
+                                                        onClick={() => handleDownload(material)} 
+                                                        disabled={downloadingId === material.id}
+                                                        className={`flex items-center px-3 py-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors ${downloadingId === material.id ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                                                        title="Download Material"
+                                                    >
+                                                        {downloadingId === material.id ? (
+                                                            <>
+                                                                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                                                                <span className="text-xs">Downloading...</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Download className="h-4 w-4 mr-2" />
+                                                                <span className="text-xs">Download</span>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleEdit(material)} 
+                                                        className={`flex items-center px-3 py-2 ${TEXT_COLOR_CLASS} dark:text-white ${LIGHT_HOVER_CLASS} dark:hover:bg-gray-700 rounded-lg`} 
+                                                        title="Edit"
+                                                    >
+                                                        <Edit className="h-4 w-4 mr-2" />
+                                                        <span className="text-xs">Edit</span>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDelete(material)} 
+                                                        className="flex items-center px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg" 
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 className="h-4 w-4 mr-2" />
+                                                        <span className="text-xs">Delete</span>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
+                                    })}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Modals & Notifications */}
