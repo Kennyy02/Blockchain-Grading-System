@@ -1000,8 +1000,8 @@ const AttendancePage: React.FC = () => {
         if (pagination.last_page <= 1) return null;
 
         return (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-                <div className="text-sm text-gray-600 dark:text-gray-300">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-600 dark:text-white">
                     Showing {((pagination.current_page - 1) * pagination.per_page) + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total} results
                 </div>
                 <div className="flex items-center space-x-2">
@@ -1051,7 +1051,7 @@ const AttendancePage: React.FC = () => {
                             <ClipboardCheck className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 mr-2 sm:mr-3 ${TEXT_COLOR_CLASS} dark:text-white`} />
                             <span className="break-words">Student Attendance Management</span>
                         </h1>
-                        <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">Track and manage student attendance for your classes</p>
+                        <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-white">Track and manage student attendance for your classes</p>
                     </div>
                     <div className="flex items-center">
                         <button
@@ -1066,7 +1066,7 @@ const AttendancePage: React.FC = () => {
                             }}
                             className={`flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-white rounded-xl text-sm font-medium ${TEXT_COLOR_CLASS} dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}
                         >
-                            <RefreshCw className="h-4 w-4 mr-2" />
+                            <RefreshCw className="h-4 w-4 mr-2 dark:text-white" />
                             Refresh
                         </button>
                     </div>
@@ -1108,11 +1108,11 @@ const AttendancePage: React.FC = () => {
                             <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4">Select a Class</h3>
                             {loadingLists ? (
                                 <div className="text-center py-8">
-                                    <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} />
-                                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Loading classes...</p>
+                                    <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} dark:text-white animate-spin mx-auto`} />
+                                    <p className="mt-2 text-sm text-gray-600 dark:text-white">Loading classes...</p>
                                 </div>
                             ) : classes.length === 0 ? (
-                                <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm sm:text-base">
+                                <div className="text-center py-8 text-gray-500 dark:text-white text-sm sm:text-base">
                                     No classes found. Please ensure you are assigned to classes.
                                 </div>
                             ) : (
@@ -1127,10 +1127,10 @@ const AttendancePage: React.FC = () => {
                                                 <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-[#003366] dark:group-hover:text-white break-words">
                                                     {classItem.class_code}
                                                 </h4>
-                                                <Users className="w-5 h-5 text-gray-400 dark:text-gray-300 group-hover:text-[#003366] dark:group-hover:text-white flex-shrink-0" />
+                                                <Users className="w-5 h-5 text-gray-400 dark:text-white group-hover:text-[#003366] dark:group-hover:text-white flex-shrink-0" />
                                             </div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{classItem.class_name}</p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            <p className="text-sm text-gray-600 dark:text-white mb-2">{classItem.class_name}</p>
+                                            <p className="text-xs text-gray-500 dark:text-white">
                                                 {classItem.subjectCount} {classItem.subjectCount === 1 ? 'subject' : 'subjects'}
                                             </p>
                                         </button>
@@ -1148,16 +1148,16 @@ const AttendancePage: React.FC = () => {
                                             setSelectedClassId(null);
                                             setFilters({...filters, class_subject_id: ''});
                                         }}
-                                        className="flex items-center text-[#003366] hover:text-[#002244] cursor-pointer"
+                                        className="flex items-center text-[#003366] dark:text-white hover:text-[#002244] dark:hover:text-gray-300 cursor-pointer"
                                     >
-                                        <ChevronLeft className="w-4 h-4 mr-1" />
+                                        <ChevronLeft className="w-4 h-4 mr-1 dark:text-white" />
                                         Back to Classes
                                     </button>
                                     <div>
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                             {classes.find(c => c.id === selectedClassId)?.class_code || 'Mark Attendance'}
                                         </h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <p className="text-sm text-gray-600 dark:text-white">
                                             {classes.find(c => c.id === selectedClassId)?.class_name || ''}
                                         </p>
                                     </div>
@@ -1167,13 +1167,13 @@ const AttendancePage: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 <div className="relative col-span-2">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Search className="h-5 w-5 text-gray-400 dark:text-gray-300" />
+                                        <Search className="h-5 w-5 text-gray-400 dark:text-white" />
                                     </div>
                                     <input
                                         type="text"
                                         value={filters.search}
                                         onChange={(e) => setFilters({...filters, search: e.target.value, page: 1})}
-                                        className={`pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
+                                        className={`pl-12 w-full px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all`}
                                         placeholder="Search student..."
                                     />
                                 </div>
@@ -1181,7 +1181,7 @@ const AttendancePage: React.FC = () => {
                                 <select
                                     value={filters.class_subject_id}
                                     onChange={(e) => setFilters({...filters, class_subject_id: e.target.value, page: 1})}
-                                    className={`px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white cursor-pointer`}
+                                    className={`px-4 py-3 border border-gray-200 dark:border-white dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 ${RING_COLOR_CLASS} focus:border-transparent transition-all appearance-none bg-white dark:bg-gray-700 cursor-pointer`}
                                 >
                                     <option value="">Select Subject</option>
                                     {classSubjects
@@ -1196,29 +1196,29 @@ const AttendancePage: React.FC = () => {
                             
                             {/* Attendance Marking Calendar Grid */}
                             {filters.class_subject_id && (
-                                <div className="mt-6 pt-6 border-t border-gray-200">
+                                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Mark Attendance</h3>
                                     </div>
                                     
                                     {loadingClassStudents ? (
                                         <div className="text-center py-8">
-                                            <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} animate-spin mx-auto`} />
-                                            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Loading students...</p>
+                                            <RefreshCw className={`h-8 w-8 ${TEXT_COLOR_CLASS} dark:text-white animate-spin mx-auto`} />
+                                            <p className="mt-2 text-sm text-gray-600 dark:text-white">Loading students...</p>
                                         </div>
                                     ) : classStudents.length === 0 ? (
-                                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <div className="text-center py-8 text-gray-500 dark:text-white">
                                             No students enrolled in this class.
                                         </div>
                                     ) : (
-                                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                                     {/* Month/Year Navigation */}
-                                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-4">
                                                 <button
                                                     onClick={goToPreviousMonth}
-                                                    className="p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                                                    className="p-2 hover:bg-white dark:hover:bg-gray-600 rounded-lg transition-colors cursor-pointer"
                                                 >
                                                     <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-white" />
                                                 </button>
@@ -1237,20 +1237,20 @@ const AttendancePage: React.FC = () => {
                                                 <div className="flex flex-wrap items-center gap-3 text-sm">
                                                     <span className="font-semibold text-gray-700 dark:text-white">Legend:</span>
                                                     <span className="flex items-center gap-1.5">
-                                                        <span className="inline-block px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">P</span>
-                                                        <span className="text-gray-600 dark:text-gray-300 text-xs">Present</span>
+                                                        <span className="inline-block px-2 py-1 rounded bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 text-xs font-medium">P</span>
+                                                        <span className="text-gray-600 dark:text-white text-xs">Present</span>
                                                     </span>
                                                     <span className="flex items-center gap-1.5">
-                                                        <span className="inline-block px-2 py-1 rounded bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300 text-xs font-medium">A</span>
-                                                        <span className="text-gray-600 dark:text-gray-300 text-xs">Absent</span>
+                                                        <span className="inline-block px-2 py-1 rounded bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 text-xs font-medium">A</span>
+                                                        <span className="text-gray-600 dark:text-white text-xs">Absent</span>
                                                     </span>
                                                     <span className="flex items-center gap-1.5">
-                                                        <span className="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300 text-xs font-medium">L</span>
-                                                        <span className="text-gray-600 dark:text-gray-300 text-xs">Late</span>
+                                                        <span className="inline-block px-2 py-1 rounded bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 text-xs font-medium">L</span>
+                                                        <span className="text-gray-600 dark:text-white text-xs">Late</span>
                                                     </span>
                                                     <span className="flex items-center gap-1.5">
-                                                        <span className="inline-block px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300 text-xs font-medium">E</span>
-                                                        <span className="text-gray-600 dark:text-gray-300 text-xs">Excused</span>
+                                                        <span className="inline-block px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 text-xs font-medium">E</span>
+                                                        <span className="text-gray-600 dark:text-white text-xs">Excused</span>
                                                     </span>
                                                 </div>
                                                 <button
