@@ -1789,7 +1789,7 @@ const fetchDropdownLists = async () => {
                                                                         step="0.01"
                                                                         value={gradeData.prelim_grade ?? ''}
                                                                         onChange={(e) => handleGridCellChange(student.id, 'prelim_grade', e.target.value)}
-                                                                        className="w-full px-2 sm:px-3 py-2 text-sm text-center border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent transition-all"
+                                                                        className="w-full px-1 sm:px-2 py-1 text-xs sm:text-sm text-center border border-gray-300 dark:border-white dark:bg-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                                                                         placeholder="0.00"
                                                                     />
                                                                     </td>
@@ -1813,7 +1813,7 @@ const fetchDropdownLists = async () => {
                                                                             step="0.01"
                                                                             value={gradeData.final_grade ?? ''}
                                                                             onChange={(e) => handleGridCellChange(student.id, 'final_grade', e.target.value)}
-                                                                            className="w-full px-2 sm:px-3 py-2 text-sm text-center border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent transition-all"
+                                                                            className="w-full px-1 sm:px-2 py-1 text-xs sm:text-sm text-center border border-gray-300 dark:border-white dark:bg-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                                                                             placeholder="0.00"
                                                                         />
                                                                     </td>
