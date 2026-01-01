@@ -1639,7 +1639,7 @@ const fetchDropdownLists = async () => {
                                     >
                                         <ChevronLeft className="w-4 h-4 mr-1" />
                                         <span className="hidden sm:inline dark:text-white">Back to Classes</span>
-                                        <span className="sm:hidden">Back</span>
+                                        <span className="sm:hidden dark:text-white">Back</span>
                                     </button>
                                     <div>
                                         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white break-words">
