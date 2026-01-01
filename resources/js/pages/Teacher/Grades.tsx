@@ -1761,8 +1761,9 @@ const fetchDropdownLists = async () => {
                                                                 <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px' }}>
                                                                     Final
                                                                 </th>
-                                                                <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap bg-gray-100 dark:bg-gray-700" style={{ minWidth: '120px' }}>
+                                                                <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap bg-gray-50 dark:bg-gray-800" style={{ minWidth: '120px' }}>
                                                                     Final Rating
+                                                                    <span className="block text-[9px] font-normal text-gray-500 dark:text-gray-400 mt-0.5">(Auto)</span>
                                                                 </th>
                                                                 <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '130px' }}>
                                                                     Remarks
@@ -1805,19 +1806,18 @@ const fetchDropdownLists = async () => {
                                                                         />
                                                                     </td>
                                                                     <td className="px-3 sm:px-6 py-3 sm:py-4">
-                                                                    <input
-                                                                        type="number"
-                                                                        min="0"
-                                                                        max="100"
-                                                                        step="0.01"
-                                                                        value={gradeData.final_rating ?? ''}
-                                                                        readOnly
-                                                                        className="w-full px-2 sm:px-3 py-2 text-sm font-semibold text-center border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white cursor-not-allowed"
-                                                                        placeholder="Auto"
-                                                                        title="Automatically calculated from Prelim, Midterm, and Final grades"
-                                                                    />
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            max="100"
+                                                                            step="0.01"
+                                                                            value={gradeData.final_grade ?? ''}
+                                                                            onChange={(e) => handleGridCellChange(student.id, 'final_grade', e.target.value)}
+                                                                            className="w-full px-2 sm:px-3 py-2 text-sm text-center border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent transition-all"
+                                                                            placeholder="0.00"
+                                                                        />
                                                                     </td>
-                                                                    <td className="px-2 sm:px-4 py-2 bg-gray-50 dark:bg-gray-900">
+                                                                    <td className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800">
                                                                         <input
                                                                             type="number"
                                                                             min="0"
@@ -1825,8 +1825,9 @@ const fetchDropdownLists = async () => {
                                                                             step="0.01"
                                                                             value={gradeData.final_rating ?? ''}
                                                                             readOnly
-                                                                            className="w-full px-1 sm:px-2 py-1 text-xs sm:text-sm text-center border border-gray-300 dark:border-white rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white cursor-not-allowed"
+                                                                            className="w-full px-2 sm:px-3 py-2 text-sm font-semibold text-center border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed"
                                                                             placeholder="Auto"
+                                                                            title="Automatically calculated from Prelim, Midterm, and Final grades"
                                                                         />
                                                                     </td>
                                                                     <td className="px-2 sm:px-4 py-2">
