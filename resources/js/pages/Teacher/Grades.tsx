@@ -1637,7 +1637,7 @@ const fetchDropdownLists = async () => {
                                         }}
                                         className="flex items-center text-[#003366] hover:text-[#002244] cursor-pointer text-sm sm:text-base"
                                     >
-                                        <ChevronLeft className="w-4 h-4 mr-1" />
+                                        <ChevronLeft className="w-4 h-4 mr-1 dark:text-white" />
                                         <span className="hidden sm:inline">Back to Classes</span>
                                         <span className="sm:hidden">Back</span>
                                     </button>
