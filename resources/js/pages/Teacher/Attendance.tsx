@@ -1276,7 +1276,7 @@ const AttendancePage: React.FC = () => {
                                                         {calendarDays.map((day) => (
                                                             <th
                                                                 key={day}
-                                                                className="border border-gray-300 dark:border-gray-700 px-2 py-2 text-center font-semibold text-gray-700 dark:text-white min-w-[40px]"
+                                                                className="border border-gray-300 dark:border-gray-700 px-2 py-2 text-center font-semibold text-gray-700 dark:text-white min-w-[40px] bg-gray-100 dark:bg-gray-800"
                                                             >
                                                                 {day}
                                                             </th>
@@ -1290,7 +1290,7 @@ const AttendancePage: React.FC = () => {
                                                         {calendarDays.map((day) => (
                                                             <th
                                                                 key={day}
-                                                                className="border border-gray-300 dark:border-gray-700 px-2 py-1 text-center text-xs text-gray-600 dark:text-gray-300 min-w-[40px]"
+                                                                className="border border-gray-300 dark:border-gray-700 px-2 py-1 text-center text-xs text-gray-600 dark:text-gray-300 min-w-[40px] bg-gray-50 dark:bg-gray-800"
                                                             >
                                                                 {getDayAbbr(new Date(currentYear, currentMonth, day).getDay())}
                                                             </th>
