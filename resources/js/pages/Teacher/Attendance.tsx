@@ -1300,8 +1300,8 @@ const AttendancePage: React.FC = () => {
                                                 <tbody>
                                                     {classStudents.map((student) => {
                                                         return (
-                                                            <tr key={student.id} className="hover:bg-gray-50">
-                                                                <td className="border border-gray-300 px-4 py-3 sticky left-0 bg-white z-10">
+                                                            <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                                <td className="border border-gray-300 dark:border-gray-700 px-4 py-3 sticky left-0 bg-white dark:bg-gray-800 z-10">
                                                                     <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">{student.full_name}</div>
                                                                     <div className="text-xs text-gray-600 dark:text-gray-400">{student.student_id}</div>
                                                                 </td>
@@ -1314,7 +1314,7 @@ const AttendancePage: React.FC = () => {
                                                                     return (
                                                                         <td
                                                                             key={day}
-                                                                            className="border border-gray-300 px-2 py-2 text-center min-w-[40px] relative attendance-cell-dropdown"
+                                                                            className="border border-gray-300 dark:border-gray-700 px-2 py-2 text-center min-w-[40px] relative attendance-cell-dropdown bg-white dark:bg-gray-800"
                                                                         >
                                                                             {attendance ? (
                                                                                 <div className="relative">
@@ -1387,12 +1387,12 @@ const AttendancePage: React.FC = () => {
                                                                                             setDropdownPosition({ top: rect.bottom + window.scrollY + 4, left: rect.left + window.scrollX });
                                                                                             setOpenDropdown(isOpen ? null : { studentId: student.id, day });
                                                                                         }}
-                                                                                        className="w-full h-8 hover:bg-gray-100 rounded cursor-pointer"
+                                                                                        className="w-full h-8 hover:bg-gray-100 dark:hover:bg-gray-600 rounded cursor-pointer"
                                                                                         title="Click to mark attendance"
                                                                                     />
                                                                                     {isOpen && dropdownPosition && (
                                                                                         <div 
-                                                                                            className="fixed bg-white border-2 border-gray-300 rounded-lg shadow-2xl z-[9999] min-w-[150px] py-1"
+                                                                                            className="fixed bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-2xl z-[9999] min-w-[150px] py-1"
                                                                                             style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
                                                                                         >
                                                                                             <button
@@ -1400,7 +1400,7 @@ const AttendancePage: React.FC = () => {
                                                                                                     e.stopPropagation();
                                                                                                     handleQuickMark(student.id, 'Present', day);
                                                                                                 }}
-                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-green-50 text-green-800 cursor-pointer flex items-center gap-2 border-b border-gray-100"
+                                                                                                className="w-full px-4 py-3 text-left text-base font-medium hover:bg-green-50 dark:hover:bg-green-900/30 text-green-800 dark:text-green-300 cursor-pointer flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
                                                                                             >
                                                                                                 <CheckCircle className="w-4 h-4" />
                                                                                                 <span>Present</span>
