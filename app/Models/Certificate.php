@@ -148,6 +148,7 @@ class Certificate extends Model
 
     /**
      * Verify the integrity of the certificate by regenerating and comparing the hash
+     * Supports both old format (with timestamp) and new format (without timestamp) for backward compatibility
      */
     public function verifyIntegrity(): bool
     {
@@ -155,11 +156,37 @@ class Certificate extends Model
             return false; // Not registered on blockchain yet
         }
 
-        // Regenerate hash with current data
+        // Try new format first (without timestamp) - this is the current format
         $currentHash = $this->generateBlockchainHash();
+        if (hash_equals($this->blockchain_hash, $currentHash)) {
+            return true;
+        }
+
+        // If new format doesn't match, try old format (with timestamp) for backward compatibility
+        // Use the stored blockchain_timestamp if available, otherwise use created_at timestamp
+        $timestamp = $this->blockchain_timestamp 
+            ? $this->blockchain_timestamp->timestamp 
+            : ($this->created_at ? $this->created_at->timestamp : null);
         
-        // Compare with stored hash
-        return hash_equals($this->blockchain_hash, $currentHash);
+        if ($timestamp) {
+            $data = [
+                'certificate_number' => $this->certificate_number,
+                'student_id' => $this->student_id,
+                'title' => $this->title,
+                'date_issued' => $this->date_issued->format('Y-m-d'),
+                'timestamp' => $timestamp,
+            ];
+            
+            ksort($data);
+            $oldFormatHash = hash('sha256', json_encode($data, JSON_UNESCAPED_UNICODE));
+            
+            if (hash_equals($this->blockchain_hash, $oldFormatHash)) {
+                return true;
+            }
+        }
+
+        // Neither format matches - integrity check failed
+        return false;
     }
 
     public function registerOnBlockchain(): void
