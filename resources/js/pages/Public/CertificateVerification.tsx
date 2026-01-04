@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Shield, CheckCircle, XCircle, Search, Award, User, Calendar, Hash, Download, Copy } from 'lucide-react';
+import { Shield, CheckCircle, XCircle, Search, Award, User, Calendar, Hash, Download, Copy, ArrowLeft } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
+import { router } from '@inertiajs/react';
 
 const PRIMARY_COLOR_CLASS = 'bg-gradient-to-r from-purple-600 to-indigo-600';
 const TEXT_COLOR_CLASS = 'text-purple-600';
@@ -91,6 +92,17 @@ const CertificateVerification: React.FC = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
             <div className="container mx-auto px-4 py-12">
+                {/* Back Button */}
+                <div className="mb-6">
+                    <button
+                        onClick={() => router.visit('/')}
+                        className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors group"
+                    >
+                        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                        <span className="font-medium">Back to Home</span>
+                    </button>
+                </div>
+
                 {/* Header */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 mb-6">

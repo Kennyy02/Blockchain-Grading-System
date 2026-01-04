@@ -1507,7 +1507,7 @@ const fetchDropdownLists = async () => {
 
                 {/* Stats Cards */}
                 {stats && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-4 lg:gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                         <StatCard 
                             title="Total Grades" 
                             value={stats.total_grades} 
@@ -1543,7 +1543,7 @@ const fetchDropdownLists = async () => {
 
                 {/* Filters */}
                 <div className="bg-white dark:bg-gray-800 dark:border-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-100 dark:border-white">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="relative sm:col-span-2 lg:col-span-2">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <Search className="h-5 w-5 text-gray-400 dark:text-gray-300" />
@@ -1628,20 +1628,19 @@ const fetchDropdownLists = async () => {
                         <div>
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                                <button
-                                    onClick={() => {
-                                        setSelectedClassId(null);
-                                        setSelectedSubjectId(null);
-                                        setGridData({});
-                                        setHasUnsavedChanges(false);
-                                    }}
-                                    className="flex items-center text-[#003366] dark:text-white hover:text-[#002244] dark:hover:text-gray-300 cursor-pointer text-sm sm:text-base"
-                                >
-                                    <ChevronLeft className="w-4 h-4 mr-1 dark:text-white" />
-                                    <span className="hidden sm:inline dark:text-white">Back to Classes</span>
-                                    <span className="sm:hidden dark:text-white">Back</span>
-                                </button>
-
+                                    <button
+                                        onClick={() => {
+                                            setSelectedClassId(null);
+                                            setSelectedSubjectId(null);
+                                            setGridData({});
+                                            setHasUnsavedChanges(false);
+                                        }}
+                                        className="flex items-center text-[#003366] hover:text-[#002244] cursor-pointer text-sm sm:text-base"
+                                    >
+                                        <ChevronLeft className="w-4 h-4 mr-1" />
+                                        <span className="hidden sm:inline">Back to Classes</span>
+                                        <span className="sm:hidden">Back</span>
+                                    </button>
                                     <div>
                                         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white break-words">
                                             {classes.find(c => c.id === selectedClassId)?.class_code || 'Manage Grades'}
@@ -1743,57 +1742,55 @@ const fetchDropdownLists = async () => {
                                                 No students found matching the current filters.
                                             </div>
                                         ) : (
-                                            <div className="overflow-x-auto -mx-4 sm:-mx-0">
-                                                <div className="inline-block min-w-full align-middle px-4 sm:px-0">
-                                                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                                                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" style={{ minWidth: '800px' }}>
-                                                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-                                                            <tr>
-                                                                <th className="px-3 sm:px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider sticky left-0 bg-gray-50 dark:bg-gray-800 z-10 border-r border-gray-200 dark:border-gray-700 whitespace-nowrap" style={{ minWidth: '150px' }}>
-                                                                    Student
-                                                                </th>
-                                                                <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px' }}>
-                                                                    Prelim
-                                                                </th>
-                                                                <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px' }}>
-                                                                    Midterm
-                                                                </th>
-                                                                <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '100px' }}>
-                                                                    Final
-                                                                </th>
-                                                                <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap bg-gray-50 dark:bg-gray-800" style={{ minWidth: '120px' }}>
-                                                                    Final Rating
-                                                                    <span className="block text-[9px] font-normal text-gray-500 dark:text-gray-400 mt-0.5">(Auto)</span>
-                                                                </th>
-                                                                <th className="px-3 sm:px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider whitespace-nowrap" style={{ minWidth: '130px' }}>
-                                                                    Remarks
-                                                                </th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                                            {filteredStudents.map((student) => {
-                                                                const key = `${student.id}_${selectedSubjectId}`;
-                                                                const gradeData = gridData[key] || {};
-                                                                
-                                                                return (
-                                                                    <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                                        <td className="px-3 sm:px-6 py-3 sm:py-4 sticky left-0 bg-white dark:bg-gray-800 z-10 border-r border-gray-200 dark:border-gray-700" style={{ minWidth: '150px' }}>
+                                            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                                            <div className="bg-white dark:bg-gray-800 dark:border-white rounded-xl shadow-sm border border-gray-200 dark:border-white overflow-hidden">
+                                                <table className="min-w-full divide-y divide-gray-200 dark:divide-white" style={{ minWidth: '600px' }}>
+                                                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-900 dark:border-white">
+                                                        <tr>
+                                                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider sticky left-0 bg-gray-50 dark:bg-gray-900 z-10 border-r border-gray-200 dark:border-white min-w-[120px]">
+                                                                Student
+                                                            </th>
+                                                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider min-w-[80px] sm:min-w-[100px]">
+                                                                Prelim
+                                                            </th>
+                                                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider min-w-[80px] sm:min-w-[100px]">
+                                                                Midterm
+                                                            </th>
+                                                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider min-w-[80px] sm:min-w-[100px]">
+                                                                Final
+                                                            </th>
+                                                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider min-w-[90px] sm:min-w-[100px] bg-gray-50 dark:bg-gray-900">
+                                                                Final Rating
+                                                            </th>
+                                                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider min-w-[100px] sm:min-w-[120px]">
+                                                                Remarks
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-white">
+                                                        {filteredStudents.map((student) => {
+                                                            const key = `${student.id}_${selectedSubjectId}`;
+                                                            const gradeData = gridData[key] || {};
+                                                            
+                                                            return (
+                                                                <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                                    <td className="px-2 sm:px-4 py-2 sm:py-3 sticky left-0 bg-white dark:bg-gray-800 z-10 border-r border-gray-200 dark:border-white min-w-[120px]">
                                                                         <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white break-words">{student.student_id}</div>
                                                                         <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-300 break-words">{student.full_name}</div>
                                                                     </td>
-                                                                    <td className="px-3 sm:px-6 py-3 sm:py-4">
-                                                                    <input
-                                                                        type="number"
-                                                                        min="0"
-                                                                        max="100"
-                                                                        step="0.01"
-                                                                        value={gradeData.prelim_grade ?? ''}
-                                                                        onChange={(e) => handleGridCellChange(student.id, 'prelim_grade', e.target.value)}
-                                                                        className="w-full px-1 sm:px-2 py-1 text-xs sm:text-sm text-center border border-gray-300 dark:border-white dark:bg-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
-                                                                        placeholder="0.00"
-                                                                    />
+                                                                    <td className="px-2 sm:px-4 py-2">
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            max="100"
+                                                                            step="0.01"
+                                                                            value={gradeData.prelim_grade ?? ''}
+                                                                            onChange={(e) => handleGridCellChange(student.id, 'prelim_grade', e.target.value)}
+                                                                            className="w-full px-1 sm:px-2 py-1 text-xs sm:text-sm text-center border border-gray-300 dark:border-white dark:bg-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
+                                                                            placeholder="0.00"
+                                                                        />
                                                                     </td>
-                                                                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                                                                    <td className="px-2 sm:px-4 py-2">
                                                                         <input
                                                                             type="number"
                                                                             min="0"
@@ -1805,7 +1802,7 @@ const fetchDropdownLists = async () => {
                                                                             placeholder="0.00"
                                                                         />
                                                                     </td>
-                                                                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                                                                    <td className="px-2 sm:px-4 py-2">
                                                                         <input
                                                                             type="number"
                                                                             min="0"
@@ -1817,7 +1814,7 @@ const fetchDropdownLists = async () => {
                                                                             placeholder="0.00"
                                                                         />
                                                                     </td>
-                                                                    <td className="px-3 sm:px-6 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800">
+                                                                    <td className="px-2 sm:px-4 py-2 bg-gray-50 dark:bg-gray-900">
                                                                         <input
                                                                             type="number"
                                                                             min="0"
@@ -1825,17 +1822,16 @@ const fetchDropdownLists = async () => {
                                                                             step="0.01"
                                                                             value={gradeData.final_rating ?? ''}
                                                                             readOnly
-                                                                            className="w-full px-2 sm:px-3 py-2 text-sm font-semibold text-center border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-not-allowed"
+                                                                            className="w-full px-1 sm:px-2 py-1 text-xs sm:text-sm text-center border border-gray-300 dark:border-white rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white cursor-not-allowed"
                                                                             placeholder="Auto"
-                                                                            title="Automatically calculated from Prelim, Midterm, and Final grades"
                                                                         />
                                                                     </td>
                                                                     <td className="px-2 sm:px-4 py-2">
-                                                                    <select
-                                                                        value={gradeData.remarks || 'Passed'}
-                                                                        onChange={(e) => handleGridCellChange(student.id, 'remarks', e.target.value as GradeRemarks)}
-                                                                        className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm text-center border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent transition-all"
-                                                                    >
+                                                                        <select
+                                                                            value={gradeData.remarks || 'Passed'}
+                                                                            onChange={(e) => handleGridCellChange(student.id, 'remarks', e.target.value as GradeRemarks)}
+                                                                            className="w-full px-1 sm:px-2 py-1 text-[10px] sm:text-xs text-center border border-gray-300 dark:border-white dark:bg-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
+                                                                        >
                                                                             <option value="Passed">Passed</option>
                                                                             <option value="Failed">Failed</option>
                                                                             <option value="Incomplete">Incomplete</option>
@@ -1846,7 +1842,6 @@ const fetchDropdownLists = async () => {
                                                         })}
                                                     </tbody>
                                                 </table>
-                                            </div>
                                             </div>
                                         </div>
                                         );

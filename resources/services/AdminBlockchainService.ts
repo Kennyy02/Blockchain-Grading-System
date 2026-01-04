@@ -258,34 +258,185 @@ class AdminBlockchainService {
     private baseURL = '/api';
 
     /**
+     * Get CSRF token from various sources
+     */
+    private getCsrfToken(): string {
+        // Try multiple sources for CSRF token
+        let csrfToken: string | null = null;
+        
+        // 1. Try meta tag first
+        csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || null;
+        
+        // 2. Try Inertia page props
+        if (!csrfToken && typeof window !== 'undefined') {
+            try {
+                const inertiaData = (window as any).__INERTIA_DATA__;
+                if (inertiaData?.page?.props?.csrf_token) {
+                    csrfToken = inertiaData.page.props.csrf_token;
+                } else if ((window as any).Inertia?.page?.props?.csrf_token) {
+                    csrfToken = (window as any).Inertia.page.props.csrf_token;
+                }
+            } catch (e) {
+                console.warn('Could not retrieve CSRF token from Inertia props:', e);
+            }
+        }
+        
+        // 3. Try Laravel's default token name
+        if (!csrfToken) {
+            const tokenInput = document.querySelector('input[name="_token"]') as HTMLInputElement;
+            if (tokenInput) {
+                csrfToken = tokenInput.value;
+            }
+        }
+        
+        if (!csrfToken) {
+            console.error('CSRF token not found. Please refresh the page.');
+            throw new Error('CSRF token not found. Please refresh the page.');
+        }
+        
+        return csrfToken;
+    }
+
+    /**
+     * Get fresh CSRF token from server
+     */
+    private async getFreshCsrfToken(): Promise<string> {
+        try {
+            const absoluteUrl = window.location.origin + '/api/csrf-token';
+            console.log('Fetching fresh CSRF token from /api/csrf-token...');
+            const response = await fetch(absoluteUrl, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.csrf_token) {
+                    console.log('Successfully retrieved fresh CSRF token');
+                    // Update the meta tag with the new token
+                    const metaTag = document.querySelector('meta[name="csrf-token"]');
+                    if (metaTag) {
+                        metaTag.setAttribute('content', data.csrf_token);
+                        console.log('Updated meta tag with new CSRF token');
+                    }
+                    return data.csrf_token;
+                }
+                console.error('Invalid CSRF token response:', data);
+            } else {
+                console.error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
+            }
+        } catch (e) {
+            console.warn('Could not fetch fresh CSRF token from server:', e);
+        }
+        
+        // Fallback to getting token from page
+        return this.getCsrfToken();
+    }
+
+    /**
      * Generic wrapper for authenticated API requests
      */
-    private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    private async request<T>(url: string, options: RequestInit = {}, retryOn419: boolean = true): Promise<ApiResponse<T>> {
+        const csrfToken = this.getCsrfToken();
+        
+        // Ensure URL is absolute - always use full URL to avoid redirects
+        let absoluteUrl = url;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            // Use window.location.origin to create absolute URL
+            absoluteUrl = window.location.origin + (url.startsWith('/') ? url : '/' + url);
+        }
         
         const defaultOptions: RequestInit = {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
+                'X-CSRF-TOKEN': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            credentials: 'same-origin',
+            credentials: 'include', // Changed from 'same-origin' to 'include' to ensure cookies are sent
         };
 
         try {
-            const response = await fetch(url, { ...defaultOptions, ...options });
-            const contentType = response.headers.get('content-type');
-            let data;
+            // Merge options carefully - ensure headers are merged correctly
+            const mergedOptions: RequestInit = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...(options.headers || {}),
+                }
+            };
             
+            const response = await fetch(absoluteUrl, mergedOptions);
+            const contentType = response.headers.get('content-type');
+            
+            // Handle 419 CSRF token mismatch BEFORE reading response body
+            // This allows us to retry with a fresh token
+            if (response.status === 419) {
+                console.error('CSRF token mismatch (419). Current token:', csrfToken ? csrfToken.substring(0, 10) + '...' : 'missing');
+                
+                if (retryOn419) {
+                    // Try to get a fresh token from the server and retry once
+                    try {
+                        console.log('Attempting to refresh CSRF token and retry request...');
+                        const freshToken = await this.getFreshCsrfToken();
+                        if (freshToken) {
+                            console.log('Token refreshed, retrying request with new token...');
+                            // Retry with fresh token
+                            const retryOptions = {
+                                ...options,
+                                headers: {
+                                    ...defaultOptions.headers,
+                                    ...options.headers,
+                                    'X-CSRF-TOKEN': freshToken,
+                                }
+                            };
+                            return this.request<T>(url, retryOptions, false); // Don't retry again
+                        } else {
+                            console.warn('Could not get a fresh token, refresh failed');
+                        }
+                    } catch (e) {
+                        console.error('Could not refresh CSRF token:', e);
+                    }
+                }
+                
+                // If we still get 419 or retry failed, read response and show error
+                const text = await response.text();
+                console.error('CSRF token mismatch (419). Response:', text.substring(0, 200));
+                const errorMsg = 'Your session has expired. Please refresh the page and try again.';
+                throw new Error(errorMsg);
+            }
+            
+            let data;
             if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
             } else {
+                // For non-JSON responses, try to get text and provide better error
                 const text = await response.text();
+                if (response.status >= 400) {
+                    throw new Error(`Server error (${response.status}): ${text.substring(0, 200)}`);
+                }
                 throw new Error('Unexpected response format from server');
             }
 
             if (!response.ok) {
+                // Handle 401 Unauthorized - redirect to login
+                if (response.status === 401) {
+                    console.warn('Unauthorized request, redirecting to login...');
+                    window.location.href = '/login';
+                    throw new Error('Unauthorized. Please log in again.');
+                }
+                
+                // Handle 405 Method Not Allowed - usually means wrong URL or route
+                if (response.status === 405) {
+                    console.error('Method Not Allowed (405). URL:', url, 'Method:', options.method || 'GET');
+                    throw new Error(`Invalid request: The URL '${url}' does not support ${options.method || 'GET'} method. Please check the route configuration.`);
+                }
+                
                 // Extract detailed error message
                 let errorMessage = data.message || `Request failed with status ${response.status}`;
                 
