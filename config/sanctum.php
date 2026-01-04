@@ -16,10 +16,11 @@ return [
     */
 
     'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-        '%s%s%s',
-        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
+        '%s%s%s%s',
+        'localhost,localhost:3000,localhost:5173,localhost:5174,127.0.0.1,127.0.0.1:8000,::1',
         Sanctum::currentApplicationUrlWithPort(),
-        env('APP_ENV') === 'production' ? ',*.railway.app,railway.app' : ''
+        env('APP_ENV') === 'production' ? ',*.railway.app,railway.app' : '',
+        env('APP_ENV') === 'production' ? ',*.onrender.com,smmsiblockchain.onrender.com' : ''
     ))),
 
     /*
