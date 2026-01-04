@@ -45,6 +45,10 @@ const CertificateTemplate: React.FC<CertificateTemplateProps> = ({
             {/* Print Styles */}
             <style>{`
                 @media print {
+                    @page {
+                        size: A4 landscape;
+                        margin: 0;
+                    }
                     body * {
                         visibility: hidden;
                     }
@@ -56,6 +60,15 @@ const CertificateTemplate: React.FC<CertificateTemplateProps> = ({
                         left: 0;
                         top: 0;
                         width: 100%;
+                        height: 100%;
+                    }
+                    .certificate-paper {
+                        width: 297mm;
+                        height: 210mm;
+                        margin: 0;
+                        padding: 40px 50px;
+                        box-shadow: none;
+                        border-radius: 0;
                     }
                     .no-print {
                         display: none !important;
@@ -66,17 +79,22 @@ const CertificateTemplate: React.FC<CertificateTemplateProps> = ({
                     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
                     min-height: 100vh;
                     padding: 40px 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
                 
                 .certificate-paper {
-                    max-width: 900px;
+                    width: 297mm;
+                    height: 210mm;
+                    max-width: 297mm;
                     margin: 0 auto;
                     background: #ffffff;
                     border: 8px solid #8b5cf6;
                     border-radius: 4px;
                     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
                     position: relative;
-                    padding: 60px 80px;
+                    padding: 40px 50px;
                     background-image: 
                         radial-gradient(circle at 2px 2px, rgba(139, 92, 246, 0.1) 1px, transparent 0);
                     background-size: 40px 40px;
