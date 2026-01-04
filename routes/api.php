@@ -41,6 +41,13 @@ use App\Http\Controllers\UserController;
 */
 
 // ========================================================================
+// 🌐 PUBLIC API ROUTES - NO AUTHENTICATION REQUIRED
+// ========================================================================
+
+// Certificate Verification (Public - No Auth Required)
+Route::post('/blockchain/verify', [BlockchainController::class, 'verifyCertificate']);
+
+// ========================================================================
 // 🔐 AUTHENTICATION & USER INFO
 // ========================================================================
 
@@ -410,12 +417,7 @@ Route::prefix('blockchain')->group(function () {
 });
 
 // ========================================================================
-// 🌐 PUBLIC API ROUTES
-// ========================================================================
-
-// Certificate Verification (Public - No Auth Required)
-Route::post('/blockchain/verify', [BlockchainController::class, 'verifyCertificate']);
-
+// 🌐 PUBLIC API ROUTES (continued)
 // ========================================================================
 // 📊 ANALYTICS & REPORTING
 // ========================================================================
