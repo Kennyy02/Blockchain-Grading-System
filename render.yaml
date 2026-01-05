@@ -13,14 +13,16 @@ services:
         value: stderr
       - key: LOG_LEVEL
         value: error
-      # Database connection will be set from Railway
+      # Database connection - Free MySQL Provider
+      # Option 1: Aiven (Recommended - Free tier available)
+      # Option 2: db4free.net (Simple free MySQL)
       # Add these in Render dashboard:
       # DB_CONNECTION=mysql
-      # DB_HOST=your-railway-db-host
+      # DB_HOST=your-mysql-host
       # DB_PORT=3306
       # DB_DATABASE=your-database-name
-      # DB_USERNAME=your-db-username
-      # DB_PASSWORD=your-db-password
+      # DB_USERNAME=your-username
+      # DB_PASSWORD=your-password
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_DRIVER
