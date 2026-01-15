@@ -272,6 +272,20 @@ class AdminCourseMaterialService {
         };
         
         const makeRequest = async (token: string, formData: FormData): Promise<Response> => {
+            // Verify FormData has file before sending
+            let hasFileInFormData = false;
+            for (const [key, value] of formData.entries()) {
+                if (key === 'file' && value instanceof File) {
+                    hasFileInFormData = true;
+                    console.log(`✅ File verified in FormData: ${value.name} (${value.size} bytes)`);
+                    break;
+                }
+            }
+            
+            if (!hasFileInFormData) {
+                console.error('❌ CRITICAL: File not found in FormData before sending request!');
+            }
+            
             const options: RequestInit = {
                 method: 'POST',
                 body: formData,
@@ -279,9 +293,18 @@ class AdminCourseMaterialService {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': token,
                     'X-Requested-With': 'XMLHttpRequest',
+                    // Note: Don't set Content-Type for FormData - browser sets it automatically with boundary
                 },
                 credentials: 'include', // Changed to 'include' for cross-origin support
             };
+            
+            console.log('📡 Sending request with:', {
+                url: absoluteUrl,
+                method: 'POST',
+                hasFile: hasFileInFormData,
+                csrfToken: token.substring(0, 20) + '...'
+            });
+            
             return fetch(absoluteUrl, options);
         };
 
@@ -340,11 +363,21 @@ class AdminCourseMaterialService {
                 }
 
                 // Log full error response for debugging
-                console.error('❌ Backend validation error:', {
+                console.error('❌ Backend validation error - Full response:', JSON.stringify({
                     status: response.status,
                     data: data,
-                    errors: data.errors
-                });
+                    errors: data.errors,
+                    message: data.message
+                }, null, 2));
+
+                // Also log errors object expanded
+                if (data.errors) {
+                    console.error('❌ Validation errors breakdown:', data.errors);
+                    Object.entries(data.errors).forEach(([field, msgs]) => {
+                        const messages = Array.isArray(msgs) ? msgs : [msgs];
+                        console.error(`  - ${field}:`, messages);
+                    });
+                }
 
                 const errorMessages = data.errors 
                     ? Object.entries(data.errors).map(([field, msgs]) => {
@@ -408,15 +441,41 @@ class AdminCourseMaterialService {
             if (!data.file) {
                 throw new Error('File object is missing or invalid');
             }
+            
+            // Verify file properties before appending
+            if (!(data.file instanceof File)) {
+                throw new Error('File object is not a valid File instance');
+            }
+            
+            if (data.file.size === 0) {
+                throw new Error('File is empty (0 bytes)');
+            }
+            
             formData.append('file', data.file);
             
-            // Log FormData contents for debugging (file won't show in console, but we can verify other fields)
+            // Log FormData contents for debugging
             console.log('📋 FormData created:', {
                 subject_id: data.subject_id,
                 title: data.title,
-                hasDescription: !!data.description,
-                hasFile: !!data.file
+                description: data.description || '(empty)',
+                file: {
+                    name: data.file.name,
+                    size: data.file.size,
+                    type: data.file.type,
+                    lastModified: new Date(data.file.lastModified).toISOString()
+                }
             });
+            
+            // Verify FormData has the file (can't directly check, but we can log what we appended)
+            const formDataEntries: string[] = [];
+            for (const [key, value] of formData.entries()) {
+                if (value instanceof File) {
+                    formDataEntries.push(`${key}: File(${value.name}, ${value.size} bytes)`);
+                } else {
+                    formDataEntries.push(`${key}: ${value}`);
+                }
+            }
+            console.log('📦 FormData entries:', formDataEntries);
             
             return formData;
         };
