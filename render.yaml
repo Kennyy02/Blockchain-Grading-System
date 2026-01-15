@@ -3,7 +3,7 @@ services:
     name: grading-management-system
     runtime: docker
     plan: free
-    healthCheckPath: /
+    healthCheckPath: /ping
     envVars:
       - key: APP_ENV
         value: production
@@ -31,3 +31,18 @@ services:
         value: database
       - key: FILESYSTEM_DISK
         value: local
+  # Scheduled task runner to keep database active
+  - type: worker
+    name: scheduler
+    runtime: docker
+    plan: free
+    command: php artisan schedule:work
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error

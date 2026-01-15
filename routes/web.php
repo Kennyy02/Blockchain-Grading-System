@@ -52,6 +52,10 @@ Route::get('/verify', function () {
     return Inertia::render('Public/CertificateVerification');
 })->name('verify');
 
+// Keep-alive endpoints to prevent Render and Aiven from sleeping
+Route::get('/ping', [App\Http\Controllers\KeepAliveController::class, 'ping'])->name('keep-alive.ping');
+Route::get('/health', [App\Http\Controllers\KeepAliveController::class, 'health'])->name('keep-alive.health');
+
 // ==================== ADMIN ROUTES ====================
 Route::middleware(['auth', 'verified', 'checkRole:admin'])->prefix('admin')->name('admin.')->group(function () {
     
