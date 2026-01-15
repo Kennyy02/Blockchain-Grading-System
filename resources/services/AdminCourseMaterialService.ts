@@ -339,10 +339,20 @@ class AdminCourseMaterialService {
                     throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page and try again.');
                 }
 
+                // Log full error response for debugging
+                console.error('❌ Backend validation error:', {
+                    status: response.status,
+                    data: data,
+                    errors: data.errors
+                });
+
                 const errorMessages = data.errors 
-                    ? Object.entries(data.errors).map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`).join('; ')
-                    : data.message;
-                throw new Error(errorMessages || `File upload failed with status ${response.status}`);
+                    ? Object.entries(data.errors).map(([field, msgs]) => {
+                        const messages = Array.isArray(msgs) ? msgs : [msgs];
+                        return `${field}: ${messages.join(', ')}`;
+                    }).join('; ')
+                    : data.message || `File upload failed with status ${response.status}`;
+                throw new Error(errorMessages);
             }
             
             return data;
@@ -373,6 +383,19 @@ class AdminCourseMaterialService {
      * Upload a new course material (Uses FormData for file transfer)
      */
     async uploadMaterial(data: CourseMaterialUploadData): Promise<ApiResponse<CourseMaterial>> {
+        // Validate file before creating FormData
+        if (!data.file) {
+            throw new Error('File is required for upload');
+        }
+        
+        // Log file info for debugging
+        console.log('📤 Uploading file:', {
+            name: data.file.name,
+            size: data.file.size,
+            type: data.file.type,
+            sizeInMB: (data.file.size / (1024 * 1024)).toFixed(2)
+        });
+        
         // Create a factory function that creates FormData (allows retry after CSRF refresh)
         const createFormData = (): FormData => {
             const formData = new FormData();
@@ -381,7 +404,20 @@ class AdminCourseMaterialService {
             if (data.description) {
                 formData.append('description', data.description);
             }
+            // Verify file is still valid before appending
+            if (!data.file) {
+                throw new Error('File object is missing or invalid');
+            }
             formData.append('file', data.file);
+            
+            // Log FormData contents for debugging (file won't show in console, but we can verify other fields)
+            console.log('📋 FormData created:', {
+                subject_id: data.subject_id,
+                title: data.title,
+                hasDescription: !!data.description,
+                hasFile: !!data.file
+            });
+            
             return formData;
         };
         

@@ -195,6 +195,16 @@ const MaterialModal: React.FC<{
             return;
         }
 
+        // Validate file size before upload
+        if (isNew && formData.file) {
+            const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+            if (formData.file.size > maxSize) {
+                alert(`File size (${(formData.file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the maximum allowed size of 10 MB. Please choose a smaller file.`);
+                setLoading(false);
+                return;
+            }
+        }
+
         try {
             if (isNew) {
                 await onSave(formData as CourseMaterialUploadData, true);
@@ -215,7 +225,20 @@ const MaterialModal: React.FC<{
         const { name, value, type, files } = e.target as HTMLInputElement;
         
         if (type === 'file' && files) {
-            setFormData(prev => ({ ...prev, file: files[0] }));
+            const file = files[0];
+            const maxSize = 10 * 1024 * 1024; // 10MB in bytes (backend limit: 10240 KB)
+            
+            if (file.size > maxSize) {
+                alert(`File size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the maximum allowed size of 10 MB. Please choose a smaller file.`);
+                // Clear the file input
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+                setFormData(prev => ({ ...prev, file: undefined }));
+                return;
+            }
+            
+            setFormData(prev => ({ ...prev, file: file }));
         } else {
             setFormData(prev => ({ 
                 ...prev, 
