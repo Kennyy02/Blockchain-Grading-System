@@ -69,14 +69,32 @@ class CourseMaterialController extends Controller
     public function store(Request $request)
     {
         try {
+            // Log incoming request for debugging
+            \Log::info('Course Material Upload Request', [
+                'has_file' => $request->hasFile('file'),
+                'file_size' => $request->hasFile('file') ? $request->file('file')->getSize() : null,
+                'subject_id' => $request->input('subject_id'),
+                'title' => $request->input('title'),
+                'content_length' => $request->header('Content-Length'),
+            ]);
+
             $validator = Validator::make($request->all(), [
                 'subject_id' => 'required|exists:subjects,id',
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'file' => 'required|file|max:10240',
+            ], [
+                'file.required' => 'Please select a file to upload.',
+                'file.file' => 'The uploaded file is not valid.',
+                'file.max' => 'The file size must not exceed 10 MB (10240 KB).',
             ]);
 
             if ($validator->fails()) {
+                \Log::warning('Course Material Upload Validation Failed', [
+                    'errors' => $validator->errors()->toArray(),
+                    'request_data' => $request->except(['file']),
+                ]);
+                
                 return response()->json([
                     'success' => false, 
                     'message' => 'Validation failed', 
@@ -85,6 +103,23 @@ class CourseMaterialController extends Controller
             }
 
             $file = $request->file('file');
+            
+            // Additional file validation
+            if (!$file->isValid()) {
+                \Log::error('Course Material Upload - Invalid File', [
+                    'error' => $file->getError(),
+                    'error_message' => $file->getErrorMessage(),
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File upload failed',
+                    'errors' => [
+                        'file' => ['The file failed to upload. Error: ' . $file->getErrorMessage()]
+                    ]
+                ], 422);
+            }
+            
             $filePath = $file->store('course_materials', 'public');
             
             $data = [
