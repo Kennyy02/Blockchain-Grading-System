@@ -249,7 +249,12 @@ class AdminCourseMaterialService {
     }
     
     // FormData Request Handler (For file uploads)
-    private async formDataRequest<T>(url: string, formData: FormData, retryOn419: boolean = true): Promise<ApiResponse<T>> {
+    // Accepts either FormData or a function that creates FormData (for retry support)
+    private async formDataRequest<T>(
+        url: string, 
+        formDataOrFactory: FormData | (() => FormData), 
+        retryOn419: boolean = true
+    ): Promise<ApiResponse<T>> {
         let csrfToken = this.getCsrfToken();
         
         // Ensure URL is absolute - always use full URL to avoid redirects
@@ -258,7 +263,15 @@ class AdminCourseMaterialService {
             absoluteUrl = window.location.origin + (url.startsWith('/') ? url : '/' + url);
         }
         
-        const makeRequest = async (token: string): Promise<Response> => {
+        // Helper to get FormData (recreate if it's a function)
+        const getFormData = (): FormData => {
+            if (typeof formDataOrFactory === 'function') {
+                return formDataOrFactory();
+            }
+            return formDataOrFactory;
+        };
+        
+        const makeRequest = async (token: string, formData: FormData): Promise<Response> => {
             const options: RequestInit = {
                 method: 'POST',
                 body: formData,
@@ -273,8 +286,8 @@ class AdminCourseMaterialService {
         };
 
         try {
-            let response = await makeRequest(csrfToken);
-            const contentType = response.headers.get('content-type');
+            let formData = getFormData();
+            let response = await makeRequest(csrfToken, formData);
             
             // Handle 419 CSRF token mismatch BEFORE trying to parse JSON
             if (response.status === 419 && retryOn419) {
@@ -282,8 +295,10 @@ class AdminCourseMaterialService {
                 try {
                     const freshToken = await this.refreshCsrfToken();
                     if (freshToken) {
-                        // Retry the request with the fresh token (only once)
-                        response = await makeRequest(freshToken);
+                        // Recreate FormData for retry (it gets consumed on first request)
+                        formData = getFormData();
+                        // Retry the request with the fresh token and new FormData (only once)
+                        response = await makeRequest(freshToken, formData);
                     } else {
                         throw new Error('Failed to refresh CSRF token');
                     }
@@ -292,6 +307,9 @@ class AdminCourseMaterialService {
                     throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page and try again.');
                 }
             }
+            
+            // Check content type after potential retry
+            const contentType = response.headers.get('content-type');
             
             if (!contentType || !contentType.includes('application/json')) {
                 const responseText = await response.text();
@@ -355,15 +373,19 @@ class AdminCourseMaterialService {
      * Upload a new course material (Uses FormData for file transfer)
      */
     async uploadMaterial(data: CourseMaterialUploadData): Promise<ApiResponse<CourseMaterial>> {
-        const formData = new FormData();
-        formData.append('subject_id', data.subject_id.toString());
-        formData.append('title', data.title);
-        if (data.description) {
-            formData.append('description', data.description);
-        }
-        formData.append('file', data.file);
+        // Create a factory function that creates FormData (allows retry after CSRF refresh)
+        const createFormData = (): FormData => {
+            const formData = new FormData();
+            formData.append('subject_id', data.subject_id.toString());
+            formData.append('title', data.title);
+            if (data.description) {
+                formData.append('description', data.description);
+            }
+            formData.append('file', data.file);
+            return formData;
+        };
         
-        return this.formDataRequest<CourseMaterial>(`${this.baseURL}/course-materials`, formData);
+        return this.formDataRequest<CourseMaterial>(`${this.baseURL}/course-materials`, createFormData);
     }
 
     /**
