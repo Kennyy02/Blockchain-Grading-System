@@ -272,19 +272,8 @@ class AdminCourseMaterialService {
         };
         
         const makeRequest = async (token: string, formData: FormData): Promise<Response> => {
-            // Verify FormData has file before sending
-            let hasFileInFormData = false;
-            for (const [key, value] of formData.entries()) {
-                if (key === 'file' && value instanceof File) {
-                    hasFileInFormData = true;
-                    console.log(`✅ File verified in FormData: ${value.name} (${value.size} bytes)`);
-                    break;
-                }
-            }
-            
-            if (!hasFileInFormData) {
-                console.error('❌ CRITICAL: File not found in FormData before sending request!');
-            }
+            // IMPORTANT: Don't iterate through formData.entries() here as it consumes the FormData!
+            // The file verification is already done when creating the FormData
             
             const options: RequestInit = {
                 method: 'POST',
@@ -301,7 +290,7 @@ class AdminCourseMaterialService {
             console.log('📡 Sending request with:', {
                 url: absoluteUrl,
                 method: 'POST',
-                hasFile: hasFileInFormData,
+                hasFormData: !!formData,
                 csrfToken: token.substring(0, 20) + '...'
             });
             
@@ -466,16 +455,13 @@ class AdminCourseMaterialService {
                 }
             });
             
-            // Verify FormData has the file (can't directly check, but we can log what we appended)
-            const formDataEntries: string[] = [];
-            for (const [key, value] of formData.entries()) {
-                if (value instanceof File) {
-                    formDataEntries.push(`${key}: File(${value.name}, ${value.size} bytes)`);
-                } else {
-                    formDataEntries.push(`${key}: ${value}`);
-                }
-            }
-            console.log('📦 FormData entries:', formDataEntries);
+            // Log what we're appending (without consuming FormData)
+            console.log('📦 FormData prepared with:', [
+                `subject_id: ${data.subject_id}`,
+                `title: ${data.title}`,
+                `description: ${data.description || '(empty)'}`,
+                `file: File(${data.file.name}, ${data.file.size} bytes)`
+            ]);
             
             return formData;
         };
