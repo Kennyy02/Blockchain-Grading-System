@@ -69,10 +69,30 @@ class CourseMaterialController extends Controller
     public function store(Request $request)
     {
         try {
+            // Check if file is present BEFORE validation
+            if (!$request->hasFile('file')) {
+                \Log::error('Course Material Upload - No file received', [
+                    'all_inputs' => array_keys($request->all()),
+                    'files' => array_keys($request->allFiles()),
+                    'content_type' => $request->header('Content-Type'),
+                    'content_length' => $request->header('Content-Length'),
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => [
+                        'file' => ['No file was received. Please ensure the file is selected and try again.']
+                    ]
+                ], 422);
+            }
+
             // Log incoming request for debugging
             \Log::info('Course Material Upload Request', [
                 'has_file' => $request->hasFile('file'),
                 'file_size' => $request->hasFile('file') ? $request->file('file')->getSize() : null,
+                'file_name' => $request->hasFile('file') ? $request->file('file')->getClientOriginalName() : null,
+                'file_mime' => $request->hasFile('file') ? $request->file('file')->getMimeType() : null,
                 'subject_id' => $request->input('subject_id'),
                 'title' => $request->input('title'),
                 'content_length' => $request->header('Content-Length'),
