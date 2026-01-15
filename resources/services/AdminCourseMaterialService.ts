@@ -76,38 +76,169 @@ export interface CourseMaterialsResponse extends ApiResponse<CourseMaterial[]> {
 class AdminCourseMaterialService {
     private baseURL = '/api';
 
+    private getCsrfToken(): string {
+        // Try multiple sources for CSRF token
+        let csrfToken: string | null = null;
+        
+        // 1. Try meta tag first
+        csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || null;
+        
+        // 2. Try Inertia page props
+        if (!csrfToken && typeof window !== 'undefined') {
+            try {
+                const inertiaData = (window as any).__INERTIA_DATA__;
+                if (inertiaData?.page?.props?.csrf_token) {
+                    csrfToken = inertiaData.page.props.csrf_token;
+                } else if ((window as any).Inertia?.page?.props?.csrf_token) {
+                    csrfToken = (window as any).Inertia.page.props.csrf_token;
+                }
+            } catch (e) {
+                console.warn('Could not retrieve CSRF token from Inertia props:', e);
+            }
+        }
+        
+        // 3. Try Laravel's default token name
+        if (!csrfToken) {
+            const tokenInput = document.querySelector('input[name="_token"]') as HTMLInputElement;
+            if (tokenInput) {
+                csrfToken = tokenInput.value;
+            }
+        }
+        
+        if (!csrfToken) {
+            console.error('CSRF token not found. Please refresh the page.');
+            throw new Error('CSRF token not found. Please refresh the page.');
+        }
+        
+        return csrfToken;
+    }
+
+    private async refreshCsrfToken(): Promise<string> {
+        try {
+            // Ensure URL is absolute for cross-origin requests
+            let csrfUrl = `${this.baseURL}/csrf-token`;
+            if (!csrfUrl.startsWith('http://') && !csrfUrl.startsWith('https://')) {
+                csrfUrl = window.location.origin + (csrfUrl.startsWith('/') ? csrfUrl : '/' + csrfUrl);
+            }
+            
+            const response = await fetch(csrfUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'include', // Changed to 'include' for cross-origin support
+            });
+            
+            if (!response.ok) {
+                console.error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
+                throw new Error(`Failed to fetch new CSRF token: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            if (data.success && data.csrf_token) {
+                console.log('Successfully retrieved fresh CSRF token');
+                const metaTag = document.querySelector('meta[name="csrf-token"]');
+                if (metaTag) {
+                    metaTag.setAttribute('content', data.csrf_token);
+                    console.log('Updated meta tag with new CSRF token');
+                }
+                return data.csrf_token;
+            }
+            console.error('Invalid CSRF token response:', data);
+            throw new Error('Invalid CSRF token response');
+        } catch (error) {
+            console.error('Error refreshing CSRF token:', error);
+            throw new Error('Failed to refresh session. Please refresh the page manually.');
+        }
+    }
+
     // Standard JSON Request Handler
-    private async request<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    private async request<T>(url: string, options: RequestInit = {}, retryOn419: boolean = true): Promise<ApiResponse<T>> {
+        let csrfToken = this.getCsrfToken();
+        
+        // Ensure URL is absolute - always use full URL to avoid redirects
+        let absoluteUrl = url;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            absoluteUrl = window.location.origin + (url.startsWith('/') ? url : '/' + url);
+        }
         
         const defaultOptions: RequestInit = {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
+                'X-CSRF-TOKEN': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
                 ...options.headers,
             },
-            credentials: 'same-origin',
+            credentials: 'include', // Changed to 'include' for cross-origin support
+        };
+
+        // Merge options carefully - ensure headers are merged correctly
+        const mergedOptions: RequestInit = {
+            ...defaultOptions,
+            ...options,
+            headers: {
+                ...defaultOptions.headers,
+                ...(options.headers || {}),
+            }
         };
 
         try {
-            const response = await fetch(url, { ...defaultOptions, ...options });
+            let response = await fetch(absoluteUrl, mergedOptions);
             const contentType = response.headers.get('content-type');
             let data;
+            
+            // Handle 419 CSRF token mismatch BEFORE trying to parse JSON
+            if (response.status === 419 && retryOn419) {
+                console.warn('CSRF token mismatch (419). Attempting to refresh token and retry...');
+                try {
+                    const newCsrfToken = await this.refreshCsrfToken();
+                    // Retry the request with the new token, but prevent further retries
+                    const retryOptions = {
+                        ...options,
+                        headers: {
+                            ...defaultOptions.headers,
+                            ...options.headers,
+                            'X-CSRF-TOKEN': newCsrfToken,
+                        },
+                    };
+                    return this.request<T>(url, retryOptions, false); // Do not retry again
+                } catch (refreshError) {
+                    console.error('Failed to refresh CSRF token:', refreshError);
+                    throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page and try again.');
+                }
+            }
             
             if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
             } else {
                 const text = await response.text();
-                throw new Error(`Unexpected non-JSON response from server: Status ${response.status}`);
+                if (response.status >= 400) {
+                    throw new Error(`Server error (${response.status}): ${text.substring(0, 200)}`);
+                }
+                throw new Error('Unexpected response format from server');
+            }
+
+            // Handle 401 Unauthorized
+            if (response.status === 401) {
+                console.warn('⚠️ Authentication error (401). This may be a temporary issue.');
+                throw new Error('Unauthenticated. Please check your login status.');
             }
 
             if (!response.ok) {
-                const errorMessages = data.errors 
-                    ? Object.entries(data.errors).map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`).join('; ')
-                    : data.message;
-                throw new Error(errorMessages || `Request failed with status ${response.status}`);
+                // Handle 419 again (in case retryOn419 was false)
+                if (response.status === 419) {
+                    throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page and try again.');
+                }
+
+                if (data.errors) {
+                    const errorMessages = Object.entries(data.errors)
+                        .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+                        .join('; ');
+                    throw new Error(errorMessages || data.message || `Request failed with status ${response.status}`);
+                }
+                throw new Error(data.message || `Request failed with status ${response.status}`);
             }
 
             return data;
@@ -118,22 +249,49 @@ class AdminCourseMaterialService {
     }
     
     // FormData Request Handler (For file uploads)
-    private async formDataRequest<T>(url: string, formData: FormData): Promise<ApiResponse<T>> {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    private async formDataRequest<T>(url: string, formData: FormData, retryOn419: boolean = true): Promise<ApiResponse<T>> {
+        let csrfToken = this.getCsrfToken();
         
-        const options: RequestInit = {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': csrfToken || '',
-            },
-            credentials: 'same-origin',
+        // Ensure URL is absolute - always use full URL to avoid redirects
+        let absoluteUrl = url;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            absoluteUrl = window.location.origin + (url.startsWith('/') ? url : '/' + url);
+        }
+        
+        const makeRequest = async (token: string): Promise<Response> => {
+            const options: RequestInit = {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'include', // Changed to 'include' for cross-origin support
+            };
+            return fetch(absoluteUrl, options);
         };
 
         try {
-            const response = await fetch(url, options);
-            
+            let response = await makeRequest(csrfToken);
             const contentType = response.headers.get('content-type');
+            
+            // Handle 419 CSRF token mismatch BEFORE trying to parse JSON
+            if (response.status === 419 && retryOn419) {
+                console.warn('CSRF token mismatch detected. Attempting to refresh token...');
+                try {
+                    const freshToken = await this.refreshCsrfToken();
+                    if (freshToken) {
+                        // Retry the request with the fresh token (only once)
+                        response = await makeRequest(freshToken);
+                    } else {
+                        throw new Error('Failed to refresh CSRF token');
+                    }
+                } catch (refreshError) {
+                    console.error('Failed to refresh CSRF token:', refreshError);
+                    throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page and try again.');
+                }
+            }
             
             if (!contentType || !contentType.includes('application/json')) {
                 const responseText = await response.text();
@@ -151,7 +309,18 @@ class AdminCourseMaterialService {
             
             const data = await response.json(); 
             
+            // Handle 401 Unauthorized
+            if (response.status === 401) {
+                console.warn('⚠️ Authentication error (401). This may be a temporary issue.');
+                throw new Error('Unauthenticated. Please check your login status.');
+            }
+            
             if (!response.ok) {
+                // Handle 419 again (in case retryOn419 was false)
+                if (response.status === 419) {
+                    throw new Error('CSRF token mismatch. Your session may have expired. Please refresh the page and try again.');
+                }
+
                 const errorMessages = data.errors 
                     ? Object.entries(data.errors).map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`).join('; ')
                     : data.message;
