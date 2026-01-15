@@ -440,7 +440,8 @@ class AdminCourseMaterialService {
                 throw new Error('File is empty (0 bytes)');
             }
             
-            formData.append('file', data.file);
+            // Append file with explicit filename (required for some servers)
+            formData.append('file', data.file, data.file.name);
             
             // Log FormData contents for debugging
             console.log('📋 FormData created:', {

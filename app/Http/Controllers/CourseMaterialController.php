@@ -69,8 +69,39 @@ class CourseMaterialController extends Controller
     public function store(Request $request)
     {
         try {
+            // Log raw request info for debugging
+            \Log::info('Course Material Upload - Raw Request Info', [
+                'method' => $request->method(),
+                'content_type' => $request->header('Content-Type'),
+                'content_length' => $request->header('Content-Length'),
+                'has_file' => $request->hasFile('file'),
+                'all_input_keys' => array_keys($request->all()),
+                'all_files_keys' => array_keys($request->allFiles()),
+                'subject_id' => $request->input('subject_id'),
+                'title' => $request->input('title'),
+            ]);
+            
             // Check if file is present BEFORE validation
             if (!$request->hasFile('file')) {
+                // Check if it's a PHP upload error
+                if ($request->has('file') && $request->input('file') === null) {
+                    \Log::error('Course Material Upload - File field exists but is null (PHP upload error)', [
+                        'php_upload_errors' => [
+                            'UPLOAD_ERR_INI_SIZE' => ini_get('upload_max_filesize'),
+                            'UPLOAD_ERR_FORM_SIZE' => ini_get('post_max_size'),
+                        ],
+                        'content_length' => $request->header('Content-Length'),
+                    ]);
+                    
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Validation failed',
+                        'errors' => [
+                            'file' => ['File upload failed. The file may be too large or there was a server configuration issue. Please check file size limits.']
+                        ]
+                    ], 422);
+                }
+                
                 \Log::error('Course Material Upload - No file received', [
                     'all_inputs' => array_keys($request->all()),
                     'files' => array_keys($request->allFiles()),
