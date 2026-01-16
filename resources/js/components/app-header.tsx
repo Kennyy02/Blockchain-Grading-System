@@ -250,6 +250,17 @@ function AppHeader() {
             ]
         },
         {
+            title: 'User Access',
+            href: '/admin/user-access',
+            icon: UserCheck,
+            submenu: [
+                { title: 'Teachers', href: '/admin/user-access?role=teacher', icon: UserCheck },
+                { title: 'Parents', href: '/admin/user-access?role=parent', icon: User },
+                { title: 'Students', href: '/admin/user-access?role=student', icon: GraduationCap },
+                { title: 'All Users', href: '/admin/user-access', icon: Users },
+            ]
+        },
+        {
             title: 'Course Materials',
             href: '/admin/course-materials',
             icon: FolderOpen,

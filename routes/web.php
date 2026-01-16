@@ -235,6 +235,11 @@ Route::middleware(['auth', 'verified', 'checkRole:admin'])->prefix('admin')->nam
         return Inertia::render('Admin/Users');
     })->name('users');
     
+    // User Access
+    Route::get('/user-access', function () {
+        return Inertia::render('Admin/UserAccess');
+    })->name('user-access');
+    
     // ==================== REPORTS & ANALYTICS ====================
     
     Route::get('/reports', function () {

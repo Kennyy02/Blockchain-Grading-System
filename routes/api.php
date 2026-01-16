@@ -77,6 +77,8 @@ Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{id}', [UserController::class, 'show']);
     Route::put('/{id}/role', [UserController::class, 'updateRole']);
+    Route::get('/access/list', [UserController::class, 'getUserAccess']);
+    Route::get('/access/{id}', [UserController::class, 'getUserAccessDetails']);
 });
 
 // ========================================================================

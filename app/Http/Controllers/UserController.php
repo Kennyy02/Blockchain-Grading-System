@@ -150,5 +150,78 @@ class UserController extends Controller
             ], 404);
         }
     }
+
+    /**
+     * Get users for User Access page with their details (Admin only).
+     */
+    public function getUserAccess(Request $request)
+    {
+        // Only admins can access this
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Admin access required.'
+            ], 403);
+        }
+
+        $query = User::with(['teacher', 'student', 'student.course', 'parent']);
+
+        // Filter by role
+        if ($request->has('role') && $request->role && $request->role !== 'all') {
+            $query->byRole($request->role);
+        }
+
+        // Search
+        if ($request->has('search') && $request->search) {
+            $query->search($request->search);
+        }
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $users = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+        // Include password in response (make visible for admin)
+        $users->getCollection()->transform(function ($user) {
+            // Make password visible (it's normally hidden)
+            $user->makeVisible('password');
+            return $user;
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $users
+        ]);
+    }
+
+    /**
+     * Get single user details with password for User Access modal (Admin only).
+     */
+    public function getUserAccessDetails($id)
+    {
+        // Only admins can access this
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Admin access required.'
+            ], 403);
+        }
+
+        try {
+            $user = User::with(['teacher', 'student', 'student.course', 'parent'])->findOrFail($id);
+            
+            // Make password visible (it's normally hidden)
+            $user->makeVisible('password');
+
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+    }
 }
 
